@@ -1,6 +1,6 @@
 'use strict';
 
-// Aurora theme generator. Reads docs/design-handover/aurora-themes.json (the
+// Aurora theme generator. Reads themes/aurora-themes.json (the
 // single source of truth) and writes build/<tool>/<theme-id>.<ext> for every
 // terminal format. Zero runtime dependencies — runs on a stock Node install.
 //
@@ -14,7 +14,7 @@ const path = require('path');
 const { normalizeHex, hexToFloat } = require('../lib/colors');
 
 const ROOT = path.join(__dirname, '..');
-const SOURCE = path.join(ROOT, 'docs/design-handover/aurora-themes.json');
+const SOURCE = path.join(ROOT, 'themes/aurora-themes.json');
 const BUILD = path.join(ROOT, 'build');
 
 // Fixed 0..7 ANSI slot order; slots 8..15 repeat it as the "bright" set.
@@ -174,7 +174,7 @@ const FORMATS = [
 
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
 
-// Syntax scope table — the mapping from docs/design-handover/README.md.
+// Syntax scope table — the mapping from README.md ("How themes are generated").
 const TOKEN_SCOPES = [
   { token: 'kw', scopes: ['keyword', 'storage'] },
   { token: 'str', scopes: ['string'] },

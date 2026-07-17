@@ -1,6 +1,6 @@
 # 011 — Retire docs/design-handover/
 
-priority: 30
+done: 2026-07-17
 depends: 008, 009
 
 ## What & why

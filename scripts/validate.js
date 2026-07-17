@@ -1,8 +1,8 @@
 'use strict';
 
-// Aurora invariant validator. Reads docs/design-handover/aurora-themes.json (the
+// Aurora invariant validator. Reads themes/aurora-themes.json (the
 // single source of truth) and turns the design rules from
-// docs/design-handover/README.md into an automated pre-commit gate. Zero runtime
+// AGENTS.md ("Design rules to preserve") into an automated pre-commit gate. Zero runtime
 // dependencies — runs on a stock Node install. Read-only: never edits the JSON.
 //
 // Hard invariants fail the exit code; the accent-hue count is a judgement-call
@@ -13,7 +13,7 @@ const path = require('path');
 const { expectedTokens, checkTheme, checkAnsiMapping } = require('../lib/rules');
 
 const ROOT = path.join(__dirname, '..');
-const SOURCE = path.join(ROOT, 'docs/design-handover/aurora-themes.json');
+const SOURCE = path.join(ROOT, 'themes/aurora-themes.json');
 
 const useColor = process.stdout.isTTY;
 const green = (s) => (useColor ? `\x1b[32m${s}\x1b[0m` : s);

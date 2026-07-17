@@ -127,7 +127,7 @@ function Markdown() {
   );
 }
 
-// New pane — the design-handover README notes error/warning/ok were never
+// New pane — error/warning/ok were never
 // visually previewed. This closes that gap: editor squiggles + a diff hunk.
 function squiggle(t: ColorToken): React.CSSProperties {
   return { textDecoration: 'underline wavy', textDecorationColor: `var(--${t})`, textDecorationThickness: 1 };

@@ -1,6 +1,6 @@
-// The single import of the source-of-truth JSON. Task 011 (deleting the old
-// .dc.html showcases) only needs to change this one line if the JSON moves.
-import data from '../../docs/design-handover/aurora-themes.json';
+// The single import of the source-of-truth JSON. If the JSON moves, only this
+// one line changes.
+import data from '../../themes/aurora-themes.json';
 
 export type ColorToken =
   | 'bg' | 'surface' | 'border' | 'ink' | 'ink2' | 'faint'

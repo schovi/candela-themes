@@ -18,7 +18,7 @@ const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(SCRIPT_DIR, '..');
 const APP_DIR = path.join(ROOT, 'app');
 const OUT_DIR = path.join(ROOT, 'docs/screenshots');
-const SOURCE = path.join(ROOT, 'docs/design-handover/aurora-themes.json');
+const SOURCE = path.join(ROOT, 'themes/aurora-themes.json');
 const PORT = 5177;
 const BASE = `http://localhost:${PORT}`;
 

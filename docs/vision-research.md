@@ -2,7 +2,7 @@
 
 What the vision-science and accessibility literature actually supports, gathered while
 auditing the Aurora design claims (2026-07). This is the normative reference for contrast
-floors and color-vision rules; `docs/design-handover/README.md` states the resulting
+floors and color-vision rules; `AGENTS.md` ("Design rules to preserve") states the resulting
 invariants, this file records why they hold and where the original rationale was wrong.
 
 ## Eye-comfort facts
@@ -101,7 +101,7 @@ Sources: [Okabe-Ito](https://jfly.uni-koeln.de/color/),
 ## Derived invariants for Aurora
 
 The rules above condense to (enforced by `scripts/validate.js`, stated in
-`docs/design-handover/README.md`):
+`AGENTS.md`, "Design rules to preserve"):
 
 - `ink` on `surface` ≥ 7:1 (AAA); no pure `#ffffff` bg / `#000000` ink.
 - Every syntax and diagnostic token, and `faint`, ≥ 4.5:1 (AA) against `bg`.

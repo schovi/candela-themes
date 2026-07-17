@@ -4,16 +4,16 @@ Read by the `workflow` plugin skills (`/workflow:groom`, `/workflow:work`, `/wor
 
 ## Project
 
-Aurora is a set of 14 light color themes for terminals and editors, tuned for eye-strain comfort. No build system: `docs/design-handover/aurora-themes.json` is the single source of truth (all palettes, tokens, ANSI mapping); the `.dc.html` files are visual showcases driven from CSS variables. Tool themes (terminal, VS Code, etc.) are generated from the JSON.
+Aurora is a set of 14 light color themes for terminals and editors, tuned for eye-strain comfort. `themes/aurora-themes.json` is the single source of truth (all palettes, tokens, ANSI mapping). Tool themes (terminal, VS Code, etc.) are generated from it by `scripts/generate.js`; the `app/` explorer previews every theme live. Token roles and design invariants live in root `AGENTS.md`.
 
 ## Validation
 
 ```bash
 # targeted, during implementation
-python3 -m json.tool docs/design-handover/aurora-themes.json > /dev/null
+python3 -m json.tool themes/aurora-themes.json > /dev/null
 
 # full gate, before every commit with non-trivial changes (run as separate steps)
-python3 -m json.tool docs/design-handover/aurora-themes.json > /dev/null
+python3 -m json.tool themes/aurora-themes.json > /dev/null
 node scripts/validate.js
 ```
 
@@ -38,14 +38,14 @@ Read the doc leaf before editing mapped paths — behavior and invariants live i
 
 | If you'll edit | Read |
 |---|---|
-| `docs/design-handover/aurora-themes.json` | `docs/design-handover/README.md` (token roles, design invariants) |
-| `docs/design-handover/*.dc.html` | `docs/design-handover/README.md` |
+| `themes/aurora-themes.json` | root `AGENTS.md` (token roles, design invariants, theme-change loop) |
+| `app/` (explorer / playground) | root `AGENTS.md` + root `README.md` (explorer/playground sections) |
 
 - Doc style rules: `docs/style.md`
 - Decision log: `docs/decisions.md` with D<N> handles (used by `/workflow:decision`)
 
 ## Local notes
 
-Design invariants that must survive any theme change (from the README): `bg`/`surface` never `#ffffff` (surface slightly lighter than bg); `ink` never `#000000` and clears ~7:1 (AAA) on `surface`; every syntax + diagnostic token and `faint` clears 4.5:1 (AA) on `bg`; `ink` on `selection` clears 4.5:1; diagnostics use unique hexes (`error`≠`num`, `warning`≠`kw`/`num`, `ok`≠`error`) with `error` vermillion / `ok` blue-green, luminance-separated; desaturation is the load-bearing anti-fringing rule (6–8 hues is taste); blue + orange carry the most meaning (colorblind-safe); every token filled in for all 14 themes — nothing implicit. Rules + rationale: `docs/vision-research.md`.
+Design invariants that must survive any theme change (from root `AGENTS.md`): `bg`/`surface` never `#ffffff` (surface slightly lighter than bg); `ink` never `#000000` and clears ~7:1 (AAA) on `surface`; every syntax + diagnostic token and `faint` clears 4.5:1 (AA) on `bg`; `ink` on `selection` clears 4.5:1; diagnostics use unique hexes (`error`≠`num`, `warning`≠`kw`/`num`, `ok`≠`error`) with `error` vermillion / `ok` blue-green, luminance-separated; desaturation is the load-bearing anti-fringing rule (6–8 hues is taste); blue + orange carry the most meaning (colorblind-safe); every token filled in for all 14 themes — nothing implicit. Rules + rationale: `docs/vision-research.md`.
 
 Theme explorer app lives in `app/` (Vite + React + TS, self-contained; repo root stays dependency-light). It reads the source-of-truth JSON directly. Run it with `cd app && npm install && npm run dev`; type-check/build with `npm run build`. Gallery screenshots regenerate via `cd app && npm run screenshots` (Playwright, needs `npx playwright install chromium` once) — see `docs/screenshots/README.md`. Editing the app is not gated by the theme validators above; run the app's `npm run build` to type-check app changes.
