@@ -1,6 +1,6 @@
 # 007 — AGENTS.md agent-behavior instructions
 
-priority: 18
+done: 2026-07-17
 
 ## What & why
 
