@@ -332,3 +332,10 @@ evaluates the same design invariants as `scripts/validate.js`
 (both import the shared rules in `lib/`), so **Copy theme JSON** stays disabled
 until every hard rule passes — paste the result into a new `themes[]` entry in
 `themes/aurora-themes.json` and it clears `node scripts/validate.js` as-is.
+
+The **Guided** view (View → Guided) is the beginner-friendly path to the same
+export: instead of 19 raw tokens, you pick a background mood and darkness, choose
+accent hues on a wheel, and set the three diagnostic hues. It derives a full,
+rule-valid palette from those choices (contrast-stepped background shades, accents
+whose lightness auto-fits their AA floor, diagnostics nudged to clear the collision
+rules), sharing the pro playground's live preview and gated export.

@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { themes, themesById } from './themes';
 import { ThemeCard } from './ThemeCard';
 import { Playground } from './Playground';
+import { Guided } from './Guided';
 import { PANE_ORDER, type PaneKey } from './samples/Panes';
 
-type View = 'single' | 'all' | 'playground';
+type View = 'single' | 'all' | 'playground' | 'guided';
 
 const ALL_PANES = new Set<PaneKey>(PANE_ORDER.map((p) => p.key));
 
@@ -57,6 +58,7 @@ export default function App() {
               <option value="all">All themes</option>
               <option value="single">Single theme</option>
               <option value="playground">Playground</option>
+              <option value="guided">Guided</option>
             </select>
           </label>
           {view === 'single' && (
@@ -69,7 +71,7 @@ export default function App() {
               </select>
             </label>
           )}
-          {view !== 'playground' && (
+          {view !== 'playground' && view !== 'guided' && (
             <span className="pane-toggles">
               {PANE_ORDER.map((p) => (
                 <label key={p.key}>
@@ -82,8 +84,8 @@ export default function App() {
         </div>
       </header>
       <main>
-        {view === 'playground'
-          ? <Playground />
+        {view === 'playground' ? <Playground />
+          : view === 'guided' ? <Guided />
           : shown.map((t) => <ThemeCard key={t.id} theme={t} panes={panes} />)}
       </main>
     </>

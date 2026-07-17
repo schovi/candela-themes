@@ -17,15 +17,18 @@ export function autoFix(theme: Theme): Theme {
   for (let pass = 0; pass < MAX_PASSES; pass++) {
     if (failureCount(work, expected) === 0) break;
     for (const token of expected) {
-      work.colors[token] = bestLightness(work, token, expected);
+      work.colors[token] = fitLightness(work, token, expected);
     }
   }
   return work;
 }
 
-// Scan this token's lightness for the value that minimizes total theme failures,
+// Scan one token's lightness for the value that minimizes total theme failures,
 // breaking ties toward the original lightness so passing tokens never wander.
-function bestLightness(work: Theme, token: ColorToken, expected: ColorToken[]): string {
+// Mutates work.colors[token] in the scan and leaves it set to the best value.
+// Exported so callers (e.g. the guided derivation) can fit a single foreground
+// token against a frozen background without moving bg/surface.
+export function fitLightness(work: Theme, token: ColorToken, expected: ColorToken[]): string {
   const original = work.colors[token];
   const { h, s, l: originalL } = hexToHsl(original);
   let best = original;

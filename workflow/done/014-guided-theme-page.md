@@ -1,6 +1,6 @@
 # 014 — Guided theme page: derive a valid palette from a few choices
 
-priority: 50
+done: 2026-07-17
 
 ## What & why
 
