@@ -199,3 +199,11 @@ If you add a 15th theme or tweak one, keep the invariants that make the set work
 - Preserve semantic roles: `kw`/`str`/`fn`/etc. mean the same thing in every theme.
 - Prefer **blue + orange** as the two hues carrying the most meaning (colorblind-safe).
 - Fill in **all** tokens — nothing implicit — so generation never needs per-theme hacks.
+
+`scripts/validate.js` (Node, no dependencies) enforces the hard invariants above —
+no pure-white `bg`/`surface`, `surface` lighter than `bg`, no pure-black `ink`,
+`ink` on `surface` ≥ 7:1 (AAA), every token present in all 14 themes, and ANSI
+mappings that reference real tokens. Run `node scripts/validate.js`; it exits
+non-zero and names the failing theme + token on any violation. The accent-hue count
+(6–8) is a warn-only judgement call, not a hard gate. It reads the JSON read-only and
+never edits colors — it reports, humans decide.

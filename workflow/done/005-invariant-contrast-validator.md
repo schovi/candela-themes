@@ -1,6 +1,6 @@
 # 005 — Invariant + contrast validator
 
-priority: 15
+done: 2026-07-17
 
 ## What & why
 

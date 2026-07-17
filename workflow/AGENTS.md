@@ -12,11 +12,19 @@ Aurora is a set of 14 light color themes for terminals and editors, tuned for ey
 # targeted, during implementation
 python3 -m json.tool docs/design-handover/aurora-themes.json > /dev/null
 
-# full gate, before every commit with non-trivial changes
+# full gate, before every commit with non-trivial changes (run as separate steps)
 python3 -m json.tool docs/design-handover/aurora-themes.json > /dev/null
+node scripts/validate.js
 ```
 
-The only automated gate is JSON validity of the source of truth — malformed JSON is the one thing that silently breaks every generated theme. Visual correctness (contrast, hues) is verified by eye in the `.dc.html` showcase; a machine can't gate it.
+Two automated gates: JSON validity of the source of truth (malformed JSON silently
+breaks every generated theme), and `node scripts/validate.js` (Node, no deps), which
+enforces the design invariants — no pure-white `bg`/`surface`, `surface` lighter than
+`bg`, no pure-black `ink`, `ink`/`surface` ≥ 7:1 (AAA), every token present in all 14
+themes, and ANSI mappings that reference real tokens. It exits non-zero on any hard
+violation, naming the theme + token. Accent-hue count is a warn-only judgement call and
+never fails the gate. Remaining visual correctness (exact hues, feel) is verified by eye
+in the `.dc.html` showcase; a machine can't gate it.
 
 Never gate a commit on a piped test run — run the check as its own step and chain the commit on its exit status.
 
