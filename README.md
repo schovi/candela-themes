@@ -1,57 +1,40 @@
 # Aurora — Light Themes for Tired Eyes
 
-**14 light color themes** for terminals and editors, for people who prefer dark
-mode but can't comfortably use it — prescription lenses, astigmatism, glare
-sensitivity, general eye strain. The goal: keep the calm, low-contrast *feel* of
-a good pastel dark theme, but on light backgrounds that don't fight your eyes.
+**14 light color themes** for terminals and editors. For people who like dark
+mode but can't use it comfortably: prescription lenses, astigmatism, glare
+sensitivity, plain eye strain. The idea is to keep the calm, low-contrast feel
+of a good pastel dark theme, but on a light background.
 
-The token model and the invariants to preserve if you extend the set live in
-[`AGENTS.md`](AGENTS.md); the full vision-science rationale lives in
+The token model and the rules to keep if you extend the set are in
+[`AGENTS.md`](AGENTS.md). The vision-science behind those rules is in
 [`docs/vision-research.md`](docs/vision-research.md).
 
-## Why light themes hurt (and how we fixed it)
+## Why most light themes hurt
 
-The usual complaint isn't "light is bad" — it's that most light themes are built
-wrong. Aurora is designed around a handful of vision-comfort principles:
+They're usually too bright and too saturated. Aurora follows a few rules to fix
+that:
 
-1. **Off-white backgrounds, not pure white.** *Halation* — the glow that bleeds
-   text edges, dramatically worse with astigmatism — is a *dark-mode* problem:
-   light text on a dark background blooms, and dark backgrounds dilate the pupil
-   so more of an imperfect cornea/lens is exposed. That's the strongest reason
-   astigmatic readers do better on light backgrounds, and it's Aurora's whole
-   point. A pure `#ffffff` background instead causes *glare*; soft off-white /
-   tinted paper (`bg`, with panels a touch lighter in `surface`) softens it.
-   Never `#fff`. See [`docs/vision-research.md`](docs/vision-research.md).
+1. **Off-white backgrounds, never pure white.** Pure white glares. Soft tinted
+   paper (`bg`, with panels a shade lighter in `surface`) doesn't.
+2. **Dark gray text, never pure black.** Aurora inks are very dark but never
+   `#000`. Dark gray on off-white just reads calmer for a lot of people.
+3. **Strong contrast, not maximal.** Body text (`ink` on `surface`) clears WCAG
+   AAA (7:1+). Secondary text (`ink2`) and comments (`faint`) step down but
+   still clear WCAG AA (4.5:1 against `bg`, the surface terminals paint on).
+4. **Low-saturation colors.** Saturated text is what causes the colored fringing
+   astigmatic eyes see. Desaturating the accents is the fix.
+5. **Blue and orange carry the meaning.** They stay distinct for almost all types
+   of color blindness, so keywords, strings, and functions don't blur together.
+6. **Same colors mean the same thing in every theme,** so switching never makes
+   you relearn what you're looking at.
 
-2. **No pure black text.** Aurora inks are very dark but never `#000` — typically
-   around `#22–34` lightness. This is a stated comfort preference, not a contrast
-   ceiling: reading performance actually *rises* with contrast, and low-vision
-   readers do best at maximal contrast (which is why Contrast Max exists).
-   Very-dark-gray on off-white just reads calmer for many people.
-
-3. **High but not maximal body contrast.** Default text (`ink` on `surface`)
-   clears **WCAG AAA (~7:1 and up)** so it's genuinely readable. Secondary text
-   (`ink2`) and comments (`faint`) step down in a deliberate, readable hierarchy
-   — but every syntax and diagnostic token, and `faint`, still clears **WCAG AA
-   (4.5:1) against `bg`** (the binding surface, since terminals paint on it).
-
-4. **Low-saturation colors.** Chromatic-aberration fringing — the colored halos
-   astigmatic eyes see around text — is driven by *saturation*, not the number of
-   hues, so desaturation is the load-bearing rule. Each theme also keeps to
-   **6–8 accent hues** for consistency and taste, not as a vision constraint.
-
-5. **Blue / orange as the primary hue anchors.** Blue and orange stay
-   distinguishable across almost all color-vision types, so keywords vs. strings
-   vs. functions remain legible even for colorblind readers.
-
-6. **Consistent semantic roles.** The same token always means the same thing
-   across all 14 themes (see the token reference in [`AGENTS.md`](AGENTS.md)), so
-   switching themes never re-teaches your eyes.
+Each rule is explained (with sources, and where common advice gets it wrong) in
+[`docs/vision-research.md`](docs/vision-research.md).
 
 ## The 14 themes
 
-Themes 01–10 are the production palettes, from calm neutrals to stronger
-pastels. 11–14 are experiments, each built around a single constraint.
+Themes 01–10 are the main palettes, from calm neutrals to stronger pastels.
+11–14 are experiments, each built around one idea.
 
 | # | Name | Tone | Code font | Prose font |
 | --- | --- | --- | --- | --- |
@@ -70,25 +53,21 @@ pastels. 11–14 are experiments, each built around a single constraint.
 | 13 | E-Ink Slate | *Reflective paper* (ultra-low chroma) | Fira Code | Atkinson Hyperlegible |
 | 14 | Contrast Max | *Acuity first* (maximal legibility) | Overpass Mono | Lora |
 
-The four experiments each answer a different question:
+What each experiment asks:
 
-- **Graphite Mono** — what if almost everything is gray and *one* blue does all
-  the work? (fewest color fringes)
-- **Tungsten** — what if we strip short-wavelength blue for evening use, like a
-  warm bulb? (Sleep hygiene: evening blue light suppresses melatonin. Blue light
-  does *not* cause eye strain — that's reduced blinking and accommodation. See
-  [`docs/vision-research.md`](docs/vision-research.md).)
-- **E-Ink Slate** — what if syntax is nearly grayscale, like reading on a Kindle?
-  (no glow, no vibration)
-- **Contrast Max** — what if sharpness, not glare, is your limiter? (deep
-  saturated accents, near-white paper)
+- **Graphite Mono** — what if almost everything is gray and one blue does the
+  work? (fewest color fringes)
+- **Tungsten** — what if we drop blue light for evening use, like a warm bulb?
+  (better for sleep; blue light doesn't cause eye strain, see the research doc)
+- **E-Ink Slate** — what if syntax is nearly grayscale, like a Kindle? (no glow)
+- **Contrast Max** — what if sharpness, not glare, is your limit? (deep accents,
+  near-white paper)
 
 ## Gallery
 
-Each shot is one theme rendered across a terminal, Ruby, Kotlin, Markdown, and
-diagnostics, captured from the theme explorer app (`app/`). Regenerate the whole
-gallery with `npm run app:screenshots` — see
-[`docs/screenshots/README.md`](docs/screenshots/README.md).
+Each shot is one theme across a terminal, Ruby, Kotlin, Markdown, and
+diagnostics, from the theme explorer (`app/`). Regenerate with
+`npm run app:screenshots` (see [`docs/screenshots/README.md`](docs/screenshots/README.md)).
 
 | | |
 | --- | --- |
@@ -102,53 +81,51 @@ gallery with `npm run app:screenshots` — see
 
 ## Install
 
-Run `npm run build` to generate every theme under `build/` (the generator has
-zero dependencies — plain `node scripts/generate.js` works too). Then grab the
-one file your tool needs from `build/<tool>/`, or for VS Code install the
-packaged `.vsix` (see below). `build/` and `dist/` are generated, not committed.
-Theme ids: `sepia-paper`, `slate-mist`,
-`sage`, `solarized-lite`, `blossom`, `lagoon`, `meadow`, `apricot`,
-`periwinkle`, `ink-coral`, `graphite-mono`, `tungsten`, `eink-slate`,
-`contrast-max`.
+Run `npm run build` to generate every theme under `build/` (`node scripts/generate.js`
+works too, no dependencies). Then grab the file your tool needs from
+`build/<tool>/`, or install the VS Code `.vsix` (below). `build/` and `dist/` are
+generated, not committed.
+
+Theme ids: `sepia-paper`, `slate-mist`, `sage`, `solarized-lite`, `blossom`,
+`lagoon`, `meadow`, `apricot`, `periwinkle`, `ink-coral`, `graphite-mono`,
+`tungsten`, `eink-slate`, `contrast-max`.
 
 ### iTerm2
 
 1. iTerm2 → **Settings → Profiles → Colors**.
 2. **Color Presets… → Import…** and pick a file from `build/iterm2/`, e.g.
-   `build/iterm2/sepia-paper.itermcolors`.
-3. Open **Color Presets…** again and select the imported preset.
+   `sepia-paper.itermcolors`.
+3. Open **Color Presets…** again and select it.
 
 ### VS Code
 
-The generated extension lives at `build/vscode/` (all 14 themes in one).
+The generated extension (all 14 themes) lives at `build/vscode/`.
 
-- **As a `.vsix` (recommended):** run `npm run package:vscode` to build and
-  package the extension into `dist/aurora-themes-<version>.vsix`, then
-  **Extensions → ⋯ → Install from VSIX…** on that file.
-- **From source:** copy `build/vscode/` into your extensions folder
-  (`~/.vscode/extensions/aurora-themes/`) and reload, or open the folder in VS
-  Code and press **F5** to run an Extension Development Host.
+- **As a `.vsix` (recommended):** `npm run package:vscode` builds and packages it
+  into `dist/aurora-themes-<version>.vsix`, then **Extensions → ⋯ → Install from
+  VSIX…** on that file.
+- **From source:** copy `build/vscode/` into `~/.vscode/extensions/aurora-themes/`
+  and reload, or open the folder in VS Code and press **F5**.
 
 Then **Preferences: Color Theme** and pick any *Aurora NN · …* entry.
 
 ### IntelliJ / JetBrains IDEs
 
-A packaged theme plugin (all 14 themes) is generated at `build/intellij/`, laid
-out under `src/main/resources/` for a Gradle `buildPlugin` (Gradle wiring is out
-of scope here). Each theme ships both an editor color scheme (`.icls`) and a UI
-theme (`.theme.json`).
+The theme plugin (all 14 themes) is generated at `build/intellij/`, laid out under
+`src/main/resources/` for a Gradle `buildPlugin` (the Gradle wiring itself is out
+of scope). Each theme ships an editor color scheme (`.icls`) and a UI theme
+(`.theme.json`).
 
-- **Editor color scheme only:** **Settings → Editor → Color Scheme → ⚙ →
-  Import Scheme…** and pick an `.icls` from
-  `build/intellij/src/main/resources/themes/`, e.g. `aurora-sepia-paper.icls`.
-- **Full UI theme:** build the plugin from `build/intellij/` and install it, then
-  **Settings → Appearance & Behavior → Appearance → Theme** and choose an
-  Aurora theme (the `.theme.json` also enables the matching editor scheme).
+- **Editor scheme only:** **Settings → Editor → Color Scheme → ⚙ → Import
+  Scheme…** and pick an `.icls` from `build/intellij/src/main/resources/themes/`.
+- **Full UI theme:** build the plugin from `build/intellij/`, install it, then
+  **Settings → Appearance & Behavior → Appearance → Theme** and pick an Aurora
+  theme.
 
 ### Other terminals
 
-The same ANSI palette is generated for six terminals — pick the file for yours
-and import per that terminal's docs:
+The same ANSI palette is generated for six terminals. Pick your file and import
+per that terminal's docs:
 
 | Terminal | File |
 | --- | --- |
@@ -161,16 +138,15 @@ and import per that terminal's docs:
 
 ### Other editors (Zed, Sublime, Neovim, Helix)
 
-Drop-in files, all 14 themes each, generated under `build/{zed,sublime,nvim,helix}/`
-— not published to any registry, install per that editor's docs. Zed is a single
-theme-family file (`build/zed/aurora.json`); the others are one file per theme
-(`aurora-<id>.sublime-color-scheme`, `aurora-<id>.lua`, `aurora-<id>.toml`).
+Drop-in files, all 14 themes, under `build/{zed,sublime,nvim,helix}/`. Not
+published to any registry; install per that editor's docs. Zed is one
+theme-family file (`build/zed/aurora.json`); the others are one file per theme.
 
 ## How themes are generated
 
 `themes/aurora-themes.json` is the source of truth. `scripts/generate.js` (Node,
-no dependencies) reads a theme's `colors` block and emits whatever format each
-tool needs. Structure:
+no dependencies) reads each theme's `colors` block and emits whatever each tool
+needs:
 
 ```json
 {
@@ -187,26 +163,25 @@ tool needs. Structure:
 }
 ```
 
-Run it from the repo root:
+Build from the repo root:
 
 ```sh
 npm run build   # or: node scripts/generate.js
 ```
 
-It wipes and rewrites `build/` and emits one file per theme per tool at
-`build/<tool>/<theme-id>.<ext>`. Output is deterministic — re-running produces
-byte-identical files. `build/` (source fragments) and `dist/` (packaged
-distributables like the VS Code `.vsix`) are both generated and gitignored.
-Hex helpers live in `lib/colors.js`; per-format emitters live in
-`scripts/generate.js`, which is where new tools plug in.
+It wipes and rewrites `build/`, emitting one file per theme per tool at
+`build/<tool>/<theme-id>.<ext>`. Output is deterministic (re-running gives
+byte-identical files). Hex helpers live in `lib/colors.js`; per-format emitters
+live in `scripts/generate.js`, which is where new tools plug in.
+
+The tables below are the token → format mappings each emitter uses.
 
 ### Terminal (ANSI 16-color)
 
-The top-level `ansiMapping` block maps tokens → the 16 ANSI slots, plus
+The top-level `ansiMapping` block maps tokens to the 16 ANSI slots, plus
 `background = bg`, `foreground = ink`, `cursor = cursor`,
 `selectionBackground = selection`. It's one sensible default (e.g. `yellow → kw`,
-`red → num`); change it once in that block and all six terminal formats
-(iTerm2, Alacritty, Kitty, WezTerm, Windows Terminal, Ghostty) regenerate.
+`red → num`); change it once and all six terminal formats regenerate.
 
 ### Editors — TextMate scopes (VS Code, Sublime)
 
@@ -225,29 +200,26 @@ syntax tokens map to `tokenColors` scopes:
 | `punct` | `punctuation`, `keyword.operator` |
 | `faint` | `comment` |
 
-The VS Code emitter writes a complete vsix-ready extension at `build/vscode/`:
-one `package.json` contributing all 14 themes (each `uiTheme: "vs"`) and one
+The VS Code emitter writes a complete, vsix-ready extension at `build/vscode/`:
+one `package.json` contributing all 14 themes and one
 `themes/aurora-<id>-color-theme.json` per theme (`"type": "light"`, workbench
-`colors{}` + `tokenColors[]`). The whole workbench is themed (activity bar,
-side bar, tabs, status bar, panels, integrated terminal — the terminal ANSI
-slots reuse `ansiMapping`), not just the editor pane. `package.json` carries
-full Marketplace metadata (placeholder `CHANGEME` URLs until a real repo
-exists) and the emitter drops a bundled `README.md`, a `.vscodeignore`, and a
-copy of the root MIT `LICENSE` so packaging is warning-free (no `icon` yet —
-needs a 128px PNG). Sublime reuses the same scope table, emitting
-`build/sublime/aurora-<id>.sublime-color-scheme` (JSON `variables` + `globals` +
-`rules[]`).
+`colors{}` + `tokenColors[]`). The whole workbench is themed (activity bar, side
+bar, tabs, status bar, panels, integrated terminal), not just the editor pane.
+`package.json` carries full Marketplace metadata (placeholder `CHANGEME` URLs
+until a real repo exists), and the emitter also drops a bundled `README.md`, a
+`.vscodeignore`, and a copy of the root MIT `LICENSE` so packaging is
+warning-free (no `icon` yet, needs a 128px PNG). Sublime reuses the same scope
+table, emitting `build/sublime/aurora-<id>.sublime-color-scheme`.
 
 ### JetBrains / IntelliJ
 
 `build/intellij/` is laid out under `src/main/resources/` for a Gradle
 `buildPlugin`. Per theme: an editor color scheme `.icls` (XML) and a UI theme
-`.theme.json` under `themes/`, plus one `META-INF/plugin.xml` registering all 14
-as `themeProvider` extensions. Two hex conventions: **`.icls` drops the leading
-`#`** (`value="9a5b2c"`); **`.theme.json` keeps it** (`"#9a5b2c"`).
+`.theme.json`, plus one `META-INF/plugin.xml` registering all 14 as
+`themeProvider` extensions. Two hex conventions: **`.icls` drops the leading `#`**
+(`value="9a5b2c"`); **`.theme.json` keeps it** (`"#9a5b2c"`).
 
-`.icls` general editor colors (`<colors>`) and the editor background/foreground
-(the `TEXT` attribute):
+`.icls` general editor colors and the editor background/foreground:
 
 | Aurora token | `.icls` key | Section |
 | --- | --- | --- |
@@ -259,7 +231,7 @@ as `themeProvider` extensions. Two hex conventions: **`.icls` drops the leading
 | `ink2` | `LINE_NUMBERS_COLOR` | `<colors>` |
 | `border` | `GUTTER_BACKGROUND`, `INDENT_GUIDE` | `<colors>` |
 
-`.icls` syntax attributes (`<attributes>`, `FOREGROUND` per key):
+`.icls` syntax attributes (`FOREGROUND` per key):
 
 | Aurora token | `.icls` attribute key(s) |
 | --- | --- |
@@ -280,8 +252,8 @@ carries a modest `ui{}` frame (backgrounds from `bg`/`surface`, borders from
 
 ### Zed, Neovim, Helix
 
-- **Zed** → `build/zed/aurora.json`, a single theme *family* file (`$schema`
-  v0.2.0, `themes[]`), each entry `appearance: "light"`. Editor UI keys map
+- **Zed** → `build/zed/aurora.json`, one theme *family* file (`$schema` v0.2.0,
+  `themes[]`), each entry `appearance: "light"`. UI keys map
   `editor.background = surface`, `editor.foreground = ink`,
   `editor.active_line.background = lineHighlight`,
   `text/text.muted/text.placeholder = ink/ink2/faint`, `border = border`,
@@ -290,12 +262,12 @@ carries a modest `ui{}` frame (backgrounds from `bg`/`surface`, borders from
   `variable.special/attribute→builtin`, `operator/punctuation→punct`,
   `comment→faint`; `terminal.ansi.*` reuses `ansiMapping`.
 - **Neovim** → `build/nvim/aurora-<id>.lua`, a self-contained Lua colorscheme
-  (chosen over base16 YAML so it loads with `:colorscheme aurora-<id>` and zero
-  plugins). Sets `vim.o.background = 'light'`, legacy highlight groups
-  (`Keyword→kw`, `String→str`, `Function→fn`, `Number/Constant→num`, `Type→type`,
+  (loads with `:colorscheme aurora-<id>`, no plugins). Sets
+  `vim.o.background = 'light'`, legacy highlight groups (`Keyword→kw`,
+  `String→str`, `Function→fn`, `Number/Constant→num`, `Type→type`,
   `PreProc/Special→builtin`, `Operator/Delimiter→punct`, `Comment→faint` italic,
-  `Normal = ink on bg`, `Visual = selection`, `CursorLine = lineHighlight`) —
-  Neovim links Treesitter groups to these by default — plus the 16
+  `Normal = ink on bg`, `Visual = selection`, `CursorLine = lineHighlight`).
+  Neovim links Treesitter groups to these by default. Plus the 16
   `vim.g.terminal_color_N` slots from `ansiMapping`.
 - **Helix** → `build/helix/aurora-<id>.toml`, a `[palette]` table of every token
   with top-level scope keys: `ui.background = bg`, `ui.text = ink`,
@@ -307,35 +279,31 @@ carries a modest `ui{}` frame (backgrounds from `bg`/`surface`, borders from
 
 ## Contributing / extending
 
-`themes/aurora-themes.json` is the single source of truth; run `npm run build` to
-regenerate `build/` and `npm run validate` to check the design invariants. Read
-[`AGENTS.md`](AGENTS.md) for repo conventions, the token roles, and the
-invariants to preserve if you add or tweak a theme.
+`themes/aurora-themes.json` is the single source of truth. Run `npm run build` to
+regenerate `build/` and `npm run validate` to check the design rules. Read
+[`AGENTS.md`](AGENTS.md) for the token roles and the rules to preserve when you
+add or tweak a theme.
 
-To preview every theme (palette, fonts, and sample panes including diagnostics),
-run the explorer app. First-time setup installs its deps under `app/` (the repo
-root stays dependency-light):
+To preview every theme (palette, fonts, sample panes, diagnostics), run the
+explorer. First-time setup installs its deps under `app/`:
 
 ```sh
 cd app && npm install && npx playwright install chromium
 ```
 
 Then from the repo root, `npm run app` serves the explorer and
-`npm run app:screenshots` regenerates the gallery PNGs (both delegate into
-`app/`). See [`docs/screenshots/README.md`](docs/screenshots/README.md).
+`npm run app:screenshots` regenerates the gallery PNGs. See
+[`docs/screenshots/README.md`](docs/screenshots/README.md).
 
-The explorer's **Playground** view (View → Playground) lets you fork any theme
-or start from a blank template and tune every color, font, name, and tone with
-live preview. Each color token has hex plus H/S/L sliders, and the lightness
-track shades the range that still clears the token's contrast floor. It
-evaluates the same design invariants as `scripts/validate.js`
-(both import the shared rules in `lib/`), so **Copy theme JSON** stays disabled
-until every hard rule passes — paste the result into a new `themes[]` entry in
-`themes/aurora-themes.json` and it clears `node scripts/validate.js` as-is.
+The explorer has two ways to build a theme:
 
-The **Guided** view (View → Guided) is the beginner-friendly path to the same
-export: instead of 19 raw tokens, you pick a background mood and darkness, choose
-accent hues on a wheel, and set the three diagnostic hues. It derives a full,
-rule-valid palette from those choices (contrast-stepped background shades, accents
-whose lightness auto-fits their AA floor, diagnostics nudged to clear the collision
-rules), sharing the pro playground's live preview and gated export.
+- **Playground** (View → Playground) forks any theme or starts blank, with hex
+  plus H/S/L sliders per token and live preview. The lightness track shades the
+  range that still clears each token's contrast floor.
+- **Guided** (View → Guided) is the beginner path: pick a background mood and
+  darkness, choose accent hues on a wheel, set the three diagnostic hues, and it
+  derives a full valid palette for you.
+
+Both run the same invariants as `scripts/validate.js` (shared code in `lib/`), so
+**Copy theme JSON** stays disabled until every hard rule passes. Paste the result
+into a new `themes[]` entry and it clears `node scripts/validate.js` as-is.
