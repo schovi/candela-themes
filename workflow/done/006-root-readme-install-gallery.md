@@ -1,6 +1,6 @@
 # 006 — Root README + install docs + screenshot gallery
 
-priority: 40
+done: 2026-07-17
 depends: 001, 002, 003
 
 ## What & why
