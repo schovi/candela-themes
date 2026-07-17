@@ -1,6 +1,6 @@
 # 009 — Theme explorer app + automated screenshots
 
-priority: 20
+done: 2026-07-17
 
 ## What & why
 

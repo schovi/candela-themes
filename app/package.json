@@ -1,0 +1,25 @@
+{
+  "name": "aurora-theme-explorer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local Vite app that previews every Aurora theme and drives automated gallery screenshots. Not published; run with npm run dev.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "screenshots": "node ../scripts/screenshots.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "playwright": "^1.49.1",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5"
+  }
+}

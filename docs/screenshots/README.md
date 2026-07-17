@@ -1,21 +1,23 @@
 # Screenshots
 
 Gallery images for the root `README.md`, one per theme: `aurora-<id>.png`
-(e.g. `aurora-sepia-paper.png`). Captured from the visual showcase
-`docs/design-handover/Aurora Light Themes.dc.html`, which renders every theme
-across a terminal, Ruby, Kotlin, and Markdown.
+(e.g. `aurora-sepia-paper.png`). Each is one theme rendered by the explorer app
+(`app/`) across a terminal, Ruby, Kotlin, Markdown, and diagnostics pane. The
+PNGs are committed.
 
 ## Regenerate
 
-The showcase is a single scrolling page with one `<section>` per theme (each
-headed `NN · Name`). To (re)capture:
+One command captures all 14, driven by Playwright against the app's screenshot
+mode (`?theme=<id>&shot=1` — a single chrome-free card that signals readiness
+once its fonts load):
 
-1. Open `docs/design-handover/Aurora Light Themes.dc.html` in Chrome.
-2. For each theme section, capture the section frame to `aurora-<id>.png`
-   using the theme ids from `dist/` (`sepia-paper`, `slate-mist`, `sage`,
-   `solarized-lite`, `blossom`, `lagoon`, `meadow`, `apricot`, `periwinkle`,
-   `ink-coral`, `graphite-mono`, `tungsten`, `eink-slate`, `contrast-max`).
+```sh
+cd app
+npm install                     # first time
+npx playwright install chromium # first time
+npm run screenshots             # writes docs/screenshots/aurora-<id>.png for all 14
+```
 
-Any headless-screenshot tool works; the Chrome MCP browser automates it
-section by section. Keep filenames stable — the root README references them by
-relative path.
+`scripts/screenshots.mjs` starts the app's dev server, iterates the theme ids
+from `docs/design-handover/aurora-themes.json`, and writes one PNG per theme.
+Filenames must stay stable — the root README references them by relative path.

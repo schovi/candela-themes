@@ -35,12 +35,9 @@ pastels. 11–14 are experiments, each built around a single constraint.
 
 ## Gallery
 
-Each shot is one theme rendered across a terminal, Ruby, Kotlin, and Markdown,
-captured from the [visual showcase](docs/design-handover/Aurora%20Light%20Themes.dc.html).
-
-> Screenshot capture needs a live browser (Chrome MCP) and is pending manual
-> capture — the images below are placeholders. Regenerate per
-> [`docs/screenshots/README.md`](docs/screenshots/README.md).
+Each shot is one theme rendered across a terminal, Ruby, Kotlin, Markdown, and
+diagnostics, captured from the theme explorer app (`app/`). Regenerate the whole
+gallery with one command — see [`docs/screenshots/README.md`](docs/screenshots/README.md).
 
 | | |
 | --- | --- |
@@ -118,3 +115,10 @@ and import per that terminal's docs:
 check the design invariants. Read [`AGENTS.md`](AGENTS.md) for repo conventions
 and [`docs/design-handover/README.md`](docs/design-handover/README.md) for the
 token roles and the invariants to preserve if you add or tweak a theme.
+
+To preview every theme (palette, fonts, and sample panes including diagnostics),
+run the explorer app: `cd app && npm install && npm run dev`. Everything the app
+needs lives under `app/` — the repo root stays dependency-light. Regenerate the
+gallery screenshots with `cd app && npm run screenshots` (one-time
+`npx playwright install chromium` first); see
+[`docs/screenshots/README.md`](docs/screenshots/README.md).

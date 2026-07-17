@@ -47,3 +47,5 @@ Read the doc leaf before editing mapped paths — behavior and invariants live i
 ## Local notes
 
 Design invariants that must survive any theme change (from the README): `bg`/`surface` never `#ffffff` (surface slightly lighter than bg); `ink` never `#000000` and clears ~7:1 (AAA) on `surface`; 6–8 desaturated accent hues, no neon; blue + orange carry the most meaning (colorblind-safe); every token filled in for all 14 themes — nothing implicit.
+
+Theme explorer app lives in `app/` (Vite + React + TS, self-contained; repo root stays dependency-light). It reads the source-of-truth JSON directly. Run it with `cd app && npm install && npm run dev`; type-check/build with `npm run build`. Gallery screenshots regenerate via `cd app && npm run screenshots` (Playwright, needs `npx playwright install chromium` once) — see `docs/screenshots/README.md`. Editing the app is not gated by the theme validators above; run the app's `npm run build` to type-check app changes.

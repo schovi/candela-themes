@@ -1,0 +1,113 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: #e7e7ea;
+  color: #2a2a2e;
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-header {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px 40px 24px;
+}
+.app-header .eyebrow {
+  font: 500 13px/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7a7a82;
+  margin-bottom: 14px;
+}
+.app-header h1 {
+  margin: 0 0 22px;
+  font-size: 34px;
+  letter-spacing: -0.02em;
+  color: #232327;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+  font-size: 14px;
+}
+.controls select { font-size: 14px; padding: 3px 6px; }
+.pane-toggles { display: flex; flex-wrap: wrap; gap: 12px; }
+.pane-toggles label { display: inline-flex; align-items: center; gap: 5px; }
+
+.theme-card { padding: 44px 40px; }
+.card-inner { max-width: 1180px; margin: 0 auto; }
+.card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+.card-head h2 { margin: 0; }
+.tone-chip {
+  font-size: 13px;
+  padding: 4px 11px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink2);
+}
+.card-desc {
+  margin: 6px 0 22px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink2);
+  max-width: 680px;
+  font-family: var(--prose-font), system-ui, sans-serif;
+}
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-bottom: 26px;
+}
+.swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: 12px/1 var(--code-font), monospace;
+  color: var(--ink2);
+}
+.swatch .chip { width: 16px; height: 16px; border-radius: 4px; display: inline-block; }
+
+.samples {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 860px) { .samples { grid-template-columns: 1fr; } }
+.pane {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.pane-bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 15px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.pane-bar .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--faint);
+  opacity: 0.55;
+  display: inline-block;
+}
+.pane-title {
+  font: 12px/1 var(--code-font), monospace;
+  color: var(--ink2);
+  margin-left: 8px;
+}
