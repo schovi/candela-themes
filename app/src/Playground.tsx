@@ -14,6 +14,8 @@ const ALL_PANES = new Set<PaneKey>(PANE_ORDER.map((p) => p.key));
 const CODE_FONTS = [
   'JetBrains Mono', 'IBM Plex Mono', 'Fira Code', 'Source Code Pro', 'DM Mono',
   'Space Mono', 'Spline Sans Mono', 'Red Hat Mono', 'Roboto Mono', 'Overpass Mono',
+  // Not a Google Font: previews for anyone with it installed, else falls back to monospace.
+  'Comic Code',
 ];
 const PROSE_FONTS = [
   'Source Serif 4', 'IBM Plex Sans', 'Atkinson Hyperlegible', 'Newsreader', 'DM Sans',
