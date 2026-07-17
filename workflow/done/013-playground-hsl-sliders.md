@@ -1,6 +1,6 @@
 # 013 — Playground pro page: HSL sliders with passing-zone hints
 
-priority: 40
+done: 2026-07-17
 
 ## What & why
 

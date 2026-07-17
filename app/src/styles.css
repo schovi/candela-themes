@@ -140,11 +140,31 @@ body {
 .pg-hint { font: 11px/1 'JetBrains Mono', monospace; color: #8a8a92; font-weight: 400; }
 .pg-group { border: 1px solid #d8d8de; border-radius: 8px; padding: 8px 10px; margin: 0; }
 .pg-group legend { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #7a7a82; padding: 0 4px; }
-.pg-color { display: flex; align-items: center; gap: 8px; margin: 5px 0; }
+.pg-token-editor { margin: 8px 0; }
+.pg-color { display: flex; align-items: center; gap: 8px; }
 .pg-color input[type="color"] { width: 30px; height: 26px; padding: 0; border: 1px solid #cfcfd6; border-radius: 5px; background: none; }
 .pg-token { flex: 1; font: 12px/1 'JetBrains Mono', monospace; color: #4a4a50; }
 .pg-hex { width: 90px; font: 12px/1 'JetBrains Mono', monospace; padding: 4px 6px; border: 1px solid #cfcfd6; border-radius: 5px; }
 .pg-hex-bad { border-color: #c0392b; background: #fdf0ee; }
+
+.pg-sliders { display: grid; grid-template-columns: 12px 1fr; gap: 3px 8px; align-items: center; margin: 4px 0 0 38px; }
+.pg-sliders > label { font: 10px/1 'JetBrains Mono', monospace; color: #9a9aa2; }
+.pg-sliders input[type="range"] {
+  width: 100%; height: 14px; margin: 0; -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer;
+}
+.pg-sliders input[type="range"]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: #e2e2e8; }
+.pg-sliders input[type="range"]::-moz-range-track { height: 6px; border-radius: 3px; background: #e2e2e8; }
+.pg-sliders input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 10px; height: 14px; margin-top: -4px; border-radius: 3px; background: #fff; border: 1px solid #6a6a72;
+}
+.pg-sliders input[type="range"]::-moz-range-thumb { width: 10px; height: 14px; border-radius: 3px; background: #fff; border: 1px solid #6a6a72; }
+.pg-sliders input[type="range"]:disabled { cursor: not-allowed; opacity: 0.5; }
+/* Lightness track: the passing-zone gradient lives on the wrapper; the range
+   input rides on top with a transparent track so the shading shows through. */
+.pg-l-wrap { height: 6px; border-radius: 3px; background-color: #e2e2e8; background-repeat: no-repeat; }
+.pg-l-slider::-webkit-slider-runnable-track { background: transparent; }
+.pg-l-slider::-moz-range-track { background: transparent; }
+.pg-l-slider::-webkit-slider-thumb { margin-top: -4px; }
 
 .pg-preview { display: flex; flex-direction: column; gap: 16px; }
 .pg-feedback { font-size: 13px; display: flex; flex-direction: column; gap: 12px; }

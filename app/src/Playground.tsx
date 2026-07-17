@@ -6,7 +6,7 @@ import { PANE_ORDER, type PaneKey } from './samples/Panes';
 // Shared rule module — the exact same invariants scripts/validate.js enforces
 // (both import the same lib/ ESM; change a rule once and both reflect it).
 import { expectedTokens, checkTheme } from '../../lib/rules.js';
-import { contrastRatio } from '../../lib/colors.js';
+import { contrastRatio, hexToHsl, hslToHex } from '../../lib/colors.js';
 
 const ALL_PANES = new Set<PaneKey>(PANE_ORDER.map((p) => p.key));
 
@@ -56,6 +56,110 @@ function cloneTheme(t: Theme): Theme {
   return { ...t, fonts: { ...t.fonts }, colors: { ...t.colors } };
 }
 
+const ZONE_STEPS = 100;
+const ZONE_SHADE = 'rgba(46,125,50,0.28)';
+
+// Contrast-floor failures that name this token as their subject (message shape
+// `<token> on <ref> N:1 < M:1`). We attribute by the leading token so a token's
+// own lightness is what clears its zone: `ink on surface` belongs to ink, not
+// surface — which is why bg/surface/border/selection/cursor/lineHighlight (never
+// the subject of a contrast floor) come back with zero and get no shading. Pure
+// oracle read: it tracks whatever floors lib/rules.js enforces.
+function tokenContrastFails(theme: Theme, expected: ColorToken[], token: string): number {
+  const { failures } = checkTheme(theme, expected) as { failures: string[] };
+  return failures.filter((f) => f.startsWith(token + ' ') && f.includes(':1 <')).length;
+}
+
+// Turn a per-step pass array into a hard-edged CSS gradient (shaded where the
+// token clears its floor). Segment loop, not min/max, so a split passing range
+// still renders correctly if a non-light bg ever produces one.
+function passZoneGradient(pass: boolean[]): string {
+  const last = pass.length - 1;
+  const parts: string[] = [];
+  let i = 0;
+  while (i < pass.length) {
+    const start = i;
+    const passing = pass[i];
+    while (i < pass.length && pass[i] === passing) i++;
+    const from = (start / last) * 100;
+    const to = ((i - 1) / last) * 100;
+    const color = passing ? ZONE_SHADE : 'transparent';
+    parts.push(`${color} ${from}%`, `${color} ${to}%`);
+  }
+  return `linear-gradient(90deg, ${parts.join(', ')})`;
+}
+
+// Scan this token's lightness (hue/saturation fixed) and shade the sub-range
+// where its contrast floor clears. Returns null when every L passes — a token
+// with no floor, so no restriction to draw. Mutates `work` in the scan and
+// restores it, matching autofix.ts's working-copy pattern.
+function lightnessZone(work: Theme, token: ColorToken, expected: ColorToken[]): string | null {
+  const original = work.colors[token];
+  const { h, s } = hexToHsl(original);
+  const pass: boolean[] = [];
+  let allPass = true;
+  for (let step = 0; step <= ZONE_STEPS; step++) {
+    work.colors[token] = hslToHex({ h, s, l: step / ZONE_STEPS });
+    const passing = tokenContrastFails(work, expected, token) === 0;
+    pass.push(passing);
+    if (!passing) allPass = false;
+  }
+  work.colors[token] = original;
+  return allPass ? null : passZoneGradient(pass);
+}
+
+function TokenEditor({ token, value, gradient, setColor }: {
+  token: ColorToken;
+  value: string;
+  gradient: string | null;
+  setColor: (token: ColorToken, hex: string) => void;
+}) {
+  const valid = HEX.test(value);
+  const { h, s, l } = valid ? hexToHsl(value) : { h: 0, s: 0, l: 0 };
+  const setHsl = (part: 'h' | 's' | 'l', v: number) => setColor(token, hslToHex({ h, s, l, [part]: v }));
+  return (
+    <div className="pg-token-editor">
+      <div className="pg-color">
+        <input
+          type="color"
+          value={valid ? value : '#000000'}
+          onChange={(e) => setColor(token, e.target.value)}
+          aria-label={`${token} color`}
+        />
+        <span className="pg-token">{token}</span>
+        <input
+          className={valid ? 'pg-hex' : 'pg-hex pg-hex-bad'}
+          value={value}
+          onChange={(e) => setColor(token, e.target.value)}
+          aria-label={`${token} hex`}
+        />
+      </div>
+      <div className="pg-sliders">
+        <label>H</label>
+        <input
+          type="range" min={0} max={360} value={Math.round(h)} disabled={!valid}
+          onChange={(e) => setHsl('h', Number(e.target.value))}
+          aria-label={`${token} hue`}
+        />
+        <label>S</label>
+        <input
+          type="range" min={0} max={100} value={Math.round(s * 100)} disabled={!valid}
+          onChange={(e) => setHsl('s', Number(e.target.value) / 100)}
+          aria-label={`${token} saturation`}
+        />
+        <label>L</label>
+        <div className="pg-l-wrap" style={gradient ? { backgroundImage: gradient } : undefined}>
+          <input
+            type="range" className="pg-l-slider" min={0} max={100} value={Math.round(l * 100)} disabled={!valid}
+            onChange={(e) => setHsl('l', Number(e.target.value) / 100)}
+            aria-label={`${token} lightness`}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Playground() {
   const [seed, setSeed] = useState('blank');
   const [draft, setDraft] = useState<Theme>(() => cloneTheme(BLANK_TEMPLATE));
@@ -100,6 +204,17 @@ export function Playground() {
       onSurface: contrastRatio(draft.colors[t as ColorToken], draft.colors.surface),
     }));
     return { failures: result.failures, warnings: result.warnings, contrast };
+  }, [draft]);
+
+  const passZones = useMemo(() => {
+    const expected = expectedTokens(tokenReference) as ColorToken[];
+    if (expected.some((t) => !HEX.test(draft.colors[t] ?? ''))) {
+      return {} as Record<string, string | null>;
+    }
+    const work = cloneTheme(draft);
+    const zones: Record<string, string | null> = {};
+    for (const token of expected) zones[token] = lightnessZone(work, token, expected);
+    return zones;
   }, [draft]);
 
   const id = slugify(draft.name);
@@ -156,27 +271,15 @@ export function Playground() {
         {TOKEN_GROUPS.map((group) => (
           <fieldset key={group.label} className="pg-group">
             <legend>{group.label}</legend>
-            {group.tokens.map((token) => {
-              const value = draft.colors[token] ?? '';
-              const valid = HEX.test(value);
-              return (
-                <div className="pg-color" key={token}>
-                  <input
-                    type="color"
-                    value={valid ? value : '#000000'}
-                    onChange={(e) => setColor(token, e.target.value)}
-                    aria-label={`${token} color`}
-                  />
-                  <span className="pg-token">{token}</span>
-                  <input
-                    className={valid ? 'pg-hex' : 'pg-hex pg-hex-bad'}
-                    value={value}
-                    onChange={(e) => setColor(token, e.target.value)}
-                    aria-label={`${token} hex`}
-                  />
-                </div>
-              );
-            })}
+            {group.tokens.map((token) => (
+              <TokenEditor
+                key={token}
+                token={token}
+                value={draft.colors[token] ?? ''}
+                gradient={passZones[token] ?? null}
+                setColor={setColor}
+              />
+            ))}
           </fieldset>
         ))}
       </aside>
