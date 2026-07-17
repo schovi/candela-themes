@@ -1,0 +1,23 @@
+{
+  "name": "Aurora 11 · Graphite Mono",
+  "background": "#eef0f1",
+  "foreground": "#23272b",
+  "cursorColor": "#23272b",
+  "selectionBackground": "#dde1e4",
+  "black": "#23272b",
+  "brightBlack": "#4b5157",
+  "red": "#55606a",
+  "brightRed": "#8a3a3a",
+  "green": "#3a6ea5",
+  "brightGreen": "#3a6ea5",
+  "yellow": "#2f4a63",
+  "brightYellow": "#6a5a2f",
+  "blue": "#3a4650",
+  "brightBlue": "#3a4650",
+  "purple": "#2f3a44",
+  "brightPurple": "#2f3a44",
+  "cyan": "#3a6ea5",
+  "brightCyan": "#3a6ea5",
+  "white": "#949a9f",
+  "brightWhite": "#f8f9fa"
+}

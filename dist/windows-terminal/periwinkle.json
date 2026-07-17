@@ -1,0 +1,23 @@
+{
+  "name": "Aurora 09 · Periwinkle",
+  "background": "#eeeefb",
+  "foreground": "#2e2f3d",
+  "cursorColor": "#2e2f3d",
+  "selectionBackground": "#dedef3",
+  "black": "#2e2f3d",
+  "brightBlack": "#585a6d",
+  "red": "#c05a7a",
+  "brightRed": "#c05a7a",
+  "green": "#3f76a0",
+  "brightGreen": "#2f8a86",
+  "yellow": "#5a4fc0",
+  "brightYellow": "#b06a2f",
+  "blue": "#7a3fb0",
+  "brightBlue": "#7a3fb0",
+  "purple": "#2f8a86",
+  "brightPurple": "#2f8a86",
+  "cyan": "#b06a2f",
+  "brightCyan": "#b06a2f",
+  "white": "#9698b6",
+  "brightWhite": "#f8f8fe"
+}

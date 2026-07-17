@@ -1,0 +1,23 @@
+{
+  "name": "Aurora 10 · Ink & Coral",
+  "background": "#eef0f0",
+  "foreground": "#222831",
+  "cursorColor": "#222831",
+  "selectionBackground": "#dbe3e3",
+  "black": "#222831",
+  "brightBlack": "#4c545d",
+  "red": "#a85a1f",
+  "brightRed": "#b0402f",
+  "green": "#2f7d5a",
+  "brightGreen": "#2f7d5a",
+  "yellow": "#16467a",
+  "brightYellow": "#a85a1f",
+  "blue": "#b0402f",
+  "brightBlue": "#b0402f",
+  "purple": "#6b3fa0",
+  "brightPurple": "#6b3fa0",
+  "cyan": "#0f7d8a",
+  "brightCyan": "#0f7d8a",
+  "white": "#8b959c",
+  "brightWhite": "#f8fafa"
+}

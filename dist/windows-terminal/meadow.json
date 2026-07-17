@@ -1,0 +1,23 @@
+{
+  "name": "Aurora 07 · Meadow",
+  "background": "#ecf3e4",
+  "foreground": "#2c342a",
+  "cursorColor": "#2c342a",
+  "selectionBackground": "#dcecc9",
+  "black": "#2c342a",
+  "brightBlack": "#556150",
+  "red": "#c07a2f",
+  "brightRed": "#b0503f",
+  "green": "#3f76a8",
+  "brightGreen": "#4a8a2f",
+  "yellow": "#4a8a2f",
+  "brightYellow": "#c07a2f",
+  "blue": "#2f8a70",
+  "brightBlue": "#2f8a70",
+  "purple": "#8a5aa0",
+  "brightPurple": "#8a5aa0",
+  "cyan": "#b0503f",
+  "brightCyan": "#b0503f",
+  "white": "#93a385",
+  "brightWhite": "#f6faf0"
+}

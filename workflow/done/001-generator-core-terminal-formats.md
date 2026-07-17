@@ -1,6 +1,6 @@
 # 001 — Generator core + terminal formats
 
-priority: 10
+done: 2026-07-17
 
 ## What & why
 

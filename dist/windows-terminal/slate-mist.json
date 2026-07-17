@@ -1,0 +1,23 @@
+{
+  "name": "Aurora 02 · Slate Mist",
+  "background": "#e8edf3",
+  "foreground": "#29323d",
+  "cursorColor": "#29323d",
+  "selectionBackground": "#d3deec",
+  "black": "#29323d",
+  "brightBlack": "#54606d",
+  "red": "#a4586a",
+  "brightRed": "#a4405a",
+  "green": "#41745a",
+  "brightGreen": "#41745a",
+  "yellow": "#7159a0",
+  "brightYellow": "#a9642f",
+  "blue": "#2f6f96",
+  "brightBlue": "#2f6f96",
+  "purple": "#a9642f",
+  "brightPurple": "#a9642f",
+  "cyan": "#2f8296",
+  "brightCyan": "#2f8296",
+  "white": "#8b96a3",
+  "brightWhite": "#f6f8fb"
+}

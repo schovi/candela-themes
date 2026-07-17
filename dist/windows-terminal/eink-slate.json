@@ -1,0 +1,23 @@
+{
+  "name": "Aurora 13 · E-Ink Slate",
+  "background": "#eceeec",
+  "foreground": "#26292a",
+  "cursorColor": "#26292a",
+  "selectionBackground": "#dcdedb",
+  "black": "#26292a",
+  "brightBlack": "#4e5253",
+  "red": "#5a4d45",
+  "brightRed": "#6a4545",
+  "green": "#4a5a4a",
+  "brightGreen": "#4a5a4a",
+  "yellow": "#3d4d4a",
+  "brightYellow": "#5a4d45",
+  "blue": "#3d4a5a",
+  "brightBlue": "#3d4a5a",
+  "purple": "#4d445a",
+  "brightPurple": "#4d445a",
+  "cyan": "#455a55",
+  "brightCyan": "#455a55",
+  "white": "#8c9092",
+  "brightWhite": "#f6f7f5"
+}

@@ -167,40 +167,25 @@ tokens to `tokenColors` scopes:
 
 The same idea works for Sublime, Neovim (base16-style), JetBrains IDEs, Zed, Helix, etc.
 
-### A minimal generator sketch
+### The generator
 
-```js
-const { themes, ansiMapping } = require('./aurora-themes.json');
+`scripts/generate.js` is the real generator (Node, no dependencies). Run it from the repo root:
 
-for (const t of themes) {
-  const c = t.colors;
-
-  // Terminal (pseudo)
-  writeTerminal(t.id, {
-    background: c.bg, foreground: c.ink, cursor: c.cursor, selection: c.selection,
-    normal:  mapAnsi(ansiMapping.normal, c),   // {black: c[...], red: c[...], ...}
-    bright:  mapAnsi(ansiMapping.bright, c),
-  });
-
-  // VS Code (pseudo)
-  writeVsCode(t.id, {
-    'editor.background': c.surface,
-    'editor.foreground': c.ink,
-    'editorLineHighlightBackground': c.lineHighlight,
-    'editor.selectionBackground': c.selection,
-    tokenColors: [
-      { scope: ['keyword','storage'], settings: { foreground: c.kw } },
-      { scope: 'string',              settings: { foreground: c.str } },
-      { scope: 'comment',             settings: { foreground: c.faint } },
-      // ...rest of the scope table above
-    ],
-  });
-}
-
-function mapAnsi(slots, c) {
-  return Object.fromEntries(Object.entries(slots).map(([k, tok]) => [k, c[tok]]));
-}
+```sh
+node scripts/generate.js
 ```
+
+It reads this JSON, wipes and rewrites `dist/`, and emits one file per theme per
+tool at `dist/<tool>/<theme-id>.<ext>`. Output is deterministic — re-running
+produces byte-identical files, so `dist/` is committed and users can grab a
+theme without running Node.
+
+Terminal formats generated today (all 14 themes each): **iTerm2**
+(`.itermcolors`), **Alacritty** (`.toml`), **Kitty** (`.conf`), **WezTerm**
+(`.toml`), **Windows Terminal** (JSON fragment), **Ghostty** (`.conf`). Every
+terminal format is driven by the `ansiMapping` block above — change the mapping
+once and all six regenerate. Hex helpers live in `lib/colors.js`; per-format
+emitters live in `scripts/generate.js`, which is where new tools plug in.
 
 ---
 

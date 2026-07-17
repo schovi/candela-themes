@@ -1,0 +1,23 @@
+{
+  "name": "Aurora 01 · Sepia Paper",
+  "background": "#f2ecdf",
+  "foreground": "#322f28",
+  "cursorColor": "#322f28",
+  "selectionBackground": "#e6dcc0",
+  "black": "#322f28",
+  "brightBlack": "#5f584b",
+  "red": "#976122",
+  "brightRed": "#a33a2c",
+  "green": "#5a6b39",
+  "brightGreen": "#5a6b39",
+  "yellow": "#9a5b2c",
+  "brightYellow": "#976122",
+  "blue": "#37648f",
+  "brightBlue": "#37648f",
+  "purple": "#7b5595",
+  "brightPurple": "#7b5595",
+  "cyan": "#2f7d6e",
+  "brightCyan": "#2f7d6e",
+  "white": "#a39a84",
+  "brightWhite": "#fbf7ee"
+}

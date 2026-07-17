@@ -1,0 +1,23 @@
+{
+  "name": "Aurora 04 · Solarized Lite",
+  "background": "#f6efd8",
+  "foreground": "#33362c",
+  "cursorColor": "#33362c",
+  "selectionBackground": "#e9dfbf",
+  "black": "#33362c",
+  "brightBlack": "#5c5f52",
+  "red": "#b02a68",
+  "brightRed": "#b7420f",
+  "green": "#5f7300",
+  "brightGreen": "#5f7300",
+  "yellow": "#b7420f",
+  "brightYellow": "#a5701a",
+  "blue": "#1f6fa8",
+  "brightBlue": "#1f6fa8",
+  "purple": "#5257a8",
+  "brightPurple": "#5257a8",
+  "cyan": "#1d857c",
+  "brightCyan": "#1d857c",
+  "white": "#9a9578",
+  "brightWhite": "#fbf6e6"
+}
