@@ -1,6 +1,6 @@
 # 004 — Extra editor formats: Zed, Sublime, Neovim, Helix
 
-priority: 50
+done: 2026-07-17
 depends: 001
 
 ## What & why

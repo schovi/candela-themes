@@ -1,0 +1,70 @@
+{
+  "name": "Aurora 06 · Lagoon",
+  "author": "Aurora",
+  "variables": {
+    "bg": "#e5f1f2",
+    "surface": "#f4fafb",
+    "border": "#cfe2e4",
+    "ink": "#24333a",
+    "ink2": "#4f6169",
+    "faint": "#86a0a6",
+    "selection": "#d0e6e8",
+    "cursor": "#24333a",
+    "lineHighlight": "#ecf5f6",
+    "kw": "#0f7d99",
+    "str": "#3f8a5a",
+    "fn": "#2f6fb0",
+    "num": "#c05a55",
+    "type": "#7a5aa8",
+    "builtin": "#b06a2f",
+    "punct": "#5f717a",
+    "error": "#c05a55",
+    "warning": "#b06a2f",
+    "ok": "#3f8a5a"
+  },
+  "globals": {
+    "background": "var(surface)",
+    "foreground": "var(ink)",
+    "caret": "var(cursor)",
+    "line_highlight": "var(lineHighlight)",
+    "selection": "var(selection)",
+    "gutter": "var(bg)",
+    "gutter_foreground": "var(ink2)",
+    "invisibles": "var(faint)"
+  },
+  "rules": [
+    {
+      "scope": "keyword, storage",
+      "foreground": "var(kw)"
+    },
+    {
+      "scope": "string",
+      "foreground": "var(str)"
+    },
+    {
+      "scope": "entity.name.function, support.function",
+      "foreground": "var(fn)"
+    },
+    {
+      "scope": "constant.numeric, constant.language",
+      "foreground": "var(num)"
+    },
+    {
+      "scope": "entity.name.type, entity.name.class, support.type",
+      "foreground": "var(type)"
+    },
+    {
+      "scope": "support, variable.language, constant.other.symbol",
+      "foreground": "var(builtin)"
+    },
+    {
+      "scope": "punctuation, keyword.operator",
+      "foreground": "var(punct)"
+    },
+    {
+      "scope": "comment",
+      "foreground": "var(faint)",
+      "font_style": "italic"
+    }
+  ]
+}

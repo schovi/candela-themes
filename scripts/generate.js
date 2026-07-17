@@ -542,6 +542,303 @@ function emitIntellij(themes) {
   return themes.length;
 }
 
+// --- Zed emitter -----------------------------------------------------------
+// Zed consumes a single theme-family JSON: one file, all 14 themes as entries
+// with appearance "light" and a style{} block (editor UI + syntax{}). The
+// integrated terminal ANSI keys reuse the shared ansiMapping so terminal and
+// editor stay in sync, exactly like VS Code.
+
+// Zed syntax highlight name -> Aurora token, following the README scope roles.
+const ZED_SYNTAX = [
+  ['keyword', 'kw'],
+  ['string', 'str'],
+  ['string.special', 'str'],
+  ['string.escape', 'str'],
+  ['function', 'fn'],
+  ['function.method', 'fn'],
+  ['number', 'num'],
+  ['boolean', 'num'],
+  ['constant', 'num'],
+  ['type', 'type'],
+  ['constructor', 'type'],
+  ['variable.special', 'builtin'],
+  ['attribute', 'builtin'],
+  ['operator', 'punct'],
+  ['punctuation', 'punct'],
+  ['punctuation.bracket', 'punct'],
+  ['punctuation.delimiter', 'punct'],
+  ['comment', 'faint'],
+  ['comment.doc', 'faint'],
+];
+
+// Zed's ANSI style keys: black..white plus bright_ variants, in slot order.
+const ZED_ANSI = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
+
+function zedStyle(theme, ansiMapping) {
+  const c = theme.colors;
+  const n = (hex) => normalizeHex(hex);
+  const style = {
+    background: n(c.bg),
+    'surface.background': n(c.surface),
+    'elevated_surface.background': n(c.surface),
+    border: n(c.border),
+    'border.variant': n(c.border),
+    text: n(c.ink),
+    'text.muted': n(c.ink2),
+    'text.placeholder': n(c.faint),
+    'editor.foreground': n(c.ink),
+    'editor.background': n(c.surface),
+    'editor.gutter.background': n(c.surface),
+    'editor.line_number': n(c.ink2),
+    'editor.active_line_number': n(c.ink),
+    'editor.active_line.background': n(c.lineHighlight),
+    'editor.document_highlight.read_background': n(c.selection),
+    'terminal.background': n(c.surface),
+    'terminal.foreground': n(c.ink),
+    error: n(c.error),
+    warning: n(c.warning),
+    success: n(c.ok),
+    players: [{ cursor: n(c.cursor), selection: n(c.selection), background: n(c.cursor) }],
+  };
+
+  const ansi = resolveAnsi(ansiMapping, c);
+  ZED_ANSI.forEach((name, i) => {
+    style['terminal.ansi.' + name] = ansi[i];
+    style['terminal.ansi.bright_' + name] = ansi[i + 8];
+  });
+
+  const syntax = {};
+  for (const [name, token] of ZED_SYNTAX) {
+    syntax[name] = { color: n(c[token]) };
+  }
+  style.syntax = syntax;
+  return style;
+}
+
+function emitZed(themes, ansiMapping) {
+  const dir = path.join(DIST, 'zed');
+  fs.mkdirSync(dir, { recursive: true });
+  const family = {
+    $schema: 'https://zed.dev/schema/themes/v0.2.0.json',
+    name: 'Aurora',
+    author: 'Aurora',
+    themes: themes.map((theme) => ({
+      name: `Aurora ${theme.name}`,
+      appearance: 'light',
+      style: zedStyle(theme, ansiMapping),
+    })),
+  };
+  fs.writeFileSync(path.join(dir, 'aurora.json'), JSON.stringify(family, null, 2) + '\n');
+  return themes.length;
+}
+
+// --- Sublime Text emitter --------------------------------------------------
+// One .sublime-color-scheme (JSON) per theme: variables hold the palette,
+// globals wire the editor chrome, rules[] map the same TextMate scopes as VS
+// Code (reusing TOKEN_SCOPES) to those variables.
+
+function emitSublimeScheme(theme) {
+  const c = theme.colors;
+  const variables = {};
+  for (const [token, hex] of Object.entries(c)) {
+    variables[token] = normalizeHex(hex);
+  }
+  const doc = {
+    name: `Aurora ${theme.name}`,
+    author: 'Aurora',
+    variables,
+    globals: {
+      background: 'var(surface)',
+      foreground: 'var(ink)',
+      caret: 'var(cursor)',
+      line_highlight: 'var(lineHighlight)',
+      selection: 'var(selection)',
+      gutter: 'var(bg)',
+      gutter_foreground: 'var(ink2)',
+      invisibles: 'var(faint)',
+    },
+    rules: TOKEN_SCOPES.map(({ token, scopes, fontStyle }) => {
+      const rule = { scope: scopes.join(', '), foreground: `var(${token})` };
+      if (fontStyle) rule.font_style = fontStyle;
+      return rule;
+    }),
+  };
+  return JSON.stringify(doc, null, 2) + '\n';
+}
+
+function emitSublime(themes) {
+  const dir = path.join(DIST, 'sublime');
+  fs.mkdirSync(dir, { recursive: true });
+  for (const theme of themes) {
+    fs.writeFileSync(
+      path.join(dir, `aurora-${theme.id}.sublime-color-scheme`),
+      emitSublimeScheme(theme),
+    );
+  }
+  return themes.length;
+}
+
+// --- Neovim emitter --------------------------------------------------------
+// One self-contained Lua colorscheme per theme (dist/nvim/aurora-<id>.lua).
+// Chosen over a base16 YAML: a Lua colorscheme drops into runtimepath and loads
+// with `:colorscheme aurora-<id>` and zero plugins, where a base16 YAML needs
+// the base16 builder/plugin to apply at all. It sets legacy highlight groups
+// (Neovim links Treesitter groups to these by default) plus the 16
+// terminal_color_N globals from the shared ansiMapping.
+
+// Legacy highlight group -> Aurora token (foreground). Comments get italic.
+const NVIM_SYNTAX = [
+  ['Comment', 'faint', 'italic'],
+  ['Constant', 'num'],
+  ['String', 'str'],
+  ['Character', 'str'],
+  ['Number', 'num'],
+  ['Boolean', 'num'],
+  ['Identifier', 'ink'],
+  ['Function', 'fn'],
+  ['Statement', 'kw'],
+  ['Keyword', 'kw'],
+  ['Operator', 'punct'],
+  ['PreProc', 'builtin'],
+  ['Type', 'type'],
+  ['Special', 'builtin'],
+  ['Delimiter', 'punct'],
+  ['Todo', 'kw'],
+  ['Error', 'error'],
+  ['WarningMsg', 'warning'],
+];
+
+function luaHl(group, opts) {
+  const parts = Object.entries(opts).map(([k, v]) =>
+    typeof v === 'boolean' ? `${k} = ${v}` : `${k} = '${v}'`,
+  );
+  return `hi('${group}', { ${parts.join(', ')} })`;
+}
+
+function emitNvimTheme(theme, ansiMapping) {
+  const c = theme.colors;
+  const n = (hex) => normalizeHex(hex);
+  const lines = [
+    `-- Aurora ${theme.name} — generated by scripts/generate.js, do not edit.`,
+    "vim.cmd('highlight clear')",
+    "if vim.fn.exists('syntax_on') == 1 then vim.cmd('syntax reset') end",
+    "vim.o.background = 'light'",
+    `vim.g.colors_name = 'aurora-${theme.id}'`,
+    '',
+    'local hi = function(group, opts) vim.api.nvim_set_hl(0, group, opts) end',
+    '',
+    luaHl('Normal', { fg: n(c.ink), bg: n(c.bg) }),
+    luaHl('NormalFloat', { fg: n(c.ink), bg: n(c.surface) }),
+    luaHl('LineNr', { fg: n(c.ink2) }),
+    luaHl('CursorLine', { bg: n(c.lineHighlight) }),
+    luaHl('CursorLineNr', { fg: n(c.ink) }),
+    luaHl('Cursor', { fg: n(c.bg), bg: n(c.cursor) }),
+    luaHl('Visual', { bg: n(c.selection) }),
+    luaHl('VertSplit', { fg: n(c.border) }),
+    luaHl('WinSeparator', { fg: n(c.border) }),
+    luaHl('Pmenu', { fg: n(c.ink), bg: n(c.surface) }),
+    luaHl('PmenuSel', { bg: n(c.selection) }),
+    luaHl('StatusLine', { fg: n(c.ink), bg: n(c.surface) }),
+    luaHl('DiffAdd', { fg: n(c.ok) }),
+    luaHl('DiffDelete', { fg: n(c.error) }),
+    luaHl('DiffChange', { fg: n(c.warning) }),
+  ];
+  for (const [group, token, style] of NVIM_SYNTAX) {
+    const opts = { fg: n(c[token]) };
+    if (style) opts[style] = true;
+    lines.push(luaHl(group, opts));
+  }
+
+  lines.push('');
+  const ansi = resolveAnsi(ansiMapping, c);
+  ansi.forEach((hex, i) => lines.push(`vim.g.terminal_color_${i} = '${hex}'`));
+  lines.push('');
+  return lines.join('\n');
+}
+
+function emitNvim(themes, ansiMapping) {
+  const dir = path.join(DIST, 'nvim');
+  fs.mkdirSync(dir, { recursive: true });
+  for (const theme of themes) {
+    fs.writeFileSync(path.join(dir, `aurora-${theme.id}.lua`), emitNvimTheme(theme, ansiMapping));
+  }
+  return themes.length;
+}
+
+// --- Helix emitter ---------------------------------------------------------
+// One theme TOML per theme: top-level scope keys reference named palette
+// entries, and a [palette] table at the bottom carries every Aurora token as a
+// hex value. Scope keys follow the README roles.
+
+// Helix scope key -> Aurora palette name. Inline-table scopes (ui.*) are handled
+// separately; these are plain foreground scopes.
+const HELIX_SYNTAX = [
+  ['keyword', 'kw'],
+  ['keyword.storage', 'kw'],
+  ['string', 'str'],
+  ['constant.character', 'str'],
+  ['function', 'fn'],
+  ['function.method', 'fn'],
+  ['constant', 'num'],
+  ['constant.numeric', 'num'],
+  ['type', 'type'],
+  ['type.builtin', 'type'],
+  ['constructor', 'type'],
+  ['variable.builtin', 'builtin'],
+  ['variable.other.member', 'builtin'],
+  ['label', 'builtin'],
+  ['punctuation', 'punct'],
+  ['operator', 'punct'],
+  ['comment', 'faint'],
+];
+
+function emitHelixTheme(theme) {
+  const c = theme.colors;
+  const lines = [`# Aurora ${theme.name} — generated by scripts/generate.js, do not edit.`];
+
+  lines.push('"ui.background" = { bg = "bg" }');
+  lines.push('"ui.text" = "ink"');
+  lines.push('"ui.window" = { fg = "border" }');
+  lines.push('"ui.linenr" = "ink2"');
+  lines.push('"ui.linenr.selected" = "ink"');
+  lines.push('"ui.cursor" = { fg = "bg", bg = "cursor" }');
+  lines.push('"ui.cursor.primary" = { fg = "bg", bg = "cursor" }');
+  lines.push('"ui.selection" = { bg = "selection" }');
+  lines.push('"ui.cursorline" = { bg = "lineHighlight" }');
+  lines.push('"ui.statusline" = { fg = "ink", bg = "surface" }');
+  lines.push('"ui.popup" = { bg = "surface" }');
+  lines.push('"ui.menu" = { fg = "ink", bg = "surface" }');
+  lines.push('"ui.help" = { fg = "ink", bg = "surface" }');
+  lines.push('"ui.virtual.whitespace" = "faint"');
+  lines.push('"ui.virtual.ruler" = { bg = "border" }');
+  for (const [scope, token] of HELIX_SYNTAX) {
+    lines.push(`"${scope}" = "${token}"`);
+  }
+  lines.push('"diagnostic.error" = "error"');
+  lines.push('"diagnostic.warning" = "warning"');
+  lines.push('error = "error"');
+  lines.push('warning = "warning"');
+  lines.push('hint = "faint"');
+  lines.push('info = "fn"');
+
+  lines.push('');
+  lines.push('[palette]');
+  for (const [token, hex] of Object.entries(c)) {
+    lines.push(`${token} = "${normalizeHex(hex)}"`);
+  }
+  lines.push('');
+  return lines.join('\n');
+}
+
+function emitHelix(themes) {
+  const dir = path.join(DIST, 'helix');
+  fs.mkdirSync(dir, { recursive: true });
+  for (const theme of themes) {
+    fs.writeFileSync(path.join(dir, `aurora-${theme.id}.toml`), emitHelixTheme(theme));
+  }
+  return themes.length;
+}
+
 function main() {
   const { themes, ansiMapping } = JSON.parse(fs.readFileSync(SOURCE, 'utf8'));
 
@@ -562,10 +859,18 @@ function main() {
 
   const vscodeCount = emitVSCode(themes, ansiMapping);
   const intellijCount = emitIntellij(themes);
+  const zedCount = emitZed(themes, ansiMapping);
+  const sublimeCount = emitSublime(themes);
+  const nvimCount = emitNvim(themes, ansiMapping);
+  const helixCount = emitHelix(themes);
 
   console.log(`Generated ${count} files for ${themes.length} themes across ${FORMATS.length} formats.`);
   console.log(`Generated dist/vscode/ extension: package.json + ${vscodeCount} theme files.`);
   console.log(`Generated dist/intellij/ plugin: plugin.xml + ${intellijCount} .icls + ${intellijCount} .theme.json.`);
+  console.log(`Generated dist/zed/aurora.json family with ${zedCount} themes.`);
+  console.log(`Generated dist/sublime/ ${sublimeCount} .sublime-color-scheme files.`);
+  console.log(`Generated dist/nvim/ ${nvimCount} Lua colorschemes.`);
+  console.log(`Generated dist/helix/ ${helixCount} .toml themes.`);
 }
 
 main();

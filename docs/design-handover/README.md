@@ -165,7 +165,8 @@ tokens to `tokenColors` scopes:
 | `punct` | `punctuation`, `keyword.operator` |
 | `faint` | `comment` |
 
-The same idea works for Sublime, Neovim (base16-style), JetBrains IDEs, Zed, Helix, etc.
+JetBrains IDEs, Zed, Sublime Text, Neovim, and Helix each get their own generated
+output — see "JetBrains / IntelliJ" below and "Extra editors" for the exact paths and mappings.
 
 ### JetBrains / IntelliJ
 
@@ -221,6 +222,45 @@ block, so editor and terminal stay in sync), not just the editor pane. Package i
 with `vsce package` from `dist/vscode/`. End-user install instructions live in the
 root README.
 
+### Extra editors (Zed, Sublime, Neovim, Helix)
+
+`scripts/generate.js` also emits Aurora for four more editors, all 14 themes each,
+reusing the same color helpers and syntax scope roles (no duplicated color/ANSI logic).
+
+**Zed** → `dist/zed/aurora.json` — a single theme *family* file (`$schema` v0.2.0,
+`themes[]`), each entry `appearance: "light"` with a `style{}` block. Editor UI keys map
+`editor.background = surface`, `editor.foreground = ink`, `editor.active_line.background
+= lineHighlight`, `text/text.muted/text.placeholder = ink/ink2/faint`, `border = border`,
+and `players[0] = {cursor, selection}`. `style.syntax{}` maps `keyword→kw`, `string→str`,
+`function→fn`, `number/constant→num`, `type/constructor→type`, `variable.special/attribute→builtin`,
+`operator/punctuation→punct`, `comment→faint`. The `terminal.ansi.*` keys reuse the
+`ansiMapping` block, so Zed's terminal matches the terminal themes.
+
+**Sublime Text** → `dist/sublime/aurora-<id>.sublime-color-scheme` — JSON with `variables`
+(every Aurora token as a `#rrggbb`), `globals` (`background = surface`, `foreground = ink`,
+`caret = cursor`, `selection = selection`, `line_highlight = lineHighlight`, gutter from
+`bg`/`ink2`), and `rules[]` mapping the **same TextMate scope table as VS Code** (above) to
+`var(<token>)`.
+
+**Neovim** → `dist/nvim/aurora-<id>.lua` — a self-contained Lua colorscheme.
+Chosen over a base16 YAML: the Lua file drops into `runtimepath` and loads with
+`:colorscheme aurora-<id>` and **zero plugins**, whereas a base16 YAML needs the base16
+builder/plugin to apply at all. It sets `vim.o.background = 'light'`, legacy highlight groups
+(`Keyword→kw`, `String→str`, `Function→fn`, `Number/Constant→num`, `Type→type`,
+`PreProc/Special→builtin`, `Operator/Delimiter→punct`, `Comment→faint` italic, `Normal =
+ink on bg`, `Visual = selection`, `CursorLine = lineHighlight`, …) — Neovim links Treesitter
+groups to these by default — plus the 16 `vim.g.terminal_color_N` slots from `ansiMapping`.
+
+**Helix** → `dist/helix/aurora-<id>.toml` — a `[palette]` table carrying every Aurora token
+as hex, with top-level scope keys referencing palette names: `ui.background = bg`,
+`ui.text = ink`, `ui.cursor = {fg=bg, bg=cursor}`, `ui.selection = {bg=selection}`,
+`ui.cursorline = {bg=lineHighlight}`, `ui.linenr = ink2`; syntax `keyword→kw`, `string→str`,
+`function→fn`, `constant[.numeric]→num`, `type→type`, `variable.builtin/label→builtin`,
+`punctuation/operator→punct`, `comment→faint`, and `diagnostic.error/warning → error/warning`.
+
+None of these are published to a marketplace/registry — they are drop-in files; install
+instructions live in the root README.
+
 ### The generator
 
 `scripts/generate.js` is the real generator (Node, no dependencies). Run it from the repo root:
@@ -239,7 +279,9 @@ Terminal formats generated today (all 14 themes each): **iTerm2**
 (`.toml`), **Windows Terminal** (JSON fragment), **Ghostty** (`.conf`). Every
 terminal format is driven by the `ansiMapping` block above — change the mapping
 once and all six regenerate. A VS Code extension is generated too, at
-`dist/vscode/` (see "Editors" above). Hex helpers live in `lib/colors.js`;
+`dist/vscode/` (see "Editors" above), a JetBrains plugin at `dist/intellij/`, and
+Zed / Sublime / Neovim / Helix output under `dist/{zed,sublime,nvim,helix}/`
+(see "Extra editors" above). Hex helpers live in `lib/colors.js`;
 per-format emitters live in `scripts/generate.js`, which is where new tools
 plug in.
 

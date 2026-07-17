@@ -1,0 +1,70 @@
+{
+  "name": "Aurora 04 · Solarized Lite",
+  "author": "Aurora",
+  "variables": {
+    "bg": "#f6efd8",
+    "surface": "#fbf6e6",
+    "border": "#e6dcc0",
+    "ink": "#33362c",
+    "ink2": "#5c5f52",
+    "faint": "#9a9578",
+    "selection": "#e9dfbf",
+    "cursor": "#33362c",
+    "lineHighlight": "#f1e9cd",
+    "kw": "#b7420f",
+    "str": "#5f7300",
+    "fn": "#1f6fa8",
+    "num": "#b02a68",
+    "type": "#5257a8",
+    "builtin": "#1d857c",
+    "punct": "#6a6d5c",
+    "error": "#b7420f",
+    "warning": "#a5701a",
+    "ok": "#5f7300"
+  },
+  "globals": {
+    "background": "var(surface)",
+    "foreground": "var(ink)",
+    "caret": "var(cursor)",
+    "line_highlight": "var(lineHighlight)",
+    "selection": "var(selection)",
+    "gutter": "var(bg)",
+    "gutter_foreground": "var(ink2)",
+    "invisibles": "var(faint)"
+  },
+  "rules": [
+    {
+      "scope": "keyword, storage",
+      "foreground": "var(kw)"
+    },
+    {
+      "scope": "string",
+      "foreground": "var(str)"
+    },
+    {
+      "scope": "entity.name.function, support.function",
+      "foreground": "var(fn)"
+    },
+    {
+      "scope": "constant.numeric, constant.language",
+      "foreground": "var(num)"
+    },
+    {
+      "scope": "entity.name.type, entity.name.class, support.type",
+      "foreground": "var(type)"
+    },
+    {
+      "scope": "support, variable.language, constant.other.symbol",
+      "foreground": "var(builtin)"
+    },
+    {
+      "scope": "punctuation, keyword.operator",
+      "foreground": "var(punct)"
+    },
+    {
+      "scope": "comment",
+      "foreground": "var(faint)",
+      "font_style": "italic"
+    }
+  ]
+}
