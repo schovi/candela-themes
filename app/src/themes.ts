@@ -19,3 +19,13 @@ export interface Theme {
 
 export const themes: Theme[] = (data as { themes: Theme[] }).themes;
 export const themesById = new Map(themes.map((t) => [t.id, t]));
+
+// The token catalog (roles by group), from the same source of truth. The
+// playground iterates it and feeds it to the shared rule module's
+// expectedTokens() so "which tokens must exist" is never hard-coded twice.
+export interface TokenReference {
+  ui: Record<string, string>;
+  syntax: Record<string, string>;
+  diagnostics: Record<string, string>;
+}
+export const tokenReference = (data as { tokenReference: TokenReference }).tokenReference;

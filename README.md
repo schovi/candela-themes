@@ -127,3 +127,10 @@ cd app && npm install && npx playwright install chromium
 Then from the repo root, `npm run app` serves the explorer and
 `npm run app:screenshots` regenerates the gallery PNGs (both delegate into
 `app/`). See [`docs/screenshots/README.md`](docs/screenshots/README.md).
+
+The explorer's **Playground** view (View → Playground) lets you fork any theme
+or start from a blank template and tune every color, font, name, and tone with
+live preview. It evaluates the same design invariants as `scripts/validate.js`
+(both import the shared rules in `lib/`), so **Copy theme JSON** stays disabled
+until every hard rule passes — paste the result into a new `themes[]` entry in
+`aurora-themes.json` and it clears `node scripts/validate.js` as-is.

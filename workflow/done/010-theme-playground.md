@@ -1,6 +1,6 @@
 # 010 — Theme playground: rule-guarded theme editing
 
-priority: 40
+done: 2026-07-17
 depends: 009
 
 ## What & why
@@ -62,3 +62,11 @@ Depends on 009 for the app shell and presentation components. Written assuming t
 post-011 layout (`themes/aurora-themes.json`); if 011 hasn't shipped, the only delta is
 the JSON path. The "not completely free edit" requirement is satisfied by gated export +
 omnipresent feedback, not by clamped inputs (decided in groom).
+
+Shared rules live in `lib/rules.js` (ESM), imported by both `scripts/validate.js`
+(Node 22 `require(ESM)`) and the app. Hard gate = the invariants `validate.js` enforces
+today. The spec's extra warn-level checks (4.5:1 syntax/diagnostics floors,
+diagnostics-uniqueness, purple/blue separation, CVD hints) are 008's floors; 008 had not
+landed them in `validate.js` when this shipped, so they are not implemented here — once
+008 adds them to `lib/rules.js` the playground picks them up automatically. Per-token
+contrast vs bg/surface is shown as info in the feedback pane.
