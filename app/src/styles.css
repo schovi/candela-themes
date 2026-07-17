@@ -150,6 +150,9 @@ body {
 .pg-feedback { font-size: 13px; display: flex; flex-direction: column; gap: 12px; }
 .pg-ok { margin: 0; color: #2e7d32; font-weight: 600; }
 .pg-fails { color: #b5341f; }
+.pg-fails-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.pg-fix { font: 500 13px/1 inherit; padding: 6px 12px; border-radius: 6px; border: 1px solid #b5341f; background: #fff; color: #b5341f; cursor: pointer; }
+.pg-fix:hover { background: #fdf0ee; }
 .pg-warns { color: #8a6d00; }
 .pg-fails ul, .pg-warns ul { margin: 4px 0 0; padding-left: 20px; }
 .pg-contrast summary, .pg-json summary { cursor: pointer; color: #4a4a50; font-weight: 500; }

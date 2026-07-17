@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { themes, tokenReference, type Theme, type ColorToken } from './themes';
 import { ThemeCard } from './ThemeCard';
+import { autoFix } from './autofix';
 import { PANE_ORDER, type PaneKey } from './samples/Panes';
 // Shared rule module — the exact same invariants scripts/validate.js enforces
 // (both import the same lib/ ESM; change a rule once and both reflect it).
@@ -186,7 +187,16 @@ export function Playground() {
             <p className="pg-ok">All hard invariants pass — ready to export.</p>
           ) : (
             <div className="pg-fails">
-              <strong>{failures.length} hard rule(s) failing (export blocked):</strong>
+              <div className="pg-fails-head">
+                <strong>{failures.length} hard rule(s) failing (export blocked):</strong>
+                <button
+                  className="pg-fix"
+                  onClick={() => { setDraft((d) => autoFix(d)); setCopied(false); }}
+                  title="Adjusts each failing color's lightness (keeping hue) to the nearest passing value"
+                >
+                  Auto-fix colors
+                </button>
+              </div>
               <ul>{failures.map((f, i) => <li key={i}>{f}</li>)}</ul>
             </div>
           )}
