@@ -1,0 +1,5 @@
+{
+  "enabledPlugins": {
+    "workflow@schovi-workflows": true
+  }
+}

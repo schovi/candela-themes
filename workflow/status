@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+"""Print the board from the workflow/ status folders.
+
+Usage: workflow/status [--done N|all]   (default: done hidden, count only)
+Folder = status. Task file: first line `# NNN — Title`, then optional
+`priority:` (ready), `depends:` (task IDs), `gate:` (blocked), `done:` (done) lines.
+Ready tasks show `depends:` and flag unmet ones as `(waits: N)`.
+
+Other git worktrees are scanned too: a task whose section differs from this
+checkout, or whose file has uncommitted edits there, is reported under
+`Worktrees` so in-flight work elsewhere is visible from any checkout.
+"""
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+REPO = ROOT.parent
+META = re.compile(r"^(priority|depends|gate|done):\s*(.+?)\s*$")
+SECTIONS = ("draft", "ready", "in-progress", "blocked", "done")
+
+
+def tasks(section, root=ROOT):
+    items = []
+    for path in sorted((root / section).glob("*.md")):
+        lines = path.read_text(encoding="utf-8").splitlines()
+        title = lines[0].lstrip("#").strip() if lines else path.stem
+        meta = {}
+        for line in lines[1:10]:
+            match = META.match(line.strip())
+            if match:
+                meta[match.group(1)] = match.group(2)
+        task_id = re.match(r"(\d+)", path.name)
+        items.append({"id": int(task_id.group(1)) if task_id else 0, "title": title, "meta": meta})
+    return items
+
+
+def show(heading, items, annotate=None):
+    print(f"\n{heading}")
+    for item in items:
+        note = annotate(item) if annotate else ""
+        print(f"  {item['title']}{note}")
+
+
+def git(args, cwd=REPO):
+    try:
+        out = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, timeout=10)
+        return out.stdout if out.returncode == 0 else ""
+    except (OSError, subprocess.SubprocessError):
+        return ""
+
+
+def other_worktrees():
+    paths = [line[len("worktree ") :] for line in git(["worktree", "list", "--porcelain"]).splitlines()
+             if line.startswith("worktree ")]
+    return [Path(p) for p in paths if Path(p).resolve() != REPO.resolve() and (Path(p) / "workflow").is_dir()]
+
+
+def section_of(checkout):
+    """task_id -> section for a checkout's board."""
+    return {t["id"]: section for section in SECTIONS for t in tasks(section, checkout / "workflow")}
+
+
+def dirty_task_ids(root):
+    """Task ids with uncommitted changes under workflow/ in this checkout."""
+    ids = set()
+    for line in git(["status", "--porcelain", "--", "workflow/"], cwd=root).splitlines():
+        match = re.search(r"workflow/[\w-]+/(\d+)", line[3:])
+        if match:
+            ids.add(int(match.group(1)))
+    return ids
+
+
+def show_worktrees():
+    worktrees = other_worktrees()
+    if not worktrees:
+        return
+    here = section_of(REPO)
+    print(f"\nWorktrees ({len(worktrees)} other)")
+    for wt in worktrees:
+        there = section_of(wt)
+        titles = {t["id"]: t["title"] for section in SECTIONS for t in tasks(section, wt / "workflow")}
+        dirty = dirty_task_ids(wt)
+        print(f"  {wt.name} [{wt}]")
+        rows = 0
+        for task_id, section in sorted(there.items()):
+            moved = here.get(task_id) != section
+            if not moved and task_id not in dirty:
+                continue
+            flags = []
+            if moved:
+                flags.append(f"{section} in worktree / {here.get(task_id, 'absent')} here")
+            if task_id in dirty:
+                flags.append("uncommitted")
+            print(f"    {titles[task_id]}  ({', '.join(flags)})")
+            rows += 1
+        if not rows:
+            print("    (board matches this checkout)")
+
+
+def main():
+    done_limit = 0  # done is history, not a decision input — hidden unless asked
+    if "--done" in sys.argv:
+        value = sys.argv[sys.argv.index("--done") + 1]
+        done_limit = None if value == "all" else int(value)
+
+    done_ids = {t["id"] for t in tasks("done")}
+
+    def waits(item):
+        raw = item["meta"].get("depends", "")
+        deps = [d.strip() for d in raw.split(",") if d.strip().isdigit()]
+        if not deps:
+            return ""
+        pending = [d for d in deps if int(d) not in done_ids]
+        return f"  (waits: {', '.join(pending)})" if pending else f"  (depends: {', '.join(deps)} ✓)"
+
+    in_progress = tasks("in-progress")
+    show(f"In progress ({len(in_progress)})", in_progress)
+    ready = sorted(tasks("ready"), key=lambda t: (int(t["meta"].get("priority", 10**6)), t["id"]))
+    show(f"Ready ({len(ready)})", ready, lambda t: f"  [{t['meta'].get('priority', 'NO PRIORITY')}]{waits(t)}")
+    draft = tasks("draft")
+    show(f"Draft ({len(draft)})", draft)
+    blocked = tasks("blocked")
+    show(f"Blocked ({len(blocked)})", blocked, lambda t: f"  (gate: {t['meta'].get('gate', 'MISSING')})")
+    done = tasks("done")
+    if done_limit == 0:
+        print(f"\nDone ({len(done)} total; --done N|all to list)")
+    else:
+        ordered = sorted(done, key=lambda t: t["meta"].get("done", ""), reverse=True)
+        shown = ordered if done_limit is None else ordered[:done_limit]
+        show(f"Done ({len(shown)} of {len(done)})", shown, lambda t: f"  ({t['meta'].get('done', 'NO DATE')})")
+
+    show_worktrees()
+
+
+if __name__ == "__main__":
+    main()
