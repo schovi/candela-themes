@@ -87,7 +87,8 @@ The four experiments each answer a different question:
 
 Each shot is one theme rendered across a terminal, Ruby, Kotlin, Markdown, and
 diagnostics, captured from the theme explorer app (`app/`). Regenerate the whole
-gallery with `npm run app:screenshots` (see "Contributing / extending").
+gallery with `npm run app:screenshots` — see
+[`docs/screenshots/README.md`](docs/screenshots/README.md).
 
 | | |
 | --- | --- |
@@ -321,7 +322,7 @@ cd app && npm install && npx playwright install chromium
 
 Then from the repo root, `npm run app` serves the explorer and
 `npm run app:screenshots` regenerates the gallery PNGs (both delegate into
-`app/`).
+`app/`). See [`docs/screenshots/README.md`](docs/screenshots/README.md).
 
 The explorer's **Playground** view (View → Playground) lets you fork any theme
 or start from a blank template and tune every color, font, name, and tone with
