@@ -117,8 +117,13 @@ and [`docs/design-handover/README.md`](docs/design-handover/README.md) for the
 token roles and the invariants to preserve if you add or tweak a theme.
 
 To preview every theme (palette, fonts, and sample panes including diagnostics),
-run the explorer app: `cd app && npm install && npm run dev`. Everything the app
-needs lives under `app/` — the repo root stays dependency-light. Regenerate the
-gallery screenshots with `cd app && npm run screenshots` (one-time
-`npx playwright install chromium` first); see
-[`docs/screenshots/README.md`](docs/screenshots/README.md).
+run the explorer app. First-time setup installs its deps under `app/` (the repo
+root stays dependency-light):
+
+```sh
+cd app && npm install && npx playwright install chromium
+```
+
+Then from the repo root, `npm run app` serves the explorer and
+`npm run app:screenshots` regenerates the gallery PNGs (both delegate into
+`app/`). See [`docs/screenshots/README.md`](docs/screenshots/README.md).
