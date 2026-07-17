@@ -167,6 +167,50 @@ tokens to `tokenColors` scopes:
 
 The same idea works for Sublime, Neovim (base16-style), JetBrains IDEs, Zed, Helix, etc.
 
+### JetBrains / IntelliJ
+
+`scripts/generate.js` emits a packaged JetBrains theme plugin at `dist/intellij/`,
+laid out under `src/main/resources/` so a Gradle `buildPlugin` can consume it
+(Gradle wiring itself is out of scope). Per theme it writes an **editor color
+scheme** `.icls` (XML) and a **UI theme** `.theme.json` under `themes/`, plus one
+`META-INF/plugin.xml` registering all 14 as `themeProvider` extensions.
+
+Two hex conventions: **`.icls` drops the leading `#`** (`value="9a5b2c"`);
+**`.theme.json` keeps it** (`"#9a5b2c"`).
+
+The `.icls` general editor colors (`<colors>` block) and the editor background /
+foreground (the `TEXT` attribute):
+
+| Aurora token | `.icls` key | Section |
+| --- | --- | --- |
+| `surface` | `TEXT` → `BACKGROUND` | `<attributes>` |
+| `ink` | `TEXT` → `FOREGROUND` | `<attributes>` |
+| `cursor` | `CARET_COLOR` | `<colors>` |
+| `lineHighlight` | `CARET_ROW_COLOR` | `<colors>` |
+| `selection` | `SELECTION_BACKGROUND` | `<colors>` |
+| `ink2` | `LINE_NUMBERS_COLOR` | `<colors>` |
+| `border` | `GUTTER_BACKGROUND`, `INDENT_GUIDE` | `<colors>` |
+
+The `.icls` syntax attributes (`<attributes>` block, `FOREGROUND` per key):
+
+| Aurora token | `.icls` attribute key(s) |
+| --- | --- |
+| `kw` | `DEFAULT_KEYWORD` |
+| `str` | `DEFAULT_STRING` |
+| `fn` | `DEFAULT_FUNCTION_DECLARATION` |
+| `num` | `DEFAULT_NUMBER` |
+| `type` | `DEFAULT_CLASS_NAME` |
+| `builtin` | `DEFAULT_CONSTANT`, `DEFAULT_METADATA` |
+| `punct` | `DEFAULT_OPERATION_SIGN`, `DEFAULT_BRACES`, `DEFAULT_DOT` |
+| `faint` | `DEFAULT_LINE_COMMENT`, `DEFAULT_BLOCK_COMMENT` |
+| `error` | `ERRORS_ATTRIBUTES` (`EFFECT_COLOR` + `ERROR_STRIPE_COLOR`, wavy) |
+| `warning` | `WARNING_ATTRIBUTES` (`EFFECT_COLOR` + `ERROR_STRIPE_COLOR`, wavy) |
+
+Each `.theme.json` sets `dark: false`, points `editorScheme` at its `.icls`, and
+carries a modest `ui{}` frame (backgrounds from `bg`/`surface`, borders from
+`border`, text from `ink`/`ink2`/`faint`, accents from `fn`) so the IDE frame is
+coherent rather than default. End-user install instructions live in the root README.
+
 `scripts/generate.js` emits a complete, vsix-ready VS Code extension at
 `dist/vscode/`: one `package.json` contributing all 14 themes (each `uiTheme: "vs"`
 since these are light) and one `themes/aurora-<id>-color-theme.json` per theme

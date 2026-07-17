@@ -1,0 +1,35 @@
+{
+  "name": "Aurora 13 · E-Ink Slate",
+  "author": "Aurora",
+  "dark": false,
+  "editorScheme": "/themes/aurora-eink-slate.icls",
+  "ui": {
+    "*": {
+      "background": "#eceeec",
+      "foreground": "#26292a",
+      "infoForeground": "#4e5253",
+      "disabledForeground": "#8c9092",
+      "selectionBackground": "#dcdedb",
+      "selectionForeground": "#26292a",
+      "borderColor": "#d9dbd8",
+      "separatorColor": "#d9dbd8",
+      "focusColor": "#3d4a5a"
+    },
+    "Editor": {
+      "background": "#f6f7f5"
+    },
+    "EditorTabs": {
+      "background": "#eceeec",
+      "underlinedTabBackground": "#f6f7f5",
+      "underlineColor": "#3d4a5a"
+    },
+    "ToolWindow": {
+      "Header.background": "#f6f7f5",
+      "HeaderTab.underlineColor": "#3d4a5a"
+    },
+    "StatusBar": {
+      "background": "#f6f7f5",
+      "borderColor": "#d9dbd8"
+    }
+  }
+}

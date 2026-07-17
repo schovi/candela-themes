@@ -1,0 +1,35 @@
+{
+  "name": "Aurora 01 · Sepia Paper",
+  "author": "Aurora",
+  "dark": false,
+  "editorScheme": "/themes/aurora-sepia-paper.icls",
+  "ui": {
+    "*": {
+      "background": "#f2ecdf",
+      "foreground": "#322f28",
+      "infoForeground": "#5f584b",
+      "disabledForeground": "#a39a84",
+      "selectionBackground": "#e6dcc0",
+      "selectionForeground": "#322f28",
+      "borderColor": "#e3dac6",
+      "separatorColor": "#e3dac6",
+      "focusColor": "#37648f"
+    },
+    "Editor": {
+      "background": "#fbf7ee"
+    },
+    "EditorTabs": {
+      "background": "#f2ecdf",
+      "underlinedTabBackground": "#fbf7ee",
+      "underlineColor": "#37648f"
+    },
+    "ToolWindow": {
+      "Header.background": "#fbf7ee",
+      "HeaderTab.underlineColor": "#37648f"
+    },
+    "StatusBar": {
+      "background": "#fbf7ee",
+      "borderColor": "#e3dac6"
+    }
+  }
+}

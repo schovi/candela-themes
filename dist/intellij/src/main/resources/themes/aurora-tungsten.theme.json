@@ -1,0 +1,35 @@
+{
+  "name": "Aurora 12 · Tungsten",
+  "author": "Aurora",
+  "dark": false,
+  "editorScheme": "/themes/aurora-tungsten.icls",
+  "ui": {
+    "*": {
+      "background": "#f4ecd9",
+      "foreground": "#34302a",
+      "infoForeground": "#5f5749",
+      "disabledForeground": "#a2957a",
+      "selectionBackground": "#ecdfbf",
+      "selectionForeground": "#34302a",
+      "borderColor": "#e6d9bd",
+      "separatorColor": "#e6d9bd",
+      "focusColor": "#8a6a1f"
+    },
+    "Editor": {
+      "background": "#faf3e1"
+    },
+    "EditorTabs": {
+      "background": "#f4ecd9",
+      "underlinedTabBackground": "#faf3e1",
+      "underlineColor": "#8a6a1f"
+    },
+    "ToolWindow": {
+      "Header.background": "#faf3e1",
+      "HeaderTab.underlineColor": "#8a6a1f"
+    },
+    "StatusBar": {
+      "background": "#faf3e1",
+      "borderColor": "#e6d9bd"
+    }
+  }
+}

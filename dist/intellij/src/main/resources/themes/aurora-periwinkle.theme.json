@@ -1,0 +1,35 @@
+{
+  "name": "Aurora 09 · Periwinkle",
+  "author": "Aurora",
+  "dark": false,
+  "editorScheme": "/themes/aurora-periwinkle.icls",
+  "ui": {
+    "*": {
+      "background": "#eeeefb",
+      "foreground": "#2e2f3d",
+      "infoForeground": "#585a6d",
+      "disabledForeground": "#9698b6",
+      "selectionBackground": "#dedef3",
+      "selectionForeground": "#2e2f3d",
+      "borderColor": "#dcdcf0",
+      "separatorColor": "#dcdcf0",
+      "focusColor": "#7a3fb0"
+    },
+    "Editor": {
+      "background": "#f8f8fe"
+    },
+    "EditorTabs": {
+      "background": "#eeeefb",
+      "underlinedTabBackground": "#f8f8fe",
+      "underlineColor": "#7a3fb0"
+    },
+    "ToolWindow": {
+      "Header.background": "#f8f8fe",
+      "HeaderTab.underlineColor": "#7a3fb0"
+    },
+    "StatusBar": {
+      "background": "#f8f8fe",
+      "borderColor": "#dcdcf0"
+    }
+  }
+}

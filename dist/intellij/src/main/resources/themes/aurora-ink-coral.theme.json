@@ -1,0 +1,35 @@
+{
+  "name": "Aurora 10 · Ink & Coral",
+  "author": "Aurora",
+  "dark": false,
+  "editorScheme": "/themes/aurora-ink-coral.icls",
+  "ui": {
+    "*": {
+      "background": "#eef0f0",
+      "foreground": "#222831",
+      "infoForeground": "#4c545d",
+      "disabledForeground": "#8b959c",
+      "selectionBackground": "#dbe3e3",
+      "selectionForeground": "#222831",
+      "borderColor": "#d8dede",
+      "separatorColor": "#d8dede",
+      "focusColor": "#b0402f"
+    },
+    "Editor": {
+      "background": "#f8fafa"
+    },
+    "EditorTabs": {
+      "background": "#eef0f0",
+      "underlinedTabBackground": "#f8fafa",
+      "underlineColor": "#b0402f"
+    },
+    "ToolWindow": {
+      "Header.background": "#f8fafa",
+      "HeaderTab.underlineColor": "#b0402f"
+    },
+    "StatusBar": {
+      "background": "#f8fafa",
+      "borderColor": "#d8dede"
+    }
+  }
+}

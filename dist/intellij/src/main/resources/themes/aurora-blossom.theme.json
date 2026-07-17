@@ -1,0 +1,35 @@
+{
+  "name": "Aurora 05 · Blossom",
+  "author": "Aurora",
+  "dark": false,
+  "editorScheme": "/themes/aurora-blossom.icls",
+  "ui": {
+    "*": {
+      "background": "#fbeef2",
+      "foreground": "#3a2f36",
+      "infoForeground": "#6b5a63",
+      "disabledForeground": "#b596a4",
+      "selectionBackground": "#f4dce6",
+      "selectionForeground": "#3a2f36",
+      "borderColor": "#f0d8e0",
+      "separatorColor": "#f0d8e0",
+      "focusColor": "#3f74b0"
+    },
+    "Editor": {
+      "background": "#fef7f9"
+    },
+    "EditorTabs": {
+      "background": "#fbeef2",
+      "underlinedTabBackground": "#fef7f9",
+      "underlineColor": "#3f74b0"
+    },
+    "ToolWindow": {
+      "Header.background": "#fef7f9",
+      "HeaderTab.underlineColor": "#3f74b0"
+    },
+    "StatusBar": {
+      "background": "#fef7f9",
+      "borderColor": "#f0d8e0"
+    }
+  }
+}

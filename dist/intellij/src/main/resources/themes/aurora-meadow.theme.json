@@ -1,0 +1,35 @@
+{
+  "name": "Aurora 07 · Meadow",
+  "author": "Aurora",
+  "dark": false,
+  "editorScheme": "/themes/aurora-meadow.icls",
+  "ui": {
+    "*": {
+      "background": "#ecf3e4",
+      "foreground": "#2c342a",
+      "infoForeground": "#556150",
+      "disabledForeground": "#93a385",
+      "selectionBackground": "#dcecc9",
+      "selectionForeground": "#2c342a",
+      "borderColor": "#d7e4c8",
+      "separatorColor": "#d7e4c8",
+      "focusColor": "#2f8a70"
+    },
+    "Editor": {
+      "background": "#f6faf0"
+    },
+    "EditorTabs": {
+      "background": "#ecf3e4",
+      "underlinedTabBackground": "#f6faf0",
+      "underlineColor": "#2f8a70"
+    },
+    "ToolWindow": {
+      "Header.background": "#f6faf0",
+      "HeaderTab.underlineColor": "#2f8a70"
+    },
+    "StatusBar": {
+      "background": "#f6faf0",
+      "borderColor": "#d7e4c8"
+    }
+  }
+}

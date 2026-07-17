@@ -379,6 +379,169 @@ function emitVSCode(themes, ansiMapping) {
   return themes.length;
 }
 
+// --- JetBrains / IntelliJ plugin emitter -----------------------------------
+// A JetBrains theme plugin: one .icls editor color scheme + one .theme.json UI
+// theme per theme, plus a META-INF/plugin.xml registering all 14 as
+// themeProvider extensions. Layout under src/main/resources/ is what a Gradle
+// `buildPlugin` consumes (Gradle wiring itself is out of scope).
+//
+// Two hex conventions live here: .icls stores colors as 6-digit hex WITHOUT the
+// leading '#'; .theme.json uses ordinary '#rrggbb'. Attribute keys below are the
+// standard IntelliJ TextAttributesKey / ColorKey names.
+
+const xmlEscape = (s) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+// General editor colors -> .icls <colors> option names. From task spec:
+// caret=cursor, caret row=lineHighlight, selection=selection, line number=ink2,
+// gutter/indent from border. (bg/fg live in the TEXT attribute, below.)
+const ICLS_GENERAL = [
+  ['CARET_COLOR', 'cursor'],
+  ['CARET_ROW_COLOR', 'lineHighlight'],
+  ['SELECTION_BACKGROUND', 'selection'],
+  ['LINE_NUMBERS_COLOR', 'ink2'],
+  ['GUTTER_BACKGROUND', 'border'],
+  ['INDENT_GUIDE', 'border'],
+];
+
+// Syntax TextAttributes -> Aurora token, foreground only.
+const ICLS_SYNTAX = [
+  ['DEFAULT_KEYWORD', 'kw'],
+  ['DEFAULT_STRING', 'str'],
+  ['DEFAULT_FUNCTION_DECLARATION', 'fn'],
+  ['DEFAULT_NUMBER', 'num'],
+  ['DEFAULT_CLASS_NAME', 'type'],
+  ['DEFAULT_CONSTANT', 'builtin'],
+  ['DEFAULT_METADATA', 'builtin'],
+  ['DEFAULT_OPERATION_SIGN', 'punct'],
+  ['DEFAULT_BRACES', 'punct'],
+  ['DEFAULT_DOT', 'punct'],
+  ['DEFAULT_LINE_COMMENT', 'faint'],
+  ['DEFAULT_BLOCK_COMMENT', 'faint'],
+];
+
+// Diagnostics -> attribute key. EFFECT_TYPE 2 is the wavy underline IntelliJ
+// uses for errors/warnings.
+const ICLS_DIAGNOSTICS = [
+  ['ERRORS_ATTRIBUTES', 'error'],
+  ['WARNING_ATTRIBUTES', 'warning'],
+];
+
+function emitIclsScheme(theme) {
+  const c = theme.colors;
+  const h = (hex) => normalizeHex(hex).slice(1); // .icls drops the leading '#'
+  const lines = [];
+  lines.push('<?xml version="1.0" encoding="UTF-8"?>');
+  lines.push(`<scheme name="Aurora ${xmlEscape(theme.name)}" version="142" parent_scheme="Default">`);
+
+  lines.push('  <colors>');
+  for (const [name, token] of ICLS_GENERAL) {
+    lines.push(`    <option name="${name}" value="${h(c[token])}" />`);
+  }
+  lines.push('  </colors>');
+
+  lines.push('  <attributes>');
+  lines.push('    <option name="TEXT">');
+  lines.push('      <value>');
+  lines.push(`        <option name="FOREGROUND" value="${h(c.ink)}" />`);
+  lines.push(`        <option name="BACKGROUND" value="${h(c.surface)}" />`);
+  lines.push('      </value>');
+  lines.push('    </option>');
+  for (const [name, token] of ICLS_SYNTAX) {
+    lines.push(`    <option name="${name}">`);
+    lines.push('      <value>');
+    lines.push(`        <option name="FOREGROUND" value="${h(c[token])}" />`);
+    lines.push('      </value>');
+    lines.push('    </option>');
+  }
+  for (const [name, token] of ICLS_DIAGNOSTICS) {
+    lines.push(`    <option name="${name}">`);
+    lines.push('      <value>');
+    lines.push(`        <option name="EFFECT_COLOR" value="${h(c[token])}" />`);
+    lines.push(`        <option name="ERROR_STRIPE_COLOR" value="${h(c[token])}" />`);
+    lines.push('        <option name="EFFECT_TYPE" value="2" />');
+    lines.push('      </value>');
+    lines.push('    </option>');
+  }
+  lines.push('  </attributes>');
+  lines.push('</scheme>');
+  return lines.join('\n') + '\n';
+}
+
+function emitIntellijTheme(theme) {
+  const c = theme.colors;
+  const n = (hex) => normalizeHex(hex);
+  const doc = {
+    name: `Aurora ${theme.name}`,
+    author: 'Aurora',
+    dark: false,
+    editorScheme: `/themes/aurora-${theme.id}.icls`,
+    ui: {
+      '*': {
+        background: n(c.bg),
+        foreground: n(c.ink),
+        infoForeground: n(c.ink2),
+        disabledForeground: n(c.faint),
+        selectionBackground: n(c.selection),
+        selectionForeground: n(c.ink),
+        borderColor: n(c.border),
+        separatorColor: n(c.border),
+        focusColor: n(c.fn),
+      },
+      Editor: { background: n(c.surface) },
+      EditorTabs: {
+        background: n(c.bg),
+        underlinedTabBackground: n(c.surface),
+        underlineColor: n(c.fn),
+      },
+      ToolWindow: {
+        'Header.background': n(c.surface),
+        'HeaderTab.underlineColor': n(c.fn),
+      },
+      StatusBar: { background: n(c.surface), borderColor: n(c.border) },
+    },
+  };
+  return JSON.stringify(doc, null, 2) + '\n';
+}
+
+function emitIntellijPluginXml(themes) {
+  const providers = themes
+    .map((t) => `    <themeProvider id="aurora-${t.id}" path="/themes/aurora-${t.id}.theme.json" />`)
+    .join('\n');
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<idea-plugin>',
+    '  <id>com.aurora.themes</id>',
+    '  <name>Aurora Light Themes</name>',
+    '  <version>0.1.0</version>',
+    '  <vendor>Aurora</vendor>',
+    '  <description><![CDATA[14 light color themes for tired eyes — low-glare, low-saturation, AAA body contrast.]]></description>',
+    '  <idea-version since-build="223" />',
+    '  <depends>com.intellij.modules.platform</depends>',
+    '  <extensions defaultExtensionNs="com.intellij">',
+    providers,
+    '  </extensions>',
+    '</idea-plugin>',
+    '',
+  ].join('\n');
+}
+
+function emitIntellij(themes) {
+  const resources = path.join(DIST, 'intellij', 'src/main/resources');
+  const themesDir = path.join(resources, 'themes');
+  const metaInf = path.join(resources, 'META-INF');
+  fs.mkdirSync(themesDir, { recursive: true });
+  fs.mkdirSync(metaInf, { recursive: true });
+
+  for (const theme of themes) {
+    fs.writeFileSync(path.join(themesDir, `aurora-${theme.id}.icls`), emitIclsScheme(theme));
+    fs.writeFileSync(path.join(themesDir, `aurora-${theme.id}.theme.json`), emitIntellijTheme(theme));
+  }
+  fs.writeFileSync(path.join(metaInf, 'plugin.xml'), emitIntellijPluginXml(themes));
+
+  return themes.length;
+}
+
 function main() {
   const { themes, ansiMapping } = JSON.parse(fs.readFileSync(SOURCE, 'utf8'));
 
@@ -398,9 +561,11 @@ function main() {
   }
 
   const vscodeCount = emitVSCode(themes, ansiMapping);
+  const intellijCount = emitIntellij(themes);
 
   console.log(`Generated ${count} files for ${themes.length} themes across ${FORMATS.length} formats.`);
   console.log(`Generated dist/vscode/ extension: package.json + ${vscodeCount} theme files.`);
+  console.log(`Generated dist/intellij/ plugin: plugin.xml + ${intellijCount} .icls + ${intellijCount} .theme.json.`);
 }
 
 main();
