@@ -1,6 +1,6 @@
 # 002 — VS Code packaged extension
 
-priority: 20
+done: 2026-07-17
 depends: 001
 
 ## What & why
