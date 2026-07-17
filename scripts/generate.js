@@ -1,12 +1,13 @@
 'use strict';
 
 // Aurora theme generator. Reads docs/design-handover/aurora-themes.json (the
-// single source of truth) and writes dist/<tool>/<theme-id>.<ext> for every
+// single source of truth) and writes build/<tool>/<theme-id>.<ext> for every
 // terminal format. Zero runtime dependencies — runs on a stock Node install.
 //
-// dist/ is wiped and rewritten on each run so output is deterministic and
-// diffable. Downstream tasks (VS Code, IntelliJ, extra formats) extend this
-// same scaffolding.
+// build/ holds the source fragments and is wiped and rewritten on each run so
+// output is deterministic and diffable. Packaging (e.g. the VS Code .vsix) turns
+// those fragments into distributables under dist/ — see scripts/package-vscode.js.
+// Neither build/ nor dist/ is committed.
 
 const fs = require('fs');
 const path = require('path');
@@ -14,7 +15,7 @@ const { normalizeHex, hexToFloat } = require('../lib/colors');
 
 const ROOT = path.join(__dirname, '..');
 const SOURCE = path.join(ROOT, 'docs/design-handover/aurora-themes.json');
-const DIST = path.join(ROOT, 'dist');
+const BUILD = path.join(ROOT, 'build');
 
 // Fixed 0..7 ANSI slot order; slots 8..15 repeat it as the "bright" set.
 const ANSI_ORDER = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
@@ -341,8 +342,32 @@ function resolveEditor(theme, ansiMapping) {
   return { colors, tokenColors };
 }
 
+const VSCODE_VERSION = '0.1.0';
+
+// Ships only what the extension needs; keeps `vsce package` from bundling cruft.
+const VSCODE_IGNORE = ['.vscode/**', '**/*.map', '.gitignore', 'vsc-extension-quickstart.md', ''].join('\n');
+
+function vscodeReadme() {
+  return [
+    '# Aurora Light Themes',
+    '',
+    '14 light color themes for tired eyes — low-glare, low-saturation, AAA body',
+    'contrast. Built for people who prefer dark mode but find it uncomfortable',
+    '(prescription lenses, astigmatism, glare sensitivity, general eye strain).',
+    '',
+    'After installing, open **Preferences: Color Theme** and pick any *Aurora …* entry.',
+    '',
+    'Themes: Sepia Paper, Slate Mist, Sage, Solarized Lite, Blossom, Lagoon, Meadow,',
+    'Apricot, Periwinkle, Ink & Coral, Graphite Mono, Tungsten, E-Ink Slate, Contrast Max.',
+    '',
+    '> Generated from the Aurora source of truth — do not edit by hand.',
+    '> TODO: no Marketplace icon yet (needs a 128px PNG asset).',
+    '',
+  ].join('\n');
+}
+
 function emitVSCode(themes, ansiMapping) {
-  const dir = path.join(DIST, 'vscode');
+  const dir = path.join(BUILD, 'vscode');
   const themesDir = path.join(dir, 'themes');
   fs.mkdirSync(themesDir, { recursive: true });
 
@@ -364,17 +389,33 @@ function emitVSCode(themes, ansiMapping) {
     });
   }
 
+  // Placeholder until a real repo/publisher exists (task exclusion). vsce needs
+  // repository/bugs/homepage present to package without warnings.
+  const repoUrl = 'https://github.com/CHANGEME/aurora-themes';
   const pkg = {
     name: 'aurora-themes',
     displayName: 'Aurora Light Themes',
     description: '14 light color themes for tired eyes — low-glare, low-saturation, AAA body contrast.',
-    version: '0.1.0',
+    version: VSCODE_VERSION,
     publisher: 'aurora',
+    // icon: TODO — needs a 128px PNG asset. Left unset on purpose: pointing at a
+    // missing file makes vsce fail. Add the field once an icon exists.
     engines: { vscode: '^1.70.0' },
     categories: ['Themes'],
+    keywords: ['theme', 'light', 'color-theme', 'eye-strain', 'accessibility'],
+    galleryBanner: { color: '#f4ece0', theme: 'light' },
+    repository: { type: 'git', url: `${repoUrl}.git` },
+    bugs: { url: `${repoUrl}/issues` },
+    homepage: `${repoUrl}#readme`,
+    license: 'MIT',
     contributes: { themes: contributes },
   };
   fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n');
+
+  fs.writeFileSync(path.join(dir, 'README.md'), vscodeReadme());
+  fs.writeFileSync(path.join(dir, '.vscodeignore'), VSCODE_IGNORE);
+  // vsce wants a LICENSE in the extension root; copy the repo's MIT license in.
+  fs.copyFileSync(path.join(ROOT, 'LICENSE'), path.join(dir, 'LICENSE'));
 
   return themes.length;
 }
@@ -527,7 +568,7 @@ function emitIntellijPluginXml(themes) {
 }
 
 function emitIntellij(themes) {
-  const resources = path.join(DIST, 'intellij', 'src/main/resources');
+  const resources = path.join(BUILD, 'intellij', 'src/main/resources');
   const themesDir = path.join(resources, 'themes');
   const metaInf = path.join(resources, 'META-INF');
   fs.mkdirSync(themesDir, { recursive: true });
@@ -616,7 +657,7 @@ function zedStyle(theme, ansiMapping) {
 }
 
 function emitZed(themes, ansiMapping) {
-  const dir = path.join(DIST, 'zed');
+  const dir = path.join(BUILD, 'zed');
   fs.mkdirSync(dir, { recursive: true });
   const family = {
     $schema: 'https://zed.dev/schema/themes/v0.2.0.json',
@@ -667,7 +708,7 @@ function emitSublimeScheme(theme) {
 }
 
 function emitSublime(themes) {
-  const dir = path.join(DIST, 'sublime');
+  const dir = path.join(BUILD, 'sublime');
   fs.mkdirSync(dir, { recursive: true });
   for (const theme of themes) {
     fs.writeFileSync(
@@ -757,7 +798,7 @@ function emitNvimTheme(theme, ansiMapping) {
 }
 
 function emitNvim(themes, ansiMapping) {
-  const dir = path.join(DIST, 'nvim');
+  const dir = path.join(BUILD, 'nvim');
   fs.mkdirSync(dir, { recursive: true });
   for (const theme of themes) {
     fs.writeFileSync(path.join(dir, `aurora-${theme.id}.lua`), emitNvimTheme(theme, ansiMapping));
@@ -831,7 +872,7 @@ function emitHelixTheme(theme) {
 }
 
 function emitHelix(themes) {
-  const dir = path.join(DIST, 'helix');
+  const dir = path.join(BUILD, 'helix');
   fs.mkdirSync(dir, { recursive: true });
   for (const theme of themes) {
     fs.writeFileSync(path.join(dir, `aurora-${theme.id}.toml`), emitHelixTheme(theme));
@@ -842,9 +883,9 @@ function emitHelix(themes) {
 function main() {
   const { themes, ansiMapping } = JSON.parse(fs.readFileSync(SOURCE, 'utf8'));
 
-  fs.rmSync(DIST, { recursive: true, force: true });
+  fs.rmSync(BUILD, { recursive: true, force: true });
   for (const { tool } of FORMATS) {
-    fs.mkdirSync(path.join(DIST, tool), { recursive: true });
+    fs.mkdirSync(path.join(BUILD, tool), { recursive: true });
   }
 
   let count = 0;
@@ -852,7 +893,7 @@ function main() {
     const resolved = resolveTerminal(theme, ansiMapping);
     for (const { tool, ext, emit } of FORMATS) {
       const out = emit(resolved, theme);
-      fs.writeFileSync(path.join(DIST, tool, `${theme.id}.${ext}`), out);
+      fs.writeFileSync(path.join(BUILD, tool, `${theme.id}.${ext}`), out);
       count++;
     }
   }
@@ -865,12 +906,12 @@ function main() {
   const helixCount = emitHelix(themes);
 
   console.log(`Generated ${count} files for ${themes.length} themes across ${FORMATS.length} formats.`);
-  console.log(`Generated dist/vscode/ extension: package.json + ${vscodeCount} theme files.`);
-  console.log(`Generated dist/intellij/ plugin: plugin.xml + ${intellijCount} .icls + ${intellijCount} .theme.json.`);
-  console.log(`Generated dist/zed/aurora.json family with ${zedCount} themes.`);
-  console.log(`Generated dist/sublime/ ${sublimeCount} .sublime-color-scheme files.`);
-  console.log(`Generated dist/nvim/ ${nvimCount} Lua colorschemes.`);
-  console.log(`Generated dist/helix/ ${helixCount} .toml themes.`);
+  console.log(`Generated build/vscode/ extension: package.json + ${vscodeCount} theme files.`);
+  console.log(`Generated build/intellij/ plugin: plugin.xml + ${intellijCount} .icls + ${intellijCount} .theme.json.`);
+  console.log(`Generated build/zed/aurora.json family with ${zedCount} themes.`);
+  console.log(`Generated build/sublime/ ${sublimeCount} .sublime-color-scheme files.`);
+  console.log(`Generated build/nvim/ ${nvimCount} Lua colorschemes.`);
+  console.log(`Generated build/helix/ ${helixCount} .toml themes.`);
 }
 
 main();

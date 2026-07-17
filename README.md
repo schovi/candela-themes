@@ -54,8 +54,11 @@ captured from the [visual showcase](docs/design-handover/Aurora%20Light%20Themes
 
 ## Install
 
-Themes are pre-generated and committed under `dist/` — no build step. Grab the
-one file (or extension) your tool needs. Theme ids: `sepia-paper`, `slate-mist`,
+Run `npm run build` to generate every theme under `build/` (the generator has
+zero dependencies — plain `node scripts/generate.js` works too). Then grab the
+one file your tool needs from `build/<tool>/`, or for VS Code install the
+packaged `.vsix` (see below). `build/` and `dist/` are generated, not committed.
+Theme ids: `sepia-paper`, `slate-mist`,
 `sage`, `solarized-lite`, `blossom`, `lagoon`, `meadow`, `apricot`,
 `periwinkle`, `ink-coral`, `graphite-mono`, `tungsten`, `eink-slate`,
 `contrast-max`.
@@ -63,33 +66,34 @@ one file (or extension) your tool needs. Theme ids: `sepia-paper`, `slate-mist`,
 ### iTerm2
 
 1. iTerm2 → **Settings → Profiles → Colors**.
-2. **Color Presets… → Import…** and pick a file from `dist/iterm2/`, e.g.
-   `dist/iterm2/sepia-paper.itermcolors`.
+2. **Color Presets… → Import…** and pick a file from `build/iterm2/`, e.g.
+   `build/iterm2/sepia-paper.itermcolors`.
 3. Open **Color Presets…** again and select the imported preset.
 
 ### VS Code
 
-The whole extension lives at `dist/vscode/` (all 14 themes in one).
+The generated extension lives at `build/vscode/` (all 14 themes in one).
 
-- **From source:** copy `dist/vscode/` into your extensions folder
+- **As a `.vsix` (recommended):** run `npm run package:vscode` to build and
+  package the extension into `dist/aurora-themes-<version>.vsix`, then
+  **Extensions → ⋯ → Install from VSIX…** on that file.
+- **From source:** copy `build/vscode/` into your extensions folder
   (`~/.vscode/extensions/aurora-themes/`) and reload, or open the folder in VS
   Code and press **F5** to run an Extension Development Host.
-- **As a `.vsix`:** run `vsce package` from `dist/vscode/`, then
-  **Extensions → ⋯ → Install from VSIX…** on the generated file.
 
 Then **Preferences: Color Theme** and pick any *Aurora NN · …* entry.
 
 ### IntelliJ / JetBrains IDEs
 
-A packaged theme plugin (all 14 themes) is generated at `dist/intellij/`, laid
+A packaged theme plugin (all 14 themes) is generated at `build/intellij/`, laid
 out under `src/main/resources/` for a Gradle `buildPlugin` (Gradle wiring is out
 of scope here). Each theme ships both an editor color scheme (`.icls`) and a UI
 theme (`.theme.json`).
 
 - **Editor color scheme only:** **Settings → Editor → Color Scheme → ⚙ →
   Import Scheme…** and pick an `.icls` from
-  `dist/intellij/src/main/resources/themes/`, e.g. `aurora-sepia-paper.icls`.
-- **Full UI theme:** build the plugin from `dist/intellij/` and install it, then
+  `build/intellij/src/main/resources/themes/`, e.g. `aurora-sepia-paper.icls`.
+- **Full UI theme:** build the plugin from `build/intellij/` and install it, then
   **Settings → Appearance & Behavior → Appearance → Theme** and choose an
   Aurora theme (the `.theme.json` also enables the matching editor scheme).
 
@@ -100,17 +104,17 @@ and import per that terminal's docs:
 
 | Terminal | File |
 | --- | --- |
-| iTerm2 | `dist/iterm2/<id>.itermcolors` |
-| Alacritty | `dist/alacritty/<id>.toml` |
-| Kitty | `dist/kitty/<id>.conf` |
-| WezTerm | `dist/wezterm/<id>.toml` |
-| Windows Terminal | `dist/windows-terminal/<id>.json` (fragment) |
-| Ghostty | `dist/ghostty/<id>.conf` |
+| iTerm2 | `build/iterm2/<id>.itermcolors` |
+| Alacritty | `build/alacritty/<id>.toml` |
+| Kitty | `build/kitty/<id>.conf` |
+| WezTerm | `build/wezterm/<id>.toml` |
+| Windows Terminal | `build/windows-terminal/<id>.json` (fragment) |
+| Ghostty | `build/ghostty/<id>.conf` |
 
 ## Contributing / extending
 
 `docs/design-handover/aurora-themes.json` is the single source of truth; run
-`node scripts/generate.js` to rewrite `dist/` and `node scripts/validate.js` to
+`npm run build` to regenerate `build/` and `npm run validate` to
 check the design invariants. Read [`AGENTS.md`](AGENTS.md) for repo conventions
 and [`docs/design-handover/README.md`](docs/design-handover/README.md) for the
 token roles and the invariants to preserve if you add or tweak a theme.

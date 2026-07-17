@@ -1,0 +1,15 @@
+{
+  "name": "aurora-themes-tooling",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Build and packaging tooling for the Aurora light themes. The generator itself (scripts/generate.js) has zero runtime dependencies.",
+  "license": "MIT",
+  "scripts": {
+    "build": "node scripts/generate.js",
+    "validate": "node scripts/validate.js",
+    "package:vscode": "node scripts/package-vscode.js"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.2.0"
+  }
+}

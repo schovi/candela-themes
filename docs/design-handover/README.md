@@ -170,7 +170,7 @@ output — see "JetBrains / IntelliJ" below and "Extra editors" for the exact pa
 
 ### JetBrains / IntelliJ
 
-`scripts/generate.js` emits a packaged JetBrains theme plugin at `dist/intellij/`,
+`scripts/generate.js` emits a packaged JetBrains theme plugin at `build/intellij/`,
 laid out under `src/main/resources/` so a Gradle `buildPlugin` can consume it
 (Gradle wiring itself is out of scope). Per theme it writes an **editor color
 scheme** `.icls` (XML) and a **UI theme** `.theme.json` under `themes/`, plus one
@@ -213,21 +213,27 @@ carries a modest `ui{}` frame (backgrounds from `bg`/`surface`, borders from
 coherent rather than default. End-user install instructions live in the root README.
 
 `scripts/generate.js` emits a complete, vsix-ready VS Code extension at
-`dist/vscode/`: one `package.json` contributing all 14 themes (each `uiTheme: "vs"`
+`build/vscode/`: one `package.json` contributing all 14 themes (each `uiTheme: "vs"`
 since these are light) and one `themes/aurora-<id>-color-theme.json` per theme
 (`"type": "light"`, workbench `colors{}` + `tokenColors[]` from the scope table
 above). The whole workbench is themed (activity bar, side bar, tabs, status bar,
 panels, integrated terminal — the terminal ANSI slots reuse the `ansiMapping`
-block, so editor and terminal stay in sync), not just the editor pane. Package it
-with `vsce package` from `dist/vscode/`. End-user install instructions live in the
-root README.
+block, so editor and terminal stay in sync), not just the editor pane. The
+`package.json` carries full Marketplace metadata (displayName, description,
+publisher, engines, categories, keywords, galleryBanner, repository/bugs/homepage
+— placeholder `CHANGEME` URLs until a real repo exists — and `license`), and the
+emitter drops a bundled `README.md`, a `.vscodeignore`, and a copy of the root
+MIT `LICENSE` alongside it so packaging is warning-free. There is no `icon` yet
+(needs a 128px PNG). Package it with `npm run package:vscode`, which builds then
+runs `vsce package` and writes `dist/aurora-themes-<version>.vsix`. End-user
+install instructions live in the root README.
 
 ### Extra editors (Zed, Sublime, Neovim, Helix)
 
 `scripts/generate.js` also emits Aurora for four more editors, all 14 themes each,
 reusing the same color helpers and syntax scope roles (no duplicated color/ANSI logic).
 
-**Zed** → `dist/zed/aurora.json` — a single theme *family* file (`$schema` v0.2.0,
+**Zed** → `build/zed/aurora.json` — a single theme *family* file (`$schema` v0.2.0,
 `themes[]`), each entry `appearance: "light"` with a `style{}` block. Editor UI keys map
 `editor.background = surface`, `editor.foreground = ink`, `editor.active_line.background
 = lineHighlight`, `text/text.muted/text.placeholder = ink/ink2/faint`, `border = border`,
@@ -236,13 +242,13 @@ and `players[0] = {cursor, selection}`. `style.syntax{}` maps `keyword→kw`, `s
 `operator/punctuation→punct`, `comment→faint`. The `terminal.ansi.*` keys reuse the
 `ansiMapping` block, so Zed's terminal matches the terminal themes.
 
-**Sublime Text** → `dist/sublime/aurora-<id>.sublime-color-scheme` — JSON with `variables`
+**Sublime Text** → `build/sublime/aurora-<id>.sublime-color-scheme` — JSON with `variables`
 (every Aurora token as a `#rrggbb`), `globals` (`background = surface`, `foreground = ink`,
 `caret = cursor`, `selection = selection`, `line_highlight = lineHighlight`, gutter from
 `bg`/`ink2`), and `rules[]` mapping the **same TextMate scope table as VS Code** (above) to
 `var(<token>)`.
 
-**Neovim** → `dist/nvim/aurora-<id>.lua` — a self-contained Lua colorscheme.
+**Neovim** → `build/nvim/aurora-<id>.lua` — a self-contained Lua colorscheme.
 Chosen over a base16 YAML: the Lua file drops into `runtimepath` and loads with
 `:colorscheme aurora-<id>` and **zero plugins**, whereas a base16 YAML needs the base16
 builder/plugin to apply at all. It sets `vim.o.background = 'light'`, legacy highlight groups
@@ -251,7 +257,7 @@ builder/plugin to apply at all. It sets `vim.o.background = 'light'`, legacy hig
 ink on bg`, `Visual = selection`, `CursorLine = lineHighlight`, …) — Neovim links Treesitter
 groups to these by default — plus the 16 `vim.g.terminal_color_N` slots from `ansiMapping`.
 
-**Helix** → `dist/helix/aurora-<id>.toml` — a `[palette]` table carrying every Aurora token
+**Helix** → `build/helix/aurora-<id>.toml` — a `[palette]` table carrying every Aurora token
 as hex, with top-level scope keys referencing palette names: `ui.background = bg`,
 `ui.text = ink`, `ui.cursor = {fg=bg, bg=cursor}`, `ui.selection = {bg=selection}`,
 `ui.cursorline = {bg=lineHighlight}`, `ui.linenr = ink2`; syntax `keyword→kw`, `string→str`,
@@ -266,21 +272,22 @@ instructions live in the root README.
 `scripts/generate.js` is the real generator (Node, no dependencies). Run it from the repo root:
 
 ```sh
-node scripts/generate.js
+npm run build   # or: node scripts/generate.js
 ```
 
-It reads this JSON, wipes and rewrites `dist/`, and emits one file per theme per
-tool at `dist/<tool>/<theme-id>.<ext>`. Output is deterministic — re-running
-produces byte-identical files, so `dist/` is committed and users can grab a
-theme without running Node.
+It reads this JSON, wipes and rewrites `build/`, and emits one file per theme per
+tool at `build/<tool>/<theme-id>.<ext>`. Output is deterministic — re-running
+produces byte-identical files. `build/` (source fragments) and `dist/` (packaged
+distributables like the VS Code `.vsix`) are both generated and gitignored, not
+committed; users run `npm run build` to produce them.
 
 Terminal formats generated today (all 14 themes each): **iTerm2**
 (`.itermcolors`), **Alacritty** (`.toml`), **Kitty** (`.conf`), **WezTerm**
 (`.toml`), **Windows Terminal** (JSON fragment), **Ghostty** (`.conf`). Every
 terminal format is driven by the `ansiMapping` block above — change the mapping
 once and all six regenerate. A VS Code extension is generated too, at
-`dist/vscode/` (see "Editors" above), a JetBrains plugin at `dist/intellij/`, and
-Zed / Sublime / Neovim / Helix output under `dist/{zed,sublime,nvim,helix}/`
+`build/vscode/` (see "Editors" above), a JetBrains plugin at `build/intellij/`, and
+Zed / Sublime / Neovim / Helix output under `build/{zed,sublime,nvim,helix}/`
 (see "Extra editors" above). Hex helpers live in `lib/colors.js`;
 per-format emitters live in `scripts/generate.js`, which is where new tools
 plug in.

@@ -8,8 +8,9 @@ A set of 14 light color themes for terminals and editors, tuned for eye-strain c
 
 **Source of truth.** Colors are authored in exactly one place:
 `docs/design-handover/aurora-themes.json` (palettes, tokens, ANSI mapping). Everything
-under `dist/` is generated — never hand-edit it, regenerate. Doc-style rules for any doc
-you touch: `docs/style.md`.
+under `build/` is generated — never hand-edit it, regenerate. `build/` (source
+fragments) and `dist/` (packaged distributables) are both gitignored, never committed.
+Doc-style rules for any doc you touch: `docs/style.md`.
 
 **Invariants to preserve.** Every theme change must keep the design invariants (no pure
 white/black, `ink` AAA ≥7:1 on `surface`, 6–8 desaturated hues, blue+orange carry the most
@@ -21,13 +22,16 @@ meaning, every token filled in for all themes). The authoritative list lives in
 1. Edit `docs/design-handover/aurora-themes.json`.
 2. `node scripts/validate.js` — enforces the hard invariants; exits non-zero naming the
    failing theme + token.
-3. `node scripts/generate.js` — wipes and rewrites `dist/` deterministically.
+3. `npm run build` (or `node scripts/generate.js`) — wipes and rewrites `build/`
+   deterministically.
 4. Eyeball the showcase (below) — validation can't judge hue or feel.
-5. Commit the JSON and regenerated `dist/` together.
+5. Commit the JSON only — `build/` is generated and gitignored, not committed.
+   To ship the VS Code extension, `npm run package:vscode` writes a `.vsix` into
+   `dist/` (also gitignored).
 
 **Adding a 15th theme or new format.**
 - *New theme*: add one entry to `themes[]` with every token filled in (nothing implicit) —
-  `id`, `name`, `tone`, `fonts`, and the full `colors` block. `dist/` regenerates for all
+  `id`, `name`, `tone`, `fonts`, and the full `colors` block. `build/` regenerates for all
   formats automatically; add the theme to the `.dc.html` showcase and README's theme table
   by hand.
 - *New tool format*: add an emitter in `scripts/generate.js` (hex helpers in `lib/colors.js`);

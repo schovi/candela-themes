@@ -1,8 +1,0 @@
-[colors]
-foreground = "#34302a"
-background = "#f4ecd9"
-cursor_bg = "#34302a"
-cursor_border = "#34302a"
-selection_bg = "#ecdfbf"
-ansi = ["#34302a", "#a0532f", "#6f7a2f", "#a8551f", "#8a6a1f", "#8a5a3c", "#4f7a52", "#a2957a"]
-brights = ["#5f5749", "#a0532f", "#4f7a52", "#a8551f", "#8a6a1f", "#8a5a3c", "#4f7a52", "#faf3e1"]
