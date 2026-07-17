@@ -1,6 +1,6 @@
 # 008 — Accessibility contrast pass: palettes, validator floors, honest prose
 
-priority: 10
+done: 2026-07-17
 
 ## What & why
 
@@ -92,3 +92,21 @@ method: WCAG relative-luminance ratios per token per theme plus Viénot-style
 protan/deutan simulation; re-run after edits rather than reusing the numbers above.
 Eyeball the showcase after regenerating — validation can't judge feel, and this pass
 touches every theme.
+
+On completion:
+- `dist/` was NOT committed. `dist/` and `build/` are gitignored (`.gitignore`, root
+  CLAUDE.md/AGENTS.md, docs README all state generated output is never committed;
+  `node scripts/generate.js` writes `build/`, not `dist/`). Committing them would break
+  that contract, so generation was only *run* to verify colors flow through (it does).
+  The spec's "commit dist/" is the one item deliberately not fulfilled literally.
+- Validator gates were added to `lib/rules.js` (not `scripts/validate.js`): task 010
+  landed first and moved the shared rule definitions there so the app playground and the
+  CLI validator can't diverge. Gates therefore also guard the app's gated export.
+- error/ok grayscale separation is now 1.37–1.39 (was 1.02–1.22); protan/deutan sim
+  distance ≥ 36 (was as low as 9.9). Both warn-only checks pass on all 14 themes.
+- Purple/blue separation applied to the named offenders (sepia, apricot, lagoon,
+  slate-mist) by darkening blue `fn` below the purple token. Skipped for E-Ink (hue is
+  not load-bearing there) and for graphite-mono (no purple token — its near-mono blue is
+  the theme's stated concept). periwinkle's indigo `kw` + purple `fn` were left as its
+  documented "indigo/purple leads" identity; both pass contrast, and separating them
+  would need a rehue the spec excludes for passing tokens.

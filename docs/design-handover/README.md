@@ -21,23 +21,30 @@ Files in this project:
 The usual complaint isn't "light is bad" — it's that most light themes are built wrong.
 Aurora is designed around a handful of vision-comfort principles:
 
-1. **No pure white backgrounds.** Pure `#ffffff` at full brightness causes *halation* —
-   the glow that makes text edges bleed, which is dramatically worse with astigmatism.
-   Every Aurora background is a soft off-white / tinted paper (`bg`), with panels a touch
-   lighter (`surface`). Never `#fff`.
+1. **Off-white backgrounds, not pure white.** *Halation* — the glow that bleeds text
+   edges, dramatically worse with astigmatism — is a *dark-mode* problem: light text on a
+   dark background blooms, and dark backgrounds dilate the pupil so more of an imperfect
+   cornea/lens is exposed. That's the strongest reason astigmatic readers do better on
+   light backgrounds, and it's Aurora's whole point. A pure `#ffffff` background instead
+   causes *glare*; soft off-white / tinted paper (`bg`, with panels a touch lighter in
+   `surface`) softens it. Never `#fff`. See `docs/vision-research.md`.
 
-2. **No pure black text.** Maximum black-on-white contrast (21:1) is actually *too* harsh
-   and increases shimmer. Aurora inks are very dark but never `#000` — typically around
-   `#22–34` lightness.
+2. **No pure black text.** Aurora inks are very dark but never `#000` — typically around
+   `#22–34` lightness. This is a stated comfort preference, not a contrast ceiling:
+   reading performance actually *rises* with contrast, and low-vision readers do best at
+   maximal contrast (which is why Contrast Max exists). Very-dark-gray on off-white just
+   reads calmer for many people.
 
 3. **High but not maximal body contrast.** Default text (`ink` on `surface`) clears
-   **WCAG AAA (~7:1 and up)** so it's genuinely readable, without pushing to the painful
-   extreme. Secondary text (`ink2`) and comments (`faint`) step down in a deliberate,
-   readable hierarchy.
+   **WCAG AAA (~7:1 and up)** so it's genuinely readable. Secondary text (`ink2`) and
+   comments (`faint`) step down in a deliberate, readable hierarchy — but every syntax and
+   diagnostic token, and `faint`, still clears **WCAG AA (4.5:1) against `bg`** (the
+   binding surface, since terminals paint on it).
 
-4. **Few, low-saturation colors.** Each theme uses **6–8 desaturated accent hues**, not a
-   rainbow. Fewer competing highly-saturated colors means fewer chromatic-aberration
-   fringes — the colored halos astigmatic eyes see around saturated text.
+4. **Low-saturation colors.** Chromatic-aberration fringing — the colored halos astigmatic
+   eyes see around text — is driven by *saturation*, not the number of hues, so
+   desaturation is the load-bearing rule. Each theme also keeps to **6–8 accent hues** for
+   consistency and taste, not as a vision constraint.
 
 5. **Blue / orange as the primary hue anchors.** Blue and orange stay distinguishable
    across almost all color-vision types, so keywords vs. strings vs. functions remain
@@ -72,7 +79,7 @@ Themes 01–10 are the "production" palettes, from calm neutrals to stronger pas
 
 The four experiments answer different questions:
 - **Graphite Mono** — what if almost everything is gray and *one* blue does all the work? (fewest color fringes)
-- **Tungsten** — what if we strip short-wavelength blue for evening use, like a warm bulb?
+- **Tungsten** — what if we strip short-wavelength blue for evening use, like a warm bulb? (Sleep hygiene: evening blue light suppresses melatonin. Blue light does *not* cause eye strain — that's reduced blinking and accommodation. See `docs/vision-research.md`.)
 - **E-Ink Slate** — what if syntax is nearly grayscale, like reading on a Kindle? (no glow, no vibration)
 - **Contrast Max** — what if sharpness, not glare, is your limiter? (deep saturated accents, near-white paper)
 
@@ -296,19 +303,30 @@ plug in.
 
 ## Design rules to preserve if you extend it
 
-If you add a 15th theme or tweak one, keep the invariants that make the set work:
+If you add a 15th theme or tweak one, keep the invariants that make the set work. The
+vision-science behind each rule (and where the original rationale was wrong) lives in
+`docs/vision-research.md` — read it rather than re-deriving the numbers here.
 
 - `bg` and `surface` are **never** `#ffffff`; `surface` is slightly lighter than `bg`.
 - `ink` is **never** `#000000`; `ink` on `surface` must clear **~7:1 (AAA)**.
-- Keep to **6–8 accent hues**, kept **desaturated** — resist neon.
+- Every syntax + diagnostic token, and `faint`, clears **4.5:1 (AA) against `bg`**.
+- `ink` on `selection` clears **4.5:1 (AA)**; selection never repaints text.
+- Diagnostics use **unique hexes** (`error` ≠ `num`, `warning` ≠ `kw`/`num`, `ok` ≠
+  `error`); `error` leans vermillion, `ok` leans blue-green/teal, and the pair is
+  luminance-separated so it reads in grayscale.
+- Keep accents **desaturated** — resist neon (the anti-fringing rule); **6–8 hues** is
+  taste/consistency, not a vision constraint.
 - Preserve semantic roles: `kw`/`str`/`fn`/etc. mean the same thing in every theme.
-- Prefer **blue + orange** as the two hues carrying the most meaning (colorblind-safe).
+- Prefer **blue + orange** as the two hues carrying the most meaning (colorblind-safe);
+  keep purple tokens at a different lightness than blue ones (purple collapses into blue
+  for protans/deutans).
 - Fill in **all** tokens — nothing implicit — so generation never needs per-theme hacks.
 
-`scripts/validate.js` (Node, no dependencies) enforces the hard invariants above —
-no pure-white `bg`/`surface`, `surface` lighter than `bg`, no pure-black `ink`,
-`ink` on `surface` ≥ 7:1 (AAA), every token present in all 14 themes, and ANSI
-mappings that reference real tokens. Run `node scripts/validate.js`; it exits
-non-zero and names the failing theme + token on any violation. The accent-hue count
-(6–8) is a warn-only judgement call, not a hard gate. It reads the JSON read-only and
-never edits colors — it reports, humans decide.
+`scripts/validate.js` (via `lib/rules.js`, Node, no dependencies) hard-gates all of the
+above: no pure-white `bg`/`surface`, `surface` lighter than `bg`, no pure-black `ink`,
+`ink` on `surface` ≥ 7:1 (AAA), every AA floor above, diagnostic hex-uniqueness, every
+token present in all 14 themes, and ANSI mappings that reference real tokens. Run
+`node scripts/validate.js`; it exits non-zero and names the failing theme + token on any
+violation. Warn-only judgement calls (never gate): the accent-hue count (6–8) and the
+error/ok grayscale + protan/deutan separation. It reads the JSON read-only and never
+edits colors — it reports, humans decide.
