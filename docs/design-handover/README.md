@@ -167,6 +167,16 @@ tokens to `tokenColors` scopes:
 
 The same idea works for Sublime, Neovim (base16-style), JetBrains IDEs, Zed, Helix, etc.
 
+`scripts/generate.js` emits a complete, vsix-ready VS Code extension at
+`dist/vscode/`: one `package.json` contributing all 14 themes (each `uiTheme: "vs"`
+since these are light) and one `themes/aurora-<id>-color-theme.json` per theme
+(`"type": "light"`, workbench `colors{}` + `tokenColors[]` from the scope table
+above). The whole workbench is themed (activity bar, side bar, tabs, status bar,
+panels, integrated terminal — the terminal ANSI slots reuse the `ansiMapping`
+block, so editor and terminal stay in sync), not just the editor pane. Package it
+with `vsce package` from `dist/vscode/`. End-user install instructions live in the
+root README.
+
 ### The generator
 
 `scripts/generate.js` is the real generator (Node, no dependencies). Run it from the repo root:
@@ -184,8 +194,10 @@ Terminal formats generated today (all 14 themes each): **iTerm2**
 (`.itermcolors`), **Alacritty** (`.toml`), **Kitty** (`.conf`), **WezTerm**
 (`.toml`), **Windows Terminal** (JSON fragment), **Ghostty** (`.conf`). Every
 terminal format is driven by the `ansiMapping` block above — change the mapping
-once and all six regenerate. Hex helpers live in `lib/colors.js`; per-format
-emitters live in `scripts/generate.js`, which is where new tools plug in.
+once and all six regenerate. A VS Code extension is generated too, at
+`dist/vscode/` (see "Editors" above). Hex helpers live in `lib/colors.js`;
+per-format emitters live in `scripts/generate.js`, which is where new tools
+plug in.
 
 ---
 
