@@ -168,6 +168,7 @@ needs:
       "id": "sepia-paper",
       "name": "01 · Sepia Paper",
       "tone": "warm",
+      "tags": ["warm"],
       "mode": "light",
       "fonts": { "code": "JetBrains Mono", "prose": "Source Serif 4" },
       "colors": { "bg": "#f2ecdf", "surface": "#fbf7ee", "ink": "#322f28", ... }
@@ -177,9 +178,11 @@ needs:
 }
 ```
 
-Every entry declares `mode` (`"light"` or `"dark"`) — a required, validated field
-(`node scripts/validate.js` fails a theme that is missing it or has any other value)
-that drives the `/themes` gallery's light/dark filter.
+Every entry declares `mode` (`"light"` or `"dark"`) and a non-empty `tags` array —
+both required and validated (`node scripts/validate.js` fails a theme missing either).
+`mode` drives the gallery's light/dark filter; `tags` drive its tag filter, where each
+theme carries the atomic tags behind its `tone` label (so `pastel-cool` is `["pastel",
+"cool"]` and selecting `cool` matches it alongside `dark / cool`).
 
 Build from the repo root:
 
@@ -316,7 +319,7 @@ Then from the repo root, `npm run app` serves the explorer and
 The explorer is a static multi-page site (built by Vite, no SPA/router): the
 home page at `/` pitches Aurora and indexes every theme, the gallery at
 `/themes` shows each theme across sample panes (with a filter bar — fulltext
-search over name/tone/fonts plus mode and tone selects — and a per-theme anchor
+search over name/tone/tags/fonts, a mode select, and multi-select tag chips — and a per-theme anchor
 so any theme is directly linkable, e.g. `/themes#lagoon`), and the **Lab** at
 `/lab` holds the two theme-building tools:
 

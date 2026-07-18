@@ -13,6 +13,7 @@ export interface Theme {
   id: string;
   name: string;
   tone: string;
+  tags: string[];
   mode: 'light' | 'dark';
   description: string;
   fonts: { code: string; prose: string };

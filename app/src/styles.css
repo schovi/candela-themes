@@ -352,6 +352,37 @@ body {
   color: #232327;
 }
 .filter-count { margin-left: auto; font-size: 13px; color: #7a7a82; }
+.tag-filters {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.tag-chip {
+  padding: 5px 12px;
+  border: 1px solid #cfcfd6;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 13px;
+  color: #55555c;
+  cursor: pointer;
+}
+.tag-chip:hover { border-color: #a6a6b0; }
+.tag-chip.is-on {
+  background: #2f6f8f;
+  border-color: #2f6f8f;
+  color: #fff;
+}
+.tag-clear {
+  padding: 5px 10px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  color: #7a7a82;
+  cursor: pointer;
+  text-decoration: underline;
+}
 .pane-toggles {
   flex-basis: 100%;
   margin: 4px 0 0;

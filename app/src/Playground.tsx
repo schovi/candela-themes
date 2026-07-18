@@ -29,6 +29,7 @@ const BLANK_TEMPLATE: Theme = {
   id: 'my-theme',
   name: 'My Theme',
   tone: 'custom',
+  tags: ['custom'],
   mode: 'light',
   description: 'A new Aurora-style light theme.',
   fonts: { code: 'JetBrains Mono', prose: 'IBM Plex Sans' },

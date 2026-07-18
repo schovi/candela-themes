@@ -33,6 +33,7 @@
       "id": "sepia-paper",
       "name": "01 · Sepia Paper",
       "tone": "warm",
+      "tags": ["warm"],
       "mode": "light",
       "description": "Amber-paper background that kills screen glare. Code in JetBrains Mono, prose in Source Serif 4. Earthy, low-saturation syntax.",
       "fonts": {
@@ -65,6 +66,7 @@
       "id": "slate-mist",
       "name": "02 · Slate Mist",
       "tone": "cool",
+      "tags": ["cool"],
       "mode": "light",
       "description": "A calm blue-gray that reads like e-ink. Code in IBM Plex Mono, prose in IBM Plex Sans. Cool, restful syntax.",
       "fonts": {
@@ -97,6 +99,7 @@
       "id": "sage",
       "name": "03 · Sage",
       "tone": "neutral",
+      "tags": ["neutral"],
       "mode": "light",
       "description": "A green-gray neutral with a colorblind-safe blue/orange split. Code in Fira Code, prose in Atkinson Hyperlegible — a typeface designed for low vision.",
       "fonts": {
@@ -129,6 +132,7 @@
       "id": "solarized-lite",
       "name": "04 · Solarized Lite",
       "tone": "warm",
+      "tags": ["warm"],
       "mode": "light",
       "description": "The beloved Solarized cream, contrast bumped for readability. Code in Source Code Pro, prose in Newsreader. Full accent wheel, kept earthy.",
       "fonts": {
@@ -161,6 +165,7 @@
       "id": "blossom",
       "name": "05 · Blossom",
       "tone": "pastel-warm",
+      "tags": ["pastel", "warm"],
       "mode": "light",
       "description": "A soft rose page with magenta and violet accents — pastel but confident. Code in DM Mono, prose in DM Sans.",
       "fonts": {
@@ -193,6 +198,7 @@
       "id": "lagoon",
       "name": "06 · Lagoon",
       "tone": "cool",
+      "tags": ["cool"],
       "mode": "light",
       "description": "Pale aqua that reads like frosted glass, with cyan and coral punctuation. Code in Space Mono, prose in Work Sans.",
       "fonts": {
@@ -225,6 +231,7 @@
       "id": "meadow",
       "name": "07 · Meadow",
       "tone": "fresh",
+      "tags": ["fresh"],
       "mode": "light",
       "description": "A crisp mint page with a green-and-blue split for keywords vs. strings. Code in Spline Sans Mono, prose in Spline Sans.",
       "fonts": {
@@ -257,6 +264,7 @@
       "id": "apricot",
       "name": "08 · Apricot",
       "tone": "warm",
+      "tags": ["warm"],
       "mode": "light",
       "description": "A sunny peach page with a strong burnt-orange keyword. Code in Red Hat Mono, prose in Hanken Grotesk.",
       "fonts": {
@@ -289,6 +297,7 @@
       "id": "periwinkle",
       "name": "09 · Periwinkle",
       "tone": "pastel-cool",
+      "tags": ["pastel", "cool"],
       "mode": "light",
       "description": "A pale lilac page with indigo and purple leads — dreamy but readable. Code in Roboto Mono, prose in Public Sans.",
       "fonts": {
@@ -321,6 +330,7 @@
       "id": "ink-coral",
       "name": "10 · Ink & Coral",
       "tone": "high-contrast",
+      "tags": ["high-contrast"],
       "mode": "light",
       "description": "The punchiest of the set — near-neutral paper with deep navy and a bold coral function color. Code in Overpass Mono, prose in Lora.",
       "fonts": {
@@ -353,6 +363,7 @@
       "id": "graphite-mono",
       "name": "11 · Graphite Mono",
       "tone": "monochrome+1",
+      "tags": ["monochrome"],
       "mode": "light",
       "description": "Almost monochrome — everything lives in grays, and a single blue does all the semantic lifting. Fewer competing hues means fewer color-fringe artifacts for astigmatic eyes. Code in IBM Plex Mono, prose in IBM Plex Sans.",
       "fonts": {
@@ -385,6 +396,7 @@
       "id": "tungsten",
       "name": "12 · Tungsten",
       "tone": "warm / low-blue",
+      "tags": ["warm", "low-blue"],
       "mode": "light",
       "description": "An evening theme — short-wavelength blue is stripped out and every accent shifted warm, so the only cool note is a soft green. Warm like a tungsten bulb. Code in JetBrains Mono, prose in Source Serif 4.",
       "fonts": {
@@ -417,6 +429,7 @@
       "id": "eink-slate",
       "name": "13 · E-Ink Slate",
       "tone": "neutral / ultra-low chroma",
+      "tags": ["neutral", "ultra-low-chroma"],
       "mode": "light",
       "description": "Ultra-low chroma, like a Kindle. Syntax is nearly grayscale with just enough tint to tell tokens apart — no glow, no vibration, closest to reading on paper. Code in Fira Code, prose in Atkinson Hyperlegible.",
       "fonts": {
@@ -449,6 +462,7 @@
       "id": "contrast-max",
       "name": "14 · Contrast Max",
       "tone": "acuity-first / high-contrast",
+      "tags": ["acuity-first", "high-contrast"],
       "mode": "light",
       "description": "When sharpness is the limiter, not glare. Near-white paper, near-black ink, and deep, fully-saturated-but-dark accents so every token clears AAA with room to spare. Code in Overpass Mono, prose in Lora.",
       "fonts": {
@@ -481,6 +495,7 @@
       "id": "nocturne",
       "name": "15 · Nocturne",
       "tone": "dark / cool",
+      "tags": ["dark", "cool"],
       "mode": "dark",
       "description": "Aurora's first dark theme — a deep blue-gray night derived from Atom's classic One Dark, the palette a generation of developers grew up on. Accents lifted just enough to clear AA on the dark ground. Code in JetBrains Mono, prose in Public Sans.",
       "fonts": {
@@ -513,6 +528,7 @@
       "id": "borealis",
       "name": "16 · Borealis",
       "tone": "dark / pastel",
+      "tags": ["dark", "pastel"],
       "mode": "dark",
       "description": "Near-black charcoal lit by soft candy accents — teal, lilac, and coral glowing against the dark like the northern lights the set is named for. Code in DM Mono, prose in DM Sans.",
       "fonts": {

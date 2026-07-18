@@ -3,10 +3,10 @@ import { themes } from './themes';
 import { ThemeCard } from './ThemeCard';
 import { PANE_ORDER, DEFAULT_PANES, type PaneKey } from './samples/Panes';
 
-const TONES = [...new Set(themes.map((t) => t.tone))].sort();
+const ALL_TAGS = [...new Set(themes.flatMap((t) => t.tags))].sort();
 
 function matchesQuery(theme: (typeof themes)[number], query: string) {
-  const haystack = [theme.name, theme.tone, theme.fonts.code, theme.fonts.prose]
+  const haystack = [theme.name, theme.tone, ...theme.tags, theme.fonts.code, theme.fonts.prose]
     .join(' ')
     .toLowerCase();
   return haystack.includes(query);
@@ -36,9 +36,16 @@ function useAnchorFlash() {
 export function Gallery() {
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState<'all' | 'light' | 'dark'>('all');
-  const [tone, setTone] = useState('all');
+  const [tags, setTags] = useState<Set<string>>(() => new Set());
   const [panes, setPanes] = useState<Set<PaneKey>>(() => new Set(DEFAULT_PANES));
   useAnchorFlash();
+
+  const toggleTag = (tag: string) =>
+    setTags((prev) => {
+      const next = new Set(prev);
+      next.has(tag) ? next.delete(tag) : next.add(tag);
+      return next;
+    });
 
   const togglePane = (key: PaneKey) =>
     setPanes((prev) => {
@@ -53,10 +60,10 @@ export function Gallery() {
       themes.filter(
         (t) =>
           (mode === 'all' || t.mode === mode) &&
-          (tone === 'all' || t.tone === tone) &&
+          (tags.size === 0 || t.tags.some((tag) => tags.has(tag))) &&
           (normalizedQuery === '' || matchesQuery(t, normalizedQuery)),
       ),
-    [normalizedQuery, mode, tone],
+    [normalizedQuery, mode, tags],
   );
 
   return (
@@ -78,20 +85,27 @@ export function Gallery() {
             <option value="dark">Dark</option>
           </select>
         </label>
-        <label className="filter-select">
-          Tone
-          <select value={tone} onChange={(e) => setTone(e.target.value)}>
-            <option value="all">All</option>
-            {TONES.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-        </label>
         <span className="filter-count">
           {visible.length} of {themes.length} themes
         </span>
+        <div className="tag-filters" role="group" aria-label="Filter by tag">
+          {ALL_TAGS.map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              className={`tag-chip${tags.has(tag) ? ' is-on' : ''}`}
+              aria-pressed={tags.has(tag)}
+              onClick={() => toggleTag(tag)}
+            >
+              {tag}
+            </button>
+          ))}
+          {tags.size > 0 && (
+            <button type="button" className="tag-clear" onClick={() => setTags(new Set())}>
+              clear
+            </button>
+          )}
+        </div>
         <fieldset className="pane-toggles">
           <legend>Previews</legend>
           {PANE_ORDER.map((p) => (
