@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { themes } from './themes';
 import { ThemeCard } from './ThemeCard';
-import { PANE_ORDER, type PaneKey } from './samples/Panes';
+import { PANE_ORDER, DEFAULT_PANES, type PaneKey } from './samples/Panes';
 
-const ALL_PANES = new Set<PaneKey>(PANE_ORDER.map((p) => p.key));
 const TONES = [...new Set(themes.map((t) => t.tone))].sort();
 
 function matchesQuery(theme: (typeof themes)[number], query: string) {
@@ -38,7 +37,15 @@ export function Gallery() {
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState<'all' | 'light' | 'dark'>('all');
   const [tone, setTone] = useState('all');
+  const [panes, setPanes] = useState<Set<PaneKey>>(() => new Set(DEFAULT_PANES));
   useAnchorFlash();
+
+  const togglePane = (key: PaneKey) =>
+    setPanes((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
 
   const normalizedQuery = query.trim().toLowerCase();
   const visible = useMemo(
@@ -85,12 +92,25 @@ export function Gallery() {
         <span className="filter-count">
           {visible.length} of {themes.length} themes
         </span>
+        <fieldset className="pane-toggles">
+          <legend>Previews</legend>
+          {PANE_ORDER.map((p) => (
+            <label key={p.key}>
+              <input
+                type="checkbox"
+                checked={panes.has(p.key)}
+                onChange={() => togglePane(p.key)}
+              />
+              {p.label}
+            </label>
+          ))}
+        </fieldset>
       </div>
 
       {visible.length === 0 ? (
         <p className="gallery-empty">No themes match these filters.</p>
       ) : (
-        visible.map((t) => <ThemeCard key={t.id} theme={t} panes={ALL_PANES} />)
+        visible.map((t) => <ThemeCard key={t.id} theme={t} panes={panes} />)
       )}
     </>
   );

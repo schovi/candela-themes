@@ -1,15 +1,34 @@
 import type { ReactNode } from 'react';
 import type { ColorToken } from '../themes';
 
-export type PaneKey = 'terminal' | 'ruby' | 'kotlin' | 'markdown' | 'diagnostics';
+export type PaneKey =
+  | 'terminal'
+  | 'typescript'
+  | 'markdown'
+  | 'git'
+  | 'ruby'
+  | 'kotlin'
+  | 'python'
+  | 'rust'
+  | 'go'
+  | 'diagnostics';
 
+// Default 4 come first; the rest are opt-in via the gallery's pane toggles.
 export const PANE_ORDER: { key: PaneKey; label: string }[] = [
   { key: 'terminal', label: 'Terminal' },
+  { key: 'typescript', label: 'TypeScript' },
+  { key: 'markdown', label: 'Markdown' },
+  { key: 'git', label: 'Git' },
   { key: 'ruby', label: 'Ruby' },
   { key: 'kotlin', label: 'Kotlin' },
-  { key: 'markdown', label: 'Markdown' },
+  { key: 'python', label: 'Python' },
+  { key: 'rust', label: 'Rust' },
+  { key: 'go', label: 'Go' },
   { key: 'diagnostics', label: 'Diagnostics' },
 ];
+
+// Shown by default in the gallery and captured by the screenshot command.
+export const DEFAULT_PANES: PaneKey[] = ['terminal', 'typescript', 'markdown', 'git'];
 
 // Token-colored span. Every sample reads its colors from the theme's CSS
 // variables (set on the card root), exactly like the original .dc.html showcase.
@@ -151,11 +170,114 @@ function Diagnostics() {
   );
 }
 
+// TypeScript with the "Problems" folded in: a real type error and an unused
+// warning as inline squiggles, so error/warning tokens show on syntax in the
+// default view (not only the standalone Diagnostics pane).
+function TypeScript() {
+  return (
+    <Pane title="billing.ts — 1 error, 1 warning">
+      <pre style={preStyle}>
+        <div><C t="faint">// billing.ts</C></div>
+        <div><C t="kw">type</C> <C t="type">Invoice</C> <C t="punct">=</C> <C t="punct">{'{'}</C> id<C t="punct">:</C> <C t="type">string</C><C t="punct">;</C> cents<C t="punct">:</C> <C t="type">number</C> <C t="punct">{'}'}</C></div>
+        <div>{'​'}</div>
+        <div><C t="kw">function</C> <C t="fn">totalDue</C><C t="punct">(</C>invoices<C t="punct">:</C> <C t="type">Invoice</C><C t="punct">[]):</C> <C t="type">number</C> <C t="punct">{'{'}</C></div>
+        <div>{'  '}<C t="kw">return</C> invoices</div>
+        <div>{'    '}<C t="punct">.</C><C t="fn">filter</C><C t="punct">((</C>i<C t="punct">)</C> <C t="kw">=&gt;</C> i<C t="punct">.</C>cents <C t="punct">&gt;</C> <C t="num">0</C><C t="punct">)</C></div>
+        <div>{'    '}<C t="punct">.</C><C t="fn">reduce</C><C t="punct">((</C>sum<C t="punct">,</C> i<C t="punct">)</C> <C t="kw">=&gt;</C> sum <C t="punct">+</C> i<C t="punct">.</C><span style={squiggle('error')}>cetns</span><C t="punct">,</C> <C t="num">0</C><C t="punct">)</C>  <C t="error">// no 'cetns'</C></div>
+        <div><C t="punct">{'}'}</C></div>
+        <div>{'​'}</div>
+        <div><C t="kw">const</C> <span style={squiggle('warning')}>unused</span> <C t="punct">=</C> <C t="fn">totalDue</C><C t="punct">([])</C>  <C t="warning">// warning: never read</C></div>
+      </pre>
+    </Pane>
+  );
+}
+
+// Git status + diff in one pane: the "-"/"+" hunk exercises error/ok, the
+// short-status flags exercise warning/num.
+function Git() {
+  return (
+    <Pane title="git — billing.ts">
+      <pre style={preStyle}>
+        <div><C t="str">❯</C> git status <C t="punct">--short</C></div>
+        <div><C t="warning">{' M'}</C> src/billing.ts</div>
+        <div><C t="num">??</C> src/invoice.ts</div>
+        <div>{'​'}</div>
+        <div><C t="str">❯</C> git diff</div>
+        <div><C t="builtin">@@ -4,4 +4,4 @@</C> <C t="ink2">totalDue()</C></div>
+        <div style={{ background: 'var(--selection)' }}><C t="error">-    .reduce((sum, i) =&gt; sum + i.cents, 0)</C></div>
+        <div style={{ background: 'var(--lineHighlight)' }}><C t="ok">+    .reduce((s, i) =&gt; s + i.cents, 0)</C></div>
+        <div>{'  '}<C t="ink2">  .toFixed(2)</C></div>
+      </pre>
+    </Pane>
+  );
+}
+
+function Python() {
+  return (
+    <Pane title="billing.py">
+      <pre style={preStyle}>
+        <div><C t="faint"># billing.py</C></div>
+        <div><C t="kw">from</C> decimal <C t="kw">import</C> <C t="type">Decimal</C></div>
+        <div>{'​'}</div>
+        <div><C t="kw">class</C> <C t="type">Invoice</C><C t="punct">:</C></div>
+        <div>{'  '}<C t="kw">def</C> <C t="fn">__init__</C><C t="punct">(</C><C t="builtin">self</C><C t="punct">,</C> id<C t="punct">:</C> <C t="type">str</C><C t="punct">,</C> cents<C t="punct">:</C> <C t="type">int</C><C t="punct">)</C> <C t="kw">-&gt;</C> <C t="type">None</C><C t="punct">:</C></div>
+        <div>{'    '}<C t="builtin">self</C><C t="punct">.</C>cents <C t="punct">=</C> cents</div>
+        <div>{'​'}</div>
+        <div><C t="kw">def</C> <C t="fn">total_due</C><C t="punct">(</C>invoices<C t="punct">:</C> <C t="type">list</C><C t="punct">[</C><C t="type">Invoice</C><C t="punct">])</C> <C t="kw">-&gt;</C> <C t="type">Decimal</C><C t="punct">:</C></div>
+        <div>{'  '}<C t="kw">return</C> <C t="fn">sum</C><C t="punct">(</C>i<C t="punct">.</C>cents <C t="kw">for</C> i <C t="kw">in</C> invoices <C t="kw">if</C> i<C t="punct">.</C>cents <C t="punct">&gt;</C> <C t="num">0</C><C t="punct">)</C> <C t="punct">/</C> <C t="num">100</C></div>
+      </pre>
+    </Pane>
+  );
+}
+
+function Rust() {
+  return (
+    <Pane title="billing.rs">
+      <pre style={preStyle}>
+        <div><C t="faint">// billing.rs</C></div>
+        <div><C t="kw">struct</C> <C t="type">Invoice</C> <C t="punct">{'{'}</C> id<C t="punct">:</C> <C t="type">String</C><C t="punct">,</C> cents<C t="punct">:</C> <C t="type">i64</C> <C t="punct">{'}'}</C></div>
+        <div>{'​'}</div>
+        <div><C t="kw">fn</C> <C t="fn">total_due</C><C t="punct">(</C>invoices<C t="punct">:</C> <C t="punct">&amp;[</C><C t="type">Invoice</C><C t="punct">])</C> <C t="kw">-&gt;</C> <C t="type">f64</C> <C t="punct">{'{'}</C></div>
+        <div>{'  '}invoices<C t="punct">.</C><C t="fn">iter</C><C t="punct">()</C></div>
+        <div>{'    '}<C t="punct">.</C><C t="fn">filter</C><C t="punct">(|</C>i<C t="punct">|</C> i<C t="punct">.</C>cents <C t="punct">&gt;</C> <C t="num">0</C><C t="punct">)</C></div>
+        <div>{'    '}<C t="punct">.</C><C t="fn">map</C><C t="punct">(|</C>i<C t="punct">|</C> i<C t="punct">.</C>cents<C t="punct">)</C><C t="punct">.</C><C t="fn">sum</C><C t="punct">::&lt;</C><C t="type">i64</C><C t="punct">&gt;()</C> <C t="kw">as</C> <C t="type">f64</C> <C t="punct">/</C> <C t="num">100.0</C></div>
+        <div><C t="punct">{'}'}</C></div>
+      </pre>
+    </Pane>
+  );
+}
+
+function Go() {
+  return (
+    <Pane title="billing.go">
+      <pre style={preStyle}>
+        <div><C t="faint">// billing.go</C></div>
+        <div><C t="kw">package</C> billing</div>
+        <div>{'​'}</div>
+        <div><C t="kw">type</C> <C t="type">Invoice</C> <C t="kw">struct</C> <C t="punct">{'{'}</C> <C t="type">ID</C> <C t="type">string</C><C t="punct">;</C> <C t="type">Cents</C> <C t="type">int64</C> <C t="punct">{'}'}</C></div>
+        <div>{'​'}</div>
+        <div><C t="kw">func</C> <C t="fn">TotalDue</C><C t="punct">(</C>invoices <C t="punct">[]</C><C t="type">Invoice</C><C t="punct">)</C> <C t="type">float64</C> <C t="punct">{'{'}</C></div>
+        <div>{'  '}<C t="kw">var</C> sum <C t="type">int64</C></div>
+        <div>{'  '}<C t="kw">for</C> <C t="punct">_,</C> i <C t="punct">:=</C> <C t="kw">range</C> invoices <C t="punct">{'{'}</C></div>
+        <div>{'    '}<C t="kw">if</C> i<C t="punct">.</C><C t="type">Cents</C> <C t="punct">&gt;</C> <C t="num">0</C> <C t="punct">{'{'}</C> sum <C t="punct">+=</C> i<C t="punct">.</C><C t="type">Cents</C> <C t="punct">{'}'}</C></div>
+        <div>{'  '}<C t="punct">{'}'}</C></div>
+        <div>{'  '}<C t="kw">return</C> <C t="type">float64</C><C t="punct">(</C>sum<C t="punct">)</C> <C t="punct">/</C> <C t="num">100</C></div>
+        <div><C t="punct">{'}'}</C></div>
+      </pre>
+    </Pane>
+  );
+}
+
 const PANES: Record<PaneKey, () => React.JSX.Element> = {
   terminal: Terminal,
+  typescript: TypeScript,
+  markdown: Markdown,
+  git: Git,
   ruby: Ruby,
   kotlin: Kotlin,
-  markdown: Markdown,
+  python: Python,
+  rust: Rust,
+  go: Go,
   diagnostics: Diagnostics,
 };
 

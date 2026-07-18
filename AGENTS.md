@@ -95,7 +95,8 @@ protan/deutan separation. It reads the JSON read-only — it reports, humans dec
    deterministically.
 5. Eyeball the explorer — validation can't judge hue or feel. `npm run app` serves the
    `app/` explorer as a multi-page site (home at `/`, gallery at `/themes`, theme-building
-   tools at `/lab`); every theme, all sample panes including diagnostics. The Lab page's
+   tools at `/lab`); every theme, with a **Previews** picker choosing which sample panes
+   each card shows (default: terminal, TypeScript, Markdown, git; more languages opt-in). The Lab page's
    **Theme Editor** runs the same `lib/rules.js` invariants live.
 6. Commit the JSON only — `build/` is generated and gitignored, not committed. To ship the
    VS Code extension, `npm run package:vscode` writes a `.vsix` into `dist/` (also gitignored).

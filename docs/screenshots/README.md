@@ -2,8 +2,8 @@
 
 Gallery images for the root `README.md`, one per theme: `aurora-<id>.png`
 (e.g. `aurora-sepia-paper.png`). Each is one theme rendered by the explorer app
-(`app/`) across a terminal, Ruby, Kotlin, Markdown, and diagnostics pane. The
-PNGs are committed.
+(`app/`) across the four default panes — terminal, TypeScript (with an inline
+problem), Markdown, and git. The PNGs are committed.
 
 ## Regenerate
 

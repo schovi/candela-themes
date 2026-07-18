@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { themesById } from './themes';
 import { ThemeCard } from './ThemeCard';
-import { PANE_ORDER, type PaneKey } from './samples/Panes';
+import { DEFAULT_PANES, type PaneKey } from './samples/Panes';
 
-const ALL_PANES = new Set<PaneKey>(PANE_ORDER.map((p) => p.key));
+const SHOT_PANES = new Set<PaneKey>(DEFAULT_PANES);
 
 // Screenshot mode: ?theme=<id>&shot=1 renders exactly one card, chrome-free, and
 // signals readiness (after fonts load) so scripts/screenshots.mjs can capture it.
@@ -20,5 +20,5 @@ export function ShotView({ id }: { id: string }) {
     document.documentElement.dataset.shotReady = 'missing';
     return <div style={{ padding: 40, fontFamily: 'monospace' }}>Unknown theme id: {id}</div>;
   }
-  return <ThemeCard theme={theme} panes={ALL_PANES} />;
+  return <ThemeCard theme={theme} panes={SHOT_PANES} />;
 }
