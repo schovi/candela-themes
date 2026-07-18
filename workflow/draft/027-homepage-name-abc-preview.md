@@ -1,6 +1,5 @@
-# 024 — Homepage A/B/C name preview (Aurora / Fovea / Candela)
+# 027 — Homepage A/B/C name preview (Aurora / Fovea / Candela)
 
-priority: 60
 ## What & why
 
 We're weighing a rebrand away from "Aurora" (a light-theme project, but the name reads
