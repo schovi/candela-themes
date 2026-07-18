@@ -1,6 +1,6 @@
 # 021 — Explorer as a public site: multi-page shell + homepage
 
-priority: 6
+done: 2026-07-18
 
 ## What & why
 

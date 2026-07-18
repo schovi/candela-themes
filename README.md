@@ -308,14 +308,17 @@ Then from the repo root, `npm run app` serves the explorer and
 `npm run app:screenshots` regenerates the gallery PNGs. See
 [`docs/screenshots/README.md`](docs/screenshots/README.md).
 
-The explorer has two ways to build a theme:
+The explorer is a static multi-page site (built by Vite, no SPA/router): the
+home page at `/` pitches Aurora and indexes every theme, the gallery at
+`/themes` shows each theme across sample panes, and the **Lab** at `/lab` holds
+the two theme-building tools:
 
-- **Playground** (View → Playground) forks any theme or starts blank, with hex
-  plus H/S/L sliders per token and live preview. The lightness track shades the
-  range that still clears each token's contrast floor.
-- **Guided** (View → Guided) is the beginner path: pick a background mood and
-  darkness, choose accent hues on a wheel, set the three diagnostic hues, and it
-  derives a full valid palette for you.
+- **Playground** forks any theme or starts blank, with hex plus H/S/L sliders per
+  token and live preview. The lightness track shades the range that still clears
+  each token's contrast floor.
+- **Guided** is the beginner path: pick a background mood and darkness, choose
+  accent hues on a wheel, set the three diagnostic hues, and it derives a full
+  valid palette for you.
 
 Both run the same invariants as `scripts/validate.js` (shared code in `lib/`), so
 **Copy theme JSON** stays disabled until every hard rule passes. Paste the result

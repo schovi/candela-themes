@@ -7,34 +7,116 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.app-header {
+/* Site shell — shared header/nav/footer on every page. */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 48px 40px 24px;
+  padding: 22px 40px;
+  border-bottom: 1px solid #d7d7dd;
 }
-.app-header .eyebrow {
-  font: 500 13px/1 'JetBrains Mono', monospace;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+.wordmark {
+  font: 700 22px/1 'JetBrains Mono', monospace;
+  letter-spacing: -0.01em;
+  color: #232327;
+  text-decoration: none;
+}
+.site-nav { display: flex; gap: 22px; font-size: 15px; }
+.site-nav a { color: #55555c; text-decoration: none; }
+.site-nav a:hover { color: #232327; }
+.site-nav a[aria-current="page"] { color: #232327; font-weight: 600; }
+.site-footer {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 40px 48px;
+  border-top: 1px solid #d7d7dd;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
   color: #7a7a82;
-  margin-bottom: 14px;
 }
-.app-header h1 {
-  margin: 0 0 22px;
-  font-size: 34px;
+.site-footer a { color: #55555c; }
+
+/* Homepage */
+.hero, .how, .theme-index { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+.hero { padding-top: 56px; padding-bottom: 8px; }
+.hero-what {
+  margin: 0 0 16px;
+  font-size: 30px;
+  line-height: 1.25;
   letter-spacing: -0.02em;
   color: #232327;
+  max-width: 760px;
 }
-.controls {
+.hero-why {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.55;
+  color: #55555c;
+  max-width: 720px;
+}
+.how { padding-top: 40px; }
+.how h2, .theme-index h2 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7a7a82;
+}
+.how p { margin: 0 0 10px; font-size: 15px; line-height: 1.55; color: #3a3a40; max-width: 720px; }
+.how a, .home-card { color: #2e6db4; }
+
+.theme-index { padding-top: 48px; padding-bottom: 64px; }
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.home-card {
+  display: block;
+  border: 1px solid #d7d7dd;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  text-decoration: none;
+  transition: box-shadow 0.12s, transform 0.12s;
+}
+.home-card:hover { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1); transform: translateY(-1px); }
+.home-card-head {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 18px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px 10px;
+}
+.home-card-name { font-size: 15px; font-weight: 600; color: #232327; }
+.home-card-tone { font: 11px/1 'JetBrains Mono', monospace; color: #7a7a82; text-align: right; }
+.home-preview { padding: 12px 14px 14px; border-top: 1px solid #ededf1; }
+.home-swatches { display: flex; gap: 5px; margin-bottom: 10px; }
+.home-swatch { width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(0, 0, 0, 0.12); }
+.home-code {
+  margin: 0;
+  font: 13px/1 var(--code-font), monospace;
+  color: var(--ink);
+  white-space: pre;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Lab tool switcher */
+.lab-controls {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 40px 4px;
   font-size: 14px;
 }
-.controls select { font-size: 14px; padding: 3px 6px; }
-.pane-toggles { display: flex; flex-wrap: wrap; gap: 12px; }
-.pane-toggles label { display: inline-flex; align-items: center; gap: 5px; }
+.lab-controls select { font-size: 14px; padding: 3px 6px; }
 
 .theme-card { padding: 44px 40px; }
 .card-inner { max-width: 1180px; margin: 0 auto; }
