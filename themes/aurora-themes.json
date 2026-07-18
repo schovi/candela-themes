@@ -464,13 +464,13 @@
       }
     },
     {
-      "id": "midnight",
-      "name": "15 · Midnight",
-      "tone": "dark",
-      "description": "One Dark-style deep blue-gray. Extracted from an iTerm export.",
+      "id": "nocturne",
+      "name": "15 · Nocturne",
+      "tone": "dark / cool",
+      "description": "Aurora's first dark theme — a deep blue-gray night derived from Atom's classic One Dark, the palette a generation of developers grew up on. Accents lifted just enough to clear AA on the dark ground. Code in JetBrains Mono, prose in Public Sans.",
       "fonts": {
         "code": "JetBrains Mono",
-        "prose": "Inter"
+        "prose": "Public Sans"
       },
       "colors": {
         "bg": "#282c34",
@@ -495,13 +495,13 @@
       }
     },
     {
-      "id": "graphite",
-      "name": "16 · Graphite",
-      "tone": "dark",
-      "description": "Neutral graphite dark with pastel accents. Extracted from an iTerm export.",
+      "id": "borealis",
+      "name": "16 · Borealis",
+      "tone": "dark / pastel",
+      "description": "Near-black charcoal lit by soft candy accents — teal, lilac, and coral glowing against the dark like the northern lights the set is named for. Code in DM Mono, prose in DM Sans.",
       "fonts": {
-        "code": "JetBrains Mono",
-        "prose": "Inter"
+        "code": "DM Mono",
+        "prose": "DM Sans"
       },
       "colors": {
         "bg": "#212121",

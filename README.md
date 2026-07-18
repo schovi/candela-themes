@@ -1,9 +1,11 @@
 # Aurora — Light Themes for Tired Eyes
 
-**14 light color themes** for terminals and editors. For people who like dark
-mode but can't use it comfortably: prescription lenses, astigmatism, glare
-sensitivity, plain eye strain. The idea is to keep the calm, low-contrast feel
-of a good pastel dark theme, but on a light background.
+**14 light color themes** for terminals and editors, plus two dark companions.
+For people who like dark mode but can't use it comfortably: prescription lenses,
+astigmatism, glare sensitivity, plain eye strain. The idea is to keep the calm,
+low-contrast feel of a good pastel dark theme, but on a light background — and
+for the times you do want the lights off, two dark themes tuned to the same
+contrast rules.
 
 The token model and the rules to keep if you extend the set are in
 [`AGENTS.md`](AGENTS.md). The vision-science behind those rules is in
@@ -31,10 +33,11 @@ that:
 Each rule is explained (with sources, and where common advice gets it wrong) in
 [`docs/vision-research.md`](docs/vision-research.md).
 
-## The 14 themes
+## The 16 themes
 
 Themes 01–10 are the main palettes, from calm neutrals to stronger pastels.
-11–14 are experiments, each built around one idea.
+11–14 are experiments, each built around one idea. 15–16 are dark themes,
+extracted from iTerm favorites and tuned to the same contrast invariants.
 
 | # | Name | Tone | Code font | Prose font |
 | --- | --- | --- | --- | --- |
@@ -52,6 +55,8 @@ Themes 01–10 are the main palettes, from calm neutrals to stronger pastels.
 | 12 | Tungsten | *Low blue light* (evening) | JetBrains Mono | Source Serif 4 |
 | 13 | E-Ink Slate | *Reflective paper* (ultra-low chroma) | Fira Code | Atkinson Hyperlegible |
 | 14 | Contrast Max | *Acuity first* (maximal legibility) | Overpass Mono | Lora |
+| 15 | Nocturne | *Dark* (One Dark heritage) | JetBrains Mono | Public Sans |
+| 16 | Borealis | *Dark* (pastel) | DM Mono | DM Sans |
 
 What each experiment asks:
 
@@ -62,6 +67,13 @@ What each experiment asks:
 - **E-Ink Slate** — what if syntax is nearly grayscale, like a Kindle? (no glow)
 - **Contrast Max** — what if sharpness, not glare, is your limit? (deep accents,
   near-white paper)
+
+And two dark themes, for when you do want the lights off:
+
+- **Nocturne** — Atom's classic One Dark, the palette a generation of developers
+  grew up on, with accents lifted just enough to clear AA on the dark ground.
+- **Borealis** — near-black charcoal under soft candy accents (teal, lilac,
+  coral), like the northern lights the set is named for.
 
 ## Gallery
 
@@ -78,6 +90,7 @@ diagnostics, from the theme explorer (`app/`). Regenerate with
 | **09 · Periwinkle**<br>![Periwinkle](docs/screenshots/aurora-periwinkle.png) | **10 · Ink & Coral**<br>![Ink & Coral](docs/screenshots/aurora-ink-coral.png) |
 | **11 · Graphite Mono**<br>![Graphite Mono](docs/screenshots/aurora-graphite-mono.png) | **12 · Tungsten**<br>![Tungsten](docs/screenshots/aurora-tungsten.png) |
 | **13 · E-Ink Slate**<br>![E-Ink Slate](docs/screenshots/aurora-eink-slate.png) | **14 · Contrast Max**<br>![Contrast Max](docs/screenshots/aurora-contrast-max.png) |
+| **15 · Nocturne**<br>![Nocturne](docs/screenshots/aurora-nocturne.png) | **16 · Borealis**<br>![Borealis](docs/screenshots/aurora-borealis.png) |
 
 ## Install
 
@@ -88,7 +101,7 @@ generated, not committed.
 
 Theme ids: `sepia-paper`, `slate-mist`, `sage`, `solarized-lite`, `blossom`,
 `lagoon`, `meadow`, `apricot`, `periwinkle`, `ink-coral`, `graphite-mono`,
-`tungsten`, `eink-slate`, `contrast-max`.
+`tungsten`, `eink-slate`, `contrast-max`, `nocturne`, `borealis`.
 
 ### iTerm2
 
@@ -99,7 +112,7 @@ Theme ids: `sepia-paper`, `slate-mist`, `sage`, `solarized-lite`, `blossom`,
 
 ### VS Code
 
-The generated extension (all 14 themes) lives at `build/vscode/`.
+The generated extension (all 16 themes) lives at `build/vscode/`.
 
 - **As a `.vsix` (recommended):** `npm run package:vscode` builds and packages it
   into `dist/aurora-themes-<version>.vsix`, then **Extensions → ⋯ → Install from
@@ -111,7 +124,7 @@ Then **Preferences: Color Theme** and pick any *Aurora NN · …* entry.
 
 ### IntelliJ / JetBrains IDEs
 
-The theme plugin (all 14 themes) is generated at `build/intellij/`, laid out under
+The theme plugin (all 16 themes) is generated at `build/intellij/`, laid out under
 `src/main/resources/` for a Gradle `buildPlugin` (the Gradle wiring itself is out
 of scope). Each theme ships an editor color scheme (`.icls`) and a UI theme
 (`.theme.json`).
@@ -138,7 +151,7 @@ per that terminal's docs:
 
 ### Other editors (Zed, Sublime, Neovim, Helix)
 
-Drop-in files, all 14 themes, under `build/{zed,sublime,nvim,helix}/`. Not
+Drop-in files, all 16 themes, under `build/{zed,sublime,nvim,helix}/`. Not
 published to any registry; install per that editor's docs. Zed is one
 theme-family file (`build/zed/aurora.json`); the others are one file per theme.
 
@@ -201,7 +214,7 @@ syntax tokens map to `tokenColors` scopes:
 | `faint` | `comment` |
 
 The VS Code emitter writes a complete, vsix-ready extension at `build/vscode/`:
-one `package.json` contributing all 14 themes and one
+one `package.json` contributing all 16 themes and one
 `themes/aurora-<id>-color-theme.json` per theme (`"type": "light"`, workbench
 `colors{}` + `tokenColors[]`). The whole workbench is themed (activity bar, side
 bar, tabs, status bar, panels, integrated terminal), not just the editor pane.
@@ -215,7 +228,7 @@ table, emitting `build/sublime/aurora-<id>.sublime-color-scheme`.
 
 `build/intellij/` is laid out under `src/main/resources/` for a Gradle
 `buildPlugin`. Per theme: an editor color scheme `.icls` (XML) and a UI theme
-`.theme.json`, plus one `META-INF/plugin.xml` registering all 14 as
+`.theme.json`, plus one `META-INF/plugin.xml` registering all 16 as
 `themeProvider` extensions. Two hex conventions: **`.icls` drops the leading `#`**
 (`value="9a5b2c"`); **`.theme.json` keeps it** (`"#9a5b2c"`).
 
