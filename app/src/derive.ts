@@ -102,6 +102,7 @@ export function deriveTheme(choices: GuidedChoices): Theme {
     id: slugify(choices.name),
     name: choices.name,
     tone: choices.tone,
+    mode: 'light',
     description: choices.description,
     fonts: choices.fonts,
     colors,

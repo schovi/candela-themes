@@ -1,0 +1,97 @@
+import { useEffect, useMemo, useState } from 'react';
+import { themes } from './themes';
+import { ThemeCard } from './ThemeCard';
+import { PANE_ORDER, type PaneKey } from './samples/Panes';
+
+const ALL_PANES = new Set<PaneKey>(PANE_ORDER.map((p) => p.key));
+const TONES = [...new Set(themes.map((t) => t.tone))].sort();
+
+function matchesQuery(theme: (typeof themes)[number], query: string) {
+  const haystack = [theme.name, theme.tone, theme.fonts.code, theme.fonts.prose]
+    .join(' ')
+    .toLowerCase();
+  return haystack.includes(query);
+}
+
+// Landing on /themes#<id> scrolls the card into view and briefly highlights it.
+// React mounts after the HTML is parsed, so the browser's native anchor jump
+// misses (the element does not exist yet) — do it here once the cards render.
+function useAnchorFlash() {
+  useEffect(() => {
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id) return;
+    let timer = 0;
+    // Wait for web fonts before scrolling: they reflow the tall sample panes
+    // after mount, which would strand an earlier scroll at the wrong offset.
+    document.fonts.ready.then(() => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      el.classList.add('anchor-flash');
+      timer = window.setTimeout(() => el.classList.remove('anchor-flash'), 1600);
+    });
+    return () => window.clearTimeout(timer);
+  }, []);
+}
+
+export function Gallery() {
+  const [query, setQuery] = useState('');
+  const [mode, setMode] = useState<'all' | 'light' | 'dark'>('all');
+  const [tone, setTone] = useState('all');
+  useAnchorFlash();
+
+  const normalizedQuery = query.trim().toLowerCase();
+  const visible = useMemo(
+    () =>
+      themes.filter(
+        (t) =>
+          (mode === 'all' || t.mode === mode) &&
+          (tone === 'all' || t.tone === tone) &&
+          (normalizedQuery === '' || matchesQuery(t, normalizedQuery)),
+      ),
+    [normalizedQuery, mode, tone],
+  );
+
+  return (
+    <>
+      <div className="gallery-filters">
+        <input
+          type="search"
+          className="filter-search"
+          placeholder="Search name, tone, or font…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          aria-label="Search themes"
+        />
+        <label className="filter-select">
+          Mode
+          <select value={mode} onChange={(e) => setMode(e.target.value as typeof mode)}>
+            <option value="all">All</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </label>
+        <label className="filter-select">
+          Tone
+          <select value={tone} onChange={(e) => setTone(e.target.value)}>
+            <option value="all">All</option>
+            {TONES.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+        </label>
+        <span className="filter-count">
+          {visible.length} of {themes.length} themes
+        </span>
+      </div>
+
+      {visible.length === 0 ? (
+        <p className="gallery-empty">No themes match these filters.</p>
+      ) : (
+        visible.map((t) => <ThemeCard key={t.id} theme={t} panes={ALL_PANES} />)
+      )}
+    </>
+  );
+}

@@ -75,11 +75,13 @@ re-deriving the numbers.
   purple tokens at a different lightness than blue ones (purple collapses into blue for
   protans/deutans).
 - Fill in **all** tokens — nothing implicit — so generation never needs per-theme hacks.
+- `mode` is **`"light"` or `"dark"`** on every theme — the explicit light/dark signal. The
+  app's gallery filter and light/dark counts read it; never infer it from `tone`.
 
 `scripts/validate.js` (via `lib/rules.js`, Node, no deps) hard-gates the above: no pure-white
 `bg`/`surface`, `surface` lighter than `bg`, no pure-black `ink`, `ink`/`surface` ≥ 7:1 (AAA),
-every AA floor, diagnostic hex-uniqueness, every token present in all 14 themes, and ANSI
-mappings that reference real tokens. It exits non-zero and names the failing theme + token.
+every AA floor, diagnostic hex-uniqueness, a valid `mode` (`light`/`dark`), every token present
+in all themes, and ANSI mappings that reference real tokens. It exits non-zero and names the failing theme + token.
 Warn-only judgement calls (never gate): the accent-hue count (6–8) and the error/ok grayscale +
 protan/deutan separation. It reads the JSON read-only — it reports, humans decide.
 
@@ -101,7 +103,7 @@ protan/deutan separation. It reads the JSON read-only — it reports, humans dec
 ### Adding a 15th theme or new format
 
 - *New theme*: add one entry to `themes[]` with every token filled in (nothing implicit) —
-  `id`, `name`, `tone`, `fonts`, and the full `colors` block. `build/` regenerates for all
+  `id`, `name`, `tone`, `mode` (`light`/`dark`), `fonts`, and the full `colors` block. `build/` regenerates for all
   formats automatically; add the theme to README's theme table (and the gallery) by hand.
 - *New tool format*: add an emitter in `scripts/generate.js` (hex helpers in `lib/colors.js`);
   terminal formats derive from the top-level `ansiMapping` block. See README's "How themes are

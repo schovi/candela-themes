@@ -1,6 +1,6 @@
 # 022 — Themes gallery: search, filters, per-theme anchors
 
-priority: 7
+done: 2026-07-18
 
 depends: 021
 

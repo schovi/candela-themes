@@ -13,6 +13,7 @@ export interface Theme {
   id: string;
   name: string;
   tone: string;
+  mode: 'light' | 'dark';
   description: string;
   fonts: { code: string; prose: string };
   colors: Record<ColorToken, string>;
@@ -21,9 +22,8 @@ export interface Theme {
 export const themes: Theme[] = (data as { themes: Theme[] }).themes;
 export const themesById = new Map(themes.map((t) => [t.id, t]));
 
-// Dark themes carry "dark" in their tone string (there is no source `mode`
-// field yet — that's task 022). Derive the split so counts never hardcode.
-export const isDarkTheme = (theme: Theme) => theme.tone.includes('dark');
+// Light/dark comes from the explicit, validated `mode` field on each theme.
+export const isDarkTheme = (theme: Theme) => theme.mode === 'dark';
 export const darkThemes = themes.filter(isDarkTheme);
 export const lightThemes = themes.filter((t) => !isDarkTheme(t));
 
