@@ -1,6 +1,6 @@
 # 024 — Split the Lab into separate Editor and Builder pages
 
-priority: 6
+done: 2026-07-18
 
 ## What & why
 

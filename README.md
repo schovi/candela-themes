@@ -320,15 +320,15 @@ The explorer is a static multi-page site (built by Vite, no SPA/router): the
 home page at `/` pitches Aurora and indexes every theme, the gallery at
 `/themes` shows each theme across sample panes (with a filter bar — fulltext
 search over name/tone/tags/fonts, a mode select, and multi-select tag chips — and a per-theme anchor
-so any theme is directly linkable, e.g. `/themes#lagoon`), and the **Lab** at
-`/lab` holds the two theme-building tools:
+so any theme is directly linkable, e.g. `/themes#lagoon`), and the two
+theme-building tools each get their own page:
 
-- **Theme Editor** forks any theme or starts blank, with hex plus H/S/L sliders
-  per token and live preview. The lightness track shades the range that still
-  clears each token's contrast floor.
-- **Theme Builder** is the guided path: pick a background mood and darkness,
-  choose accent hues on a wheel, set the three diagnostic hues, and it derives a
-  full valid palette for you.
+- **Editor** (`/editor`) forks any theme or starts blank, with hex plus H/S/L
+  sliders per token and live preview. The lightness track shades the range that
+  still clears each token's contrast floor.
+- **Builder** (`/builder`) is the guided path: pick a background mood and
+  darkness, choose accent hues on a wheel, set the three diagnostic hues, and it
+  derives a full valid palette for you.
 
 Both run the same invariants as `scripts/validate.js` (shared code in `lib/`), so
 **Copy theme JSON** stays disabled until every hard rule passes. Paste the result
