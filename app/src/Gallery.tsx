@@ -60,7 +60,7 @@ export function Gallery() {
       themes.filter(
         (t) =>
           (mode === 'all' || t.mode === mode) &&
-          (tags.size === 0 || t.tags.some((tag) => tags.has(tag))) &&
+          (tags.size === 0 || [...tags].every((tag) => t.tags.includes(tag))) &&
           (normalizedQuery === '' || matchesQuery(t, normalizedQuery)),
       ),
     [normalizedQuery, mode, tags],
