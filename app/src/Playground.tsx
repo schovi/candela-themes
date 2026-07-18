@@ -162,9 +162,19 @@ function TokenEditor({ token, value, gradient, setColor }: {
   );
 }
 
+// A ?theme=<id> deep-link (from a gallery card's Customize action) preloads the
+// Editor with that theme; a missing or unknown id falls back to the blank template.
+function initialFork(): { seed: string; theme: Theme } {
+  const id = new URLSearchParams(window.location.search).get('theme');
+  const match = id ? themes.find((t) => t.id === id) : undefined;
+  return match
+    ? { seed: match.id, theme: cloneTheme(match) }
+    : { seed: 'blank', theme: cloneTheme(BLANK_TEMPLATE) };
+}
+
 export function Playground() {
-  const [seed, setSeed] = useState('blank');
-  const [draft, setDraft] = useState<Theme>(() => cloneTheme(BLANK_TEMPLATE));
+  const [seed, setSeed] = useState(() => initialFork().seed);
+  const [draft, setDraft] = useState<Theme>(() => initialFork().theme);
   const [copied, setCopied] = useState(false);
 
   const reseed = (value: string) => {

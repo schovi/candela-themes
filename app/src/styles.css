@@ -147,6 +147,20 @@ body {
   border: 1px solid var(--border);
   color: var(--ink2);
 }
+.card-customize {
+  margin-left: auto;
+  font-size: 13px;
+  padding: 4px 12px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  text-decoration: none;
+}
+.card-customize:hover {
+  border-color: var(--fn);
+  color: var(--fn);
+}
 .card-desc {
   margin: 6px 0 22px;
   font-size: 15px;

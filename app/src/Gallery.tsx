@@ -124,7 +124,9 @@ export function Gallery() {
       {visible.length === 0 ? (
         <p className="gallery-empty">No themes match these filters.</p>
       ) : (
-        visible.map((t) => <ThemeCard key={t.id} theme={t} panes={panes} />)
+        visible.map((t) => (
+          <ThemeCard key={t.id} theme={t} panes={panes} customizeHref={`/editor?theme=${t.id}`} />
+        ))
       )}
     </>
   );
