@@ -1,5 +1,6 @@
 {
   "enabledPlugins": {
-    "workflow@schovi-workflows": true
+    "workflow@schovi-workflows": true,
+    "frontend-design@claude-plugins-official": true
   }
 }
