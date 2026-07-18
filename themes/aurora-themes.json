@@ -462,6 +462,68 @@
         "warning": "#855d21",
         "ok": "#247b57"
       }
+    },
+    {
+      "id": "midnight",
+      "name": "15 · Midnight",
+      "tone": "dark",
+      "description": "One Dark-style deep blue-gray. Extracted from an iTerm export.",
+      "fonts": {
+        "code": "JetBrains Mono",
+        "prose": "Inter"
+      },
+      "colors": {
+        "bg": "#282c34",
+        "surface": "#31353d",
+        "border": "#747d8d",
+        "ink": "#b9c0cb",
+        "ink2": "#747d8d",
+        "faint": "#747d8d",
+        "selection": "#3e4452",
+        "cursor": "#ffcc00",
+        "lineHighlight": "#363b43",
+        "kw": "#ff936a",
+        "str": "#25a45c",
+        "fn": "#3476ff",
+        "num": "#fc2f52",
+        "type": "#9f7efe",
+        "builtin": "#58a9db",
+        "punct": "#b9c0cb",
+        "error": "#ff6480",
+        "warning": "#f9c859",
+        "ok": "#3fc56b"
+      }
+    },
+    {
+      "id": "graphite",
+      "name": "16 · Graphite",
+      "tone": "dark",
+      "description": "Neutral graphite dark with pastel accents. Extracted from an iTerm export.",
+      "fonts": {
+        "code": "JetBrains Mono",
+        "prose": "Inter"
+      },
+      "colors": {
+        "bg": "#212121",
+        "surface": "#2b2c2c",
+        "border": "#3e4143",
+        "ink": "#bfd3de",
+        "ink2": "#7d888f",
+        "faint": "#676f74",
+        "selection": "#c0d3df",
+        "cursor": "#f86200",
+        "lineHighlight": "#313334",
+        "kw": "#ffcc63",
+        "str": "#c2e989",
+        "fn": "#86dcff",
+        "num": "#ff506e",
+        "type": "#c88fec",
+        "builtin": "#7cc9c2",
+        "punct": "#bfd3de",
+        "error": "#ff506e",
+        "warning": "#ffcc63",
+        "ok": "#c2e989"
+      }
     }
   ],
   "ansiMapping": {
