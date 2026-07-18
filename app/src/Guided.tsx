@@ -213,7 +213,7 @@ export function Guided() {
             {!canExport && <span className="pg-blocked">Adjust choices to clear the failing rules.</span>}
           </div>
           <details className="pg-json">
-            <summary>Theme JSON (paste into aurora-themes.json → themes[])</summary>
+            <summary>Theme JSON (paste into candela-themes.json → themes[])</summary>
             <pre>{json}</pre>
           </details>
         </div>

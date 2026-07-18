@@ -1,8 +1,8 @@
 import { SiteShell } from './SiteShell';
-import { activeBrand, withBrand } from './branding';
+import { brand } from './branding';
 import { themes, lightThemes, darkThemes, themeVars, type Theme } from './themes';
 
-const REPO = 'https://github.com/schovi/aurora-themes';
+const REPO = 'https://github.com/schovi/candela-themes';
 
 // One line of token-colored sample code in the theme's own colors + code font.
 function TinyPreview({ theme }: { theme: Theme }) {
@@ -29,7 +29,7 @@ function TinyPreview({ theme }: { theme: Theme }) {
 
 function ThemeIndexCard({ theme }: { theme: Theme }) {
   return (
-    <a className="home-card" href={withBrand(`/themes#${theme.id}`)}>
+    <a className="home-card" href={`/themes#${theme.id}`}>
       <div className="home-card-head">
         <span className="home-card-name">{theme.name}</span>
         <span className="home-card-tone">{theme.tone}</span>
@@ -40,7 +40,6 @@ function ThemeIndexCard({ theme }: { theme: Theme }) {
 }
 
 export function Home() {
-  const brand = activeBrand();
   return (
     <SiteShell page="home">
       <section className="hero">
@@ -68,9 +67,9 @@ export function Home() {
           VS Code, JetBrains, Zed, Sublime, Neovim, and Helix.
         </p>
         <p>
-          Browse all {themes.length} in the <a href={withBrand('/themes')}>gallery</a>, tweak one in the{' '}
-          <a href={withBrand('/editor')}>Theme Editor</a>, or derive your own in the{' '}
-          <a href={withBrand('/builder')}>Theme Builder</a>.
+          Browse all {themes.length} in the <a href="/themes">gallery</a>, tweak one in the{' '}
+          <a href="/editor">Theme Editor</a>, or derive your own in the{' '}
+          <a href="/builder">Theme Builder</a>.
         </p>
         <p>
           Install instructions and the full format list live in the{' '}

@@ -62,9 +62,9 @@ function Pane({ title, children }: { title: string; children: ReactNode }) {
 
 function Terminal() {
   return (
-    <Pane title="zsh — aurora">
+    <Pane title="zsh — candela">
       <pre style={preStyle}>
-        <div><C t="fn">~/projects/aurora</C> <C t="ink2">on</C> <C t="kw">main</C></div>
+        <div><C t="fn">~/projects/candela</C> <C t="ink2">on</C> <C t="kw">main</C></div>
         <div><C t="str">❯</C> git status</div>
         <div><C t="ink2">On branch </C><C t="kw">main</C><C t="ink2">, up to date.</C></div>
         <div><C t="ink2">Changes not staged for commit:</C></div>
@@ -124,7 +124,7 @@ function Markdown() {
         }}
       >
         <h1 style={{ margin: '0 0 12px', font: '600 25px/1.2 var(--prose-font), system-ui, sans-serif', color: 'var(--ink)', letterSpacing: '-0.01em' }}>
-          Aurora Light
+          Candela Light
         </h1>
         <p style={{ margin: '0 0 14px' }}>
           A <strong style={{ color: 'var(--ink)', fontWeight: 700 }}>low-glare</strong> light theme for tired, prescription-wearing eyes.
@@ -138,7 +138,7 @@ function Markdown() {
         </blockquote>
         <p style={{ margin: 0 }}>
           <code style={{ font: '13px var(--code-font), monospace', background: 'var(--bg)', color: 'var(--builtin)', padding: '2px 7px', borderRadius: 5, border: '1px solid var(--border)' }}>
-            brew install aurora
+            brew install candela
           </code>
         </p>
       </div>

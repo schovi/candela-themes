@@ -1,6 +1,6 @@
 {
-  "$schema": "aurora-light-themes/v1",
-  "description": "Canonical color source for the Aurora light themes. Every theme defines the same token set so it can be compiled to VS Code, iTerm2, Alacritty, Windows Terminal, Kitty, etc. All backgrounds avoid pure white and all inks avoid pure black; body ink clears WCAG AAA (~7:1+) against its surface.",
+  "$schema": "candela-light-themes/v1",
+  "description": "Canonical color source for the Candela light themes. Every theme defines the same token set so it can be compiled to VS Code, iTerm2, Alacritty, Windows Terminal, Kitty, etc. All backgrounds avoid pure white and all inks avoid pure black; body ink clears WCAG AAA (~7:1+) against its surface.",
   "tokenReference": {
     "ui": {
       "bg": "editor / terminal background",
@@ -497,7 +497,7 @@
       "tone": "dark / cool",
       "tags": ["dark", "cool"],
       "mode": "dark",
-      "description": "Aurora's first dark theme — a deep blue-gray night derived from Atom's classic One Dark, the palette a generation of developers grew up on. Accents lifted just enough to clear AA on the dark ground. Code in JetBrains Mono, prose in Public Sans.",
+      "description": "Candela's first dark theme — a deep blue-gray night derived from Atom's classic One Dark, the palette a generation of developers grew up on. Accents lifted just enough to clear AA on the dark ground. Code in JetBrains Mono, prose in Public Sans.",
       "fonts": {
         "code": "JetBrains Mono",
         "prose": "Public Sans"

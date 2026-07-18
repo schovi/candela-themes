@@ -5,7 +5,7 @@
 //
 // Starts the explorer's Vite dev server, opens each theme in screenshot mode
 // (?theme=<id>&shot=1 — one chrome-free card that signals readiness once fonts
-// load), and writes docs/screenshots/aurora-<id>.png. Playwright is a devDep of
+// load), and writes docs/screenshots/candela-<id>.png. Playwright is a devDep of
 // app/, so we resolve it from there rather than the repo root.
 
 import { spawn } from 'node:child_process';
@@ -18,7 +18,7 @@ const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(SCRIPT_DIR, '..');
 const APP_DIR = path.join(ROOT, 'app');
 const OUT_DIR = path.join(ROOT, 'docs/screenshots');
-const SOURCE = path.join(ROOT, 'themes/aurora-themes.json');
+const SOURCE = path.join(ROOT, 'themes/candela-themes.json');
 const PORT = 5177;
 const BASE = `http://localhost:${PORT}`;
 
@@ -62,7 +62,7 @@ try {
       { timeout: 15_000 },
     ).then((h) => h.jsonValue());
     if (state !== '1') throw new Error(`theme '${id}' did not render (shotReady=${state})`);
-    const file = path.join(OUT_DIR, `aurora-${id}.png`);
+    const file = path.join(OUT_DIR, `candela-${id}.png`);
     await page.locator('.theme-card').screenshot({ path: file });
     console.log(`wrote ${path.relative(ROOT, file)}`);
   }

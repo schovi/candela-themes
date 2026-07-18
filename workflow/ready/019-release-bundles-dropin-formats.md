@@ -20,7 +20,7 @@ formats have none.
 ### Packaging script
 - New `scripts/package-bundles.js`: for each drop-in tool
   (`iterm2`, `alacritty`, `kitty`, `wezterm`, `windows-terminal`, `ghostty`, `helix`),
-  produce `dist/aurora-themes-<tool>-<version>.tar.gz` (or `.zip` where friendlier for
+  produce `dist/candela-themes-<tool>-<version>.tar.gz` (or `.zip` where friendlier for
   the platform, e.g. Windows Terminal) containing that tool's 14 config files from
   `build/<tool>/` plus a short bundled `README.txt`/`README.md` with the one-paragraph
   install steps for that tool (reuse the README's existing per-tool instructions).
@@ -44,14 +44,14 @@ formats have none.
 - **Docs**: `README.md`, `AGENTS.md`.
 - **Load-bearing**: reads only from `build/<tool>/`; assumes a fresh build (run it
   first or document the assumption, matching the other packaging scripts);
-  `themes/aurora-themes.json` untouched.
+  `themes/candela-themes.json` untouched.
 - **Exclusions**: any registry (these have none); CI/GitHub-release upload of the
   archives (separate release-automation follow-up); changing any emitter output.
 
 ## Acceptance criteria
 
 - `npm run package:bundles` produces one archive per drop-in tool under `dist/`
-  (`aurora-themes-<tool>-<version>.{tar.gz|zip}` for iterm2, alacritty, kitty, wezterm,
+  (`candela-themes-<tool>-<version>.{tar.gz|zip}` for iterm2, alacritty, kitty, wezterm,
   windows-terminal, ghostty, helix), each containing that tool's 14 config files plus a
   short install README. Exits non-zero on failure, no interactive prompts.
 - Extracting an archive and importing/dropping a file installs the theme for that tool
@@ -62,7 +62,7 @@ formats have none.
   unchanged.
 - README (terminals + Helix sections) mentions the packaged archives; `AGENTS.md`
   step 6 references `package:bundles`.
-- Gate green: `python3 -m json.tool themes/aurora-themes.json` and
+- Gate green: `python3 -m json.tool themes/candela-themes.json` and
   `node scripts/validate.js` both exit 0.
 
 ## Notes

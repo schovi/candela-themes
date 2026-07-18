@@ -1,6 +1,6 @@
 'use strict';
 
-// Aurora theme generator. Reads themes/aurora-themes.json (the
+// Candela theme generator. Reads themes/candela-themes.json (the
 // single source of truth) and writes build/<tool>/<theme-id>.<ext> for every
 // terminal format. Zero runtime dependencies — runs on a stock Node install.
 //
@@ -14,7 +14,7 @@ const path = require('path');
 const { normalizeHex, hexToFloat } = require('../lib/colors');
 
 const ROOT = path.join(__dirname, '..');
-const SOURCE = path.join(ROOT, 'themes/aurora-themes.json');
+const SOURCE = path.join(ROOT, 'themes/candela-themes.json');
 const BUILD = path.join(ROOT, 'build');
 
 // Fixed 0..7 ANSI slot order; slots 8..15 repeat it as the "bright" set.
@@ -133,7 +133,7 @@ const WT_NAMES = ['black', 'red', 'green', 'yellow', 'blue', 'purple', 'cyan', '
 
 function emitWindowsTerminal(t, theme) {
   const scheme = {
-    name: `Aurora ${theme.name}`,
+    name: `Candela ${theme.name}`,
     background: t.background,
     foreground: t.foreground,
     cursorColor: t.cursor,
@@ -349,18 +349,18 @@ const VSCODE_IGNORE = ['.vscode/**', '**/*.map', '.gitignore', 'vsc-extension-qu
 
 function vscodeReadme() {
   return [
-    '# Aurora Light Themes',
+    '# Candela Light Themes',
     '',
     '14 light color themes for tired eyes — low-glare, low-saturation, AAA body',
     'contrast. Built for people who prefer dark mode but find it uncomfortable',
     '(prescription lenses, astigmatism, glare sensitivity, general eye strain).',
     '',
-    'After installing, open **Preferences: Color Theme** and pick any *Aurora …* entry.',
+    'After installing, open **Preferences: Color Theme** and pick any *Candela …* entry.',
     '',
     'Themes: Sepia Paper, Slate Mist, Sage, Solarized Lite, Blossom, Lagoon, Meadow,',
     'Apricot, Periwinkle, Ink & Coral, Graphite Mono, Tungsten, E-Ink Slate, Contrast Max.',
     '',
-    '> Generated from the Aurora source of truth — do not edit by hand.',
+    '> Generated from the Candela source of truth — do not edit by hand.',
     '> TODO: no Marketplace icon yet (needs a 128px PNG asset).',
     '',
   ].join('\n');
@@ -373,17 +373,17 @@ function emitVSCode(themes, ansiMapping) {
 
   const contributes = [];
   for (const theme of themes) {
-    const file = `aurora-${theme.id}-color-theme.json`;
+    const file = `candela-${theme.id}-color-theme.json`;
     const { colors, tokenColors } = resolveEditor(theme, ansiMapping);
     const doc = {
-      name: `Aurora ${theme.name}`,
+      name: `Candela ${theme.name}`,
       type: 'light',
       colors,
       tokenColors,
     };
     fs.writeFileSync(path.join(themesDir, file), JSON.stringify(doc, null, 2) + '\n');
     contributes.push({
-      label: `Aurora ${theme.name}`,
+      label: `Candela ${theme.name}`,
       uiTheme: 'vs',
       path: `./themes/${file}`,
     });
@@ -391,13 +391,13 @@ function emitVSCode(themes, ansiMapping) {
 
   // Placeholder until a real repo/publisher exists (task exclusion). vsce needs
   // repository/bugs/homepage present to package without warnings.
-  const repoUrl = 'https://github.com/CHANGEME/aurora-themes';
+  const repoUrl = 'https://github.com/CHANGEME/candela-themes';
   const pkg = {
-    name: 'aurora-themes',
-    displayName: 'Aurora Light Themes',
+    name: 'candela-themes',
+    displayName: 'Candela Light Themes',
     description: '14 light color themes for tired eyes — low-glare, low-saturation, AAA body contrast.',
     version: VSCODE_VERSION,
-    publisher: 'aurora',
+    publisher: 'candela',
     // icon: TODO — needs a 128px PNG asset. Left unset on purpose: pointing at a
     // missing file makes vsce fail. Add the field once an icon exists.
     engines: { vscode: '^1.70.0' },
@@ -445,7 +445,7 @@ const ICLS_GENERAL = [
   ['INDENT_GUIDE', 'border'],
 ];
 
-// Syntax TextAttributes -> Aurora token, foreground only.
+// Syntax TextAttributes -> Candela token, foreground only.
 const ICLS_SYNTAX = [
   ['DEFAULT_KEYWORD', 'kw'],
   ['DEFAULT_STRING', 'str'],
@@ -473,7 +473,7 @@ function emitIclsScheme(theme) {
   const h = (hex) => normalizeHex(hex).slice(1); // .icls drops the leading '#'
   const lines = [];
   lines.push('<?xml version="1.0" encoding="UTF-8"?>');
-  lines.push(`<scheme name="Aurora ${xmlEscape(theme.name)}" version="142" parent_scheme="Default">`);
+  lines.push(`<scheme name="Candela ${xmlEscape(theme.name)}" version="142" parent_scheme="Default">`);
 
   lines.push('  <colors>');
   for (const [name, token] of ICLS_GENERAL) {
@@ -513,10 +513,10 @@ function emitIntellijTheme(theme) {
   const c = theme.colors;
   const n = (hex) => normalizeHex(hex);
   const doc = {
-    name: `Aurora ${theme.name}`,
-    author: 'Aurora',
+    name: `Candela ${theme.name}`,
+    author: 'Candela',
     dark: false,
-    editorScheme: `/themes/aurora-${theme.id}.icls`,
+    editorScheme: `/themes/candela-${theme.id}.icls`,
     ui: {
       '*': {
         background: n(c.bg),
@@ -547,15 +547,15 @@ function emitIntellijTheme(theme) {
 
 function emitIntellijPluginXml(themes) {
   const providers = themes
-    .map((t) => `    <themeProvider id="aurora-${t.id}" path="/themes/aurora-${t.id}.theme.json" />`)
+    .map((t) => `    <themeProvider id="candela-${t.id}" path="/themes/candela-${t.id}.theme.json" />`)
     .join('\n');
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<idea-plugin>',
-    '  <id>com.aurora.themes</id>',
-    '  <name>Aurora Light Themes</name>',
+    '  <id>com.candela.themes</id>',
+    '  <name>Candela Light Themes</name>',
     '  <version>0.1.0</version>',
-    '  <vendor>Aurora</vendor>',
+    '  <vendor>Candela</vendor>',
     '  <description><![CDATA[14 light color themes for tired eyes — low-glare, low-saturation, AAA body contrast.]]></description>',
     '  <idea-version since-build="223" />',
     '  <depends>com.intellij.modules.platform</depends>',
@@ -575,8 +575,8 @@ function emitIntellij(themes) {
   fs.mkdirSync(metaInf, { recursive: true });
 
   for (const theme of themes) {
-    fs.writeFileSync(path.join(themesDir, `aurora-${theme.id}.icls`), emitIclsScheme(theme));
-    fs.writeFileSync(path.join(themesDir, `aurora-${theme.id}.theme.json`), emitIntellijTheme(theme));
+    fs.writeFileSync(path.join(themesDir, `candela-${theme.id}.icls`), emitIclsScheme(theme));
+    fs.writeFileSync(path.join(themesDir, `candela-${theme.id}.theme.json`), emitIntellijTheme(theme));
   }
   fs.writeFileSync(path.join(metaInf, 'plugin.xml'), emitIntellijPluginXml(themes));
 
@@ -589,7 +589,7 @@ function emitIntellij(themes) {
 // integrated terminal ANSI keys reuse the shared ansiMapping so terminal and
 // editor stay in sync, exactly like VS Code.
 
-// Zed syntax highlight name -> Aurora token, following the README scope roles.
+// Zed syntax highlight name -> Candela token, following the README scope roles.
 const ZED_SYNTAX = [
   ['keyword', 'kw'],
   ['string', 'str'],
@@ -661,15 +661,15 @@ function emitZed(themes, ansiMapping) {
   fs.mkdirSync(dir, { recursive: true });
   const family = {
     $schema: 'https://zed.dev/schema/themes/v0.2.0.json',
-    name: 'Aurora',
-    author: 'Aurora',
+    name: 'Candela',
+    author: 'Candela',
     themes: themes.map((theme) => ({
-      name: `Aurora ${theme.name}`,
+      name: `Candela ${theme.name}`,
       appearance: 'light',
       style: zedStyle(theme, ansiMapping),
     })),
   };
-  fs.writeFileSync(path.join(dir, 'aurora.json'), JSON.stringify(family, null, 2) + '\n');
+  fs.writeFileSync(path.join(dir, 'candela.json'), JSON.stringify(family, null, 2) + '\n');
   return themes.length;
 }
 
@@ -685,8 +685,8 @@ function emitSublimeScheme(theme) {
     variables[token] = normalizeHex(hex);
   }
   const doc = {
-    name: `Aurora ${theme.name}`,
-    author: 'Aurora',
+    name: `Candela ${theme.name}`,
+    author: 'Candela',
     variables,
     globals: {
       background: 'var(surface)',
@@ -712,7 +712,7 @@ function emitSublime(themes) {
   fs.mkdirSync(dir, { recursive: true });
   for (const theme of themes) {
     fs.writeFileSync(
-      path.join(dir, `aurora-${theme.id}.sublime-color-scheme`),
+      path.join(dir, `candela-${theme.id}.sublime-color-scheme`),
       emitSublimeScheme(theme),
     );
   }
@@ -720,14 +720,14 @@ function emitSublime(themes) {
 }
 
 // --- Neovim emitter --------------------------------------------------------
-// One self-contained Lua colorscheme per theme (dist/nvim/aurora-<id>.lua).
+// One self-contained Lua colorscheme per theme (dist/nvim/candela-<id>.lua).
 // Chosen over a base16 YAML: a Lua colorscheme drops into runtimepath and loads
-// with `:colorscheme aurora-<id>` and zero plugins, where a base16 YAML needs
+// with `:colorscheme candela-<id>` and zero plugins, where a base16 YAML needs
 // the base16 builder/plugin to apply at all. It sets legacy highlight groups
 // (Neovim links Treesitter groups to these by default) plus the 16
 // terminal_color_N globals from the shared ansiMapping.
 
-// Legacy highlight group -> Aurora token (foreground). Comments get italic.
+// Legacy highlight group -> Candela token (foreground). Comments get italic.
 const NVIM_SYNTAX = [
   ['Comment', 'faint', 'italic'],
   ['Constant', 'num'],
@@ -760,11 +760,11 @@ function emitNvimTheme(theme, ansiMapping) {
   const c = theme.colors;
   const n = (hex) => normalizeHex(hex);
   const lines = [
-    `-- Aurora ${theme.name} — generated by scripts/generate.js, do not edit.`,
+    `-- Candela ${theme.name} — generated by scripts/generate.js, do not edit.`,
     "vim.cmd('highlight clear')",
     "if vim.fn.exists('syntax_on') == 1 then vim.cmd('syntax reset') end",
     "vim.o.background = 'light'",
-    `vim.g.colors_name = 'aurora-${theme.id}'`,
+    `vim.g.colors_name = 'candela-${theme.id}'`,
     '',
     'local hi = function(group, opts) vim.api.nvim_set_hl(0, group, opts) end',
     '',
@@ -801,17 +801,17 @@ function emitNvim(themes, ansiMapping) {
   const dir = path.join(BUILD, 'nvim');
   fs.mkdirSync(dir, { recursive: true });
   for (const theme of themes) {
-    fs.writeFileSync(path.join(dir, `aurora-${theme.id}.lua`), emitNvimTheme(theme, ansiMapping));
+    fs.writeFileSync(path.join(dir, `candela-${theme.id}.lua`), emitNvimTheme(theme, ansiMapping));
   }
   return themes.length;
 }
 
 // --- Helix emitter ---------------------------------------------------------
 // One theme TOML per theme: top-level scope keys reference named palette
-// entries, and a [palette] table at the bottom carries every Aurora token as a
+// entries, and a [palette] table at the bottom carries every Candela token as a
 // hex value. Scope keys follow the README roles.
 
-// Helix scope key -> Aurora palette name. Inline-table scopes (ui.*) are handled
+// Helix scope key -> Candela palette name. Inline-table scopes (ui.*) are handled
 // separately; these are plain foreground scopes.
 const HELIX_SYNTAX = [
   ['keyword', 'kw'],
@@ -835,7 +835,7 @@ const HELIX_SYNTAX = [
 
 function emitHelixTheme(theme) {
   const c = theme.colors;
-  const lines = [`# Aurora ${theme.name} — generated by scripts/generate.js, do not edit.`];
+  const lines = [`# Candela ${theme.name} — generated by scripts/generate.js, do not edit.`];
 
   lines.push('"ui.background" = { bg = "bg" }');
   lines.push('"ui.text" = "ink"');
@@ -875,7 +875,7 @@ function emitHelix(themes) {
   const dir = path.join(BUILD, 'helix');
   fs.mkdirSync(dir, { recursive: true });
   for (const theme of themes) {
-    fs.writeFileSync(path.join(dir, `aurora-${theme.id}.toml`), emitHelixTheme(theme));
+    fs.writeFileSync(path.join(dir, `candela-${theme.id}.toml`), emitHelixTheme(theme));
   }
   return themes.length;
 }
@@ -908,7 +908,7 @@ function main() {
   console.log(`Generated ${count} files for ${themes.length} themes across ${FORMATS.length} formats.`);
   console.log(`Generated build/vscode/ extension: package.json + ${vscodeCount} theme files.`);
   console.log(`Generated build/intellij/ plugin: plugin.xml + ${intellijCount} .icls + ${intellijCount} .theme.json.`);
-  console.log(`Generated build/zed/aurora.json family with ${zedCount} themes.`);
+  console.log(`Generated build/zed/candela.json family with ${zedCount} themes.`);
   console.log(`Generated build/sublime/ ${sublimeCount} .sublime-color-scheme files.`);
   console.log(`Generated build/nvim/ ${nvimCount} Lua colorschemes.`);
   console.log(`Generated build/helix/ ${helixCount} .toml themes.`);

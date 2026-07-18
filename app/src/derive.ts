@@ -51,7 +51,7 @@ const DIAG: Record<'error' | 'warning' | 'ok', { s: number; l: number }> = {
 export const DEFAULT_CHOICES: GuidedChoices = {
   name: 'My Theme',
   tone: 'custom',
-  description: 'A new Aurora-style light theme.',
+  description: 'A new Candela-style light theme.',
   fonts: { code: 'JetBrains Mono', prose: 'IBM Plex Sans' },
   mood: 'warm',
   darkness: 40,

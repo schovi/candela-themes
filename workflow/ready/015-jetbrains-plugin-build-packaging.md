@@ -36,7 +36,7 @@ hardening + docs), applied to JetBrains.
 - New `scripts/package-intellij.js`: runs `buildPlugin` in `build/intellij/`
   (assume `build/` fresh or run the build first — pick one and document, matching
   `package-vscode.js`), then copies the resulting plugin zip to
-  `dist/aurora-themes-intellij-<version>.zip`. Exits **non-zero** if the build
+  `dist/candela-themes-intellij-<version>.zip`. Exits **non-zero** if the build
   fails or Gradle/JDK is absent, with a clear message. No interactive prompts.
 - Root `package.json`: add `package:intellij` → `node scripts/package-intellij.js`.
 
@@ -62,14 +62,14 @@ hardening + docs), applied to JetBrains.
 - **Docs**: `README.md`, `AGENTS.md`.
 - **Load-bearing**: `generate.js` zero-runtime-dep + `build/` determinism; the two
   `.icls` / `.theme.json` hex conventions from task 003 stay correct;
-  `themes/aurora-themes.json` is the untouched source of truth.
+  `themes/candela-themes.json` is the untouched source of truth.
 - **Exclusions**: actual Marketplace publish, accounts/tokens, CI release upload;
   a real plugin icon PNG (leave a documented TODO like the VS Code icon); changing
   the existing `.icls`/`.theme.json` color mappings.
 
 ## Acceptance criteria
 
-- `npm run package:intellij` produces `dist/aurora-themes-intellij-<version>.zip`
+- `npm run package:intellij` produces `dist/candela-themes-intellij-<version>.zip`
   from a `buildPlugin`, exits non-zero on failure, and runs with no interactive
   prompts (given a JDK + Gradle on PATH).
 - `npm run build` emits `build.gradle.kts` + `settings.gradle.kts` under
@@ -77,14 +77,14 @@ hardening + docs), applied to JetBrains.
   url/email), description, change-notes, since-build, version, and 14 `themeProvider`
   extensions. Icon is a documented TODO, not a fabricated binary.
 - The produced plugin zip installs via **Settings → Plugins → Install Plugin from
-  Disk…** and the 14 Aurora themes appear (spot-check a warm, a cool, and one
+  Disk…** and the 14 Candela themes appear (spot-check a warm, a cool, and one
   experiment theme).
 - Root `package.json` has a `package:intellij` script; `scripts/generate.js` has no
   runtime `require` of an installed dependency and `build/` output stays
   byte-identical across runs.
 - README (JetBrains install + generation sections) documents the plugin-build path
   and the JDK+Gradle prerequisite; `AGENTS.md` step 6 references `package:intellij`.
-- Gate green: `python3 -m json.tool themes/aurora-themes.json` and
+- Gate green: `python3 -m json.tool themes/candela-themes.json` and
   `node scripts/validate.js` both exit 0.
 
 ## Notes

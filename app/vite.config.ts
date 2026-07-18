@@ -12,7 +12,7 @@ function cleanUrls(): Plugin {
     next();
   };
   return {
-    name: 'aurora-clean-urls',
+    name: 'candela-clean-urls',
     // rewrite is a plain connect handler; cast avoids pulling in @types/node.
     configureServer: (server) => void server.middlewares.use(rewrite as never),
     configurePreviewServer: (server) => void server.middlewares.use(rewrite as never),

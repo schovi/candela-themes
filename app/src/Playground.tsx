@@ -31,7 +31,7 @@ const BLANK_TEMPLATE: Theme = {
   tone: 'custom',
   tags: ['custom'],
   mode: 'light',
-  description: 'A new Aurora-style light theme.',
+  description: 'A new Candela-style light theme.',
   fonts: { code: 'JetBrains Mono', prose: 'IBM Plex Sans' },
   colors: {
     bg: '#f4f2ee', surface: '#fbfaf7', border: '#dcd8d0',
@@ -355,7 +355,7 @@ export function Playground() {
             {!canExport && <span className="pg-blocked">Fix the failing rules to enable export.</span>}
           </div>
           <details className="pg-json">
-            <summary>Theme JSON (paste into aurora-themes.json → themes[])</summary>
+            <summary>Theme JSON (paste into candela-themes.json → themes[])</summary>
             <pre>{json}</pre>
           </details>
         </div>

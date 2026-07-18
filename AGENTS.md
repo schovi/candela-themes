@@ -1,14 +1,14 @@
-# Aurora Themes
+# Candela Themes
 
 A set of 14 light color themes for terminals and editors, tuned for eye-strain comfort.
-`themes/aurora-themes.json` is the single source of truth (all palettes, tokens, ANSI
+`themes/candela-themes.json` is the single source of truth (all palettes, tokens, ANSI
 mapping). User-facing docs (rationale, install, how themes are generated) live in the root
 [`README.md`](README.md); the vision-science rationale behind the invariants lives in
 [`docs/vision-research.md`](docs/vision-research.md).
 
 ## Working on themes
 
-**Source of truth.** Colors are authored in exactly one place: `themes/aurora-themes.json`
+**Source of truth.** Colors are authored in exactly one place: `themes/candela-themes.json`
 (palettes, tokens, ANSI mapping). Everything under `build/` is generated — never hand-edit
 it, regenerate. `build/` (source fragments) and `dist/` (packaged distributables) are both
 gitignored, never committed. Doc-style rules for any doc you touch: `docs/style.md`.
@@ -87,8 +87,8 @@ protan/deutan separation. It reads the JSON read-only — it reports, humans dec
 
 ### Standard loop for a theme change
 
-1. Edit `themes/aurora-themes.json`.
-2. `python3 -m json.tool themes/aurora-themes.json > /dev/null` — JSON validity.
+1. Edit `themes/candela-themes.json`.
+2. `python3 -m json.tool themes/candela-themes.json > /dev/null` — JSON validity.
 3. `node scripts/validate.js` — enforces the hard invariants; exits non-zero naming the
    failing theme + token.
 4. `npm run build` (or `node scripts/generate.js`) — wipes and rewrites `build/`

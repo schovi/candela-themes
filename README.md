@@ -1,4 +1,4 @@
-# Aurora — Light Themes for Tired Eyes
+# Candela — Light Themes for Tired Eyes
 
 **14 light color themes** for terminals and editors, plus two dark companions.
 For people who like dark mode but can't use it comfortably: prescription lenses,
@@ -13,12 +13,12 @@ The token model and the rules to keep if you extend the set are in
 
 ## Why most light themes hurt
 
-They're usually too bright and too saturated. Aurora follows a few rules to fix
+They're usually too bright and too saturated. Candela follows a few rules to fix
 that:
 
 1. **Off-white backgrounds, never pure white.** Pure white glares. Soft tinted
    paper (`bg`, with panels a shade lighter in `surface`) doesn't.
-2. **Dark gray text, never pure black.** Aurora inks are very dark but never
+2. **Dark gray text, never pure black.** Candela inks are very dark but never
    `#000`. Dark gray on off-white just reads calmer for a lot of people.
 3. **Strong contrast, not maximal.** Body text (`ink` on `surface`) clears WCAG
    AAA (7:1+). Secondary text (`ink2`) and comments (`faint`) step down but
@@ -83,14 +83,14 @@ diagnostics, from the theme explorer (`app/`). Regenerate with
 
 | | |
 | --- | --- |
-| **01 · Sepia Paper**<br>![Sepia Paper](docs/screenshots/aurora-sepia-paper.png) | **02 · Slate Mist**<br>![Slate Mist](docs/screenshots/aurora-slate-mist.png) |
-| **03 · Sage**<br>![Sage](docs/screenshots/aurora-sage.png) | **04 · Solarized Lite**<br>![Solarized Lite](docs/screenshots/aurora-solarized-lite.png) |
-| **05 · Blossom**<br>![Blossom](docs/screenshots/aurora-blossom.png) | **06 · Lagoon**<br>![Lagoon](docs/screenshots/aurora-lagoon.png) |
-| **07 · Meadow**<br>![Meadow](docs/screenshots/aurora-meadow.png) | **08 · Apricot**<br>![Apricot](docs/screenshots/aurora-apricot.png) |
-| **09 · Periwinkle**<br>![Periwinkle](docs/screenshots/aurora-periwinkle.png) | **10 · Ink & Coral**<br>![Ink & Coral](docs/screenshots/aurora-ink-coral.png) |
-| **11 · Graphite Mono**<br>![Graphite Mono](docs/screenshots/aurora-graphite-mono.png) | **12 · Tungsten**<br>![Tungsten](docs/screenshots/aurora-tungsten.png) |
-| **13 · E-Ink Slate**<br>![E-Ink Slate](docs/screenshots/aurora-eink-slate.png) | **14 · Contrast Max**<br>![Contrast Max](docs/screenshots/aurora-contrast-max.png) |
-| **15 · Nocturne**<br>![Nocturne](docs/screenshots/aurora-nocturne.png) | **16 · Borealis**<br>![Borealis](docs/screenshots/aurora-borealis.png) |
+| **01 · Sepia Paper**<br>![Sepia Paper](docs/screenshots/candela-sepia-paper.png) | **02 · Slate Mist**<br>![Slate Mist](docs/screenshots/candela-slate-mist.png) |
+| **03 · Sage**<br>![Sage](docs/screenshots/candela-sage.png) | **04 · Solarized Lite**<br>![Solarized Lite](docs/screenshots/candela-solarized-lite.png) |
+| **05 · Blossom**<br>![Blossom](docs/screenshots/candela-blossom.png) | **06 · Lagoon**<br>![Lagoon](docs/screenshots/candela-lagoon.png) |
+| **07 · Meadow**<br>![Meadow](docs/screenshots/candela-meadow.png) | **08 · Apricot**<br>![Apricot](docs/screenshots/candela-apricot.png) |
+| **09 · Periwinkle**<br>![Periwinkle](docs/screenshots/candela-periwinkle.png) | **10 · Ink & Coral**<br>![Ink & Coral](docs/screenshots/candela-ink-coral.png) |
+| **11 · Graphite Mono**<br>![Graphite Mono](docs/screenshots/candela-graphite-mono.png) | **12 · Tungsten**<br>![Tungsten](docs/screenshots/candela-tungsten.png) |
+| **13 · E-Ink Slate**<br>![E-Ink Slate](docs/screenshots/candela-eink-slate.png) | **14 · Contrast Max**<br>![Contrast Max](docs/screenshots/candela-contrast-max.png) |
+| **15 · Nocturne**<br>![Nocturne](docs/screenshots/candela-nocturne.png) | **16 · Borealis**<br>![Borealis](docs/screenshots/candela-borealis.png) |
 
 ## Install
 
@@ -115,12 +115,12 @@ Theme ids: `sepia-paper`, `slate-mist`, `sage`, `solarized-lite`, `blossom`,
 The generated extension (all 16 themes) lives at `build/vscode/`.
 
 - **As a `.vsix` (recommended):** `npm run package:vscode` builds and packages it
-  into `dist/aurora-themes-<version>.vsix`, then **Extensions → ⋯ → Install from
+  into `dist/candela-themes-<version>.vsix`, then **Extensions → ⋯ → Install from
   VSIX…** on that file.
-- **From source:** copy `build/vscode/` into `~/.vscode/extensions/aurora-themes/`
+- **From source:** copy `build/vscode/` into `~/.vscode/extensions/candela-themes/`
   and reload, or open the folder in VS Code and press **F5**.
 
-Then **Preferences: Color Theme** and pick any *Aurora NN · …* entry.
+Then **Preferences: Color Theme** and pick any *Candela NN · …* entry.
 
 ### IntelliJ / JetBrains IDEs
 
@@ -132,7 +132,7 @@ of scope). Each theme ships an editor color scheme (`.icls`) and a UI theme
 - **Editor scheme only:** **Settings → Editor → Color Scheme → ⚙ → Import
   Scheme…** and pick an `.icls` from `build/intellij/src/main/resources/themes/`.
 - **Full UI theme:** build the plugin from `build/intellij/`, install it, then
-  **Settings → Appearance & Behavior → Appearance → Theme** and pick an Aurora
+  **Settings → Appearance & Behavior → Appearance → Theme** and pick an Candela
   theme.
 
 ### Other terminals
@@ -153,11 +153,11 @@ per that terminal's docs:
 
 Drop-in files, all 16 themes, under `build/{zed,sublime,nvim,helix}/`. Not
 published to any registry; install per that editor's docs. Zed is one
-theme-family file (`build/zed/aurora.json`); the others are one file per theme.
+theme-family file (`build/zed/candela.json`); the others are one file per theme.
 
 ## How themes are generated
 
-`themes/aurora-themes.json` is the source of truth. `scripts/generate.js` (Node,
+`themes/candela-themes.json` is the source of truth. `scripts/generate.js` (Node,
 no dependencies) reads each theme's `colors` block and emits whatever each tool
 needs:
 
@@ -210,7 +210,7 @@ UI tokens map to the editor's UI keys (`editor.background = surface`,
 `editor.foreground = ink`, `editorLineHighlightBackground = lineHighlight`, …);
 syntax tokens map to `tokenColors` scopes:
 
-| Aurora token | TextMate scope(s) |
+| Candela token | TextMate scope(s) |
 | --- | --- |
 | `kw` | `keyword`, `storage` |
 | `str` | `string` |
@@ -223,14 +223,14 @@ syntax tokens map to `tokenColors` scopes:
 
 The VS Code emitter writes a complete, vsix-ready extension at `build/vscode/`:
 one `package.json` contributing all 16 themes and one
-`themes/aurora-<id>-color-theme.json` per theme (`"type": "light"`, workbench
+`themes/candela-<id>-color-theme.json` per theme (`"type": "light"`, workbench
 `colors{}` + `tokenColors[]`). The whole workbench is themed (activity bar, side
 bar, tabs, status bar, panels, integrated terminal), not just the editor pane.
 `package.json` carries full Marketplace metadata (placeholder `CHANGEME` URLs
 until a real repo exists), and the emitter also drops a bundled `README.md`, a
 `.vscodeignore`, and a copy of the root MIT `LICENSE` so packaging is
 warning-free (no `icon` yet, needs a 128px PNG). Sublime reuses the same scope
-table, emitting `build/sublime/aurora-<id>.sublime-color-scheme`.
+table, emitting `build/sublime/candela-<id>.sublime-color-scheme`.
 
 ### JetBrains / IntelliJ
 
@@ -242,7 +242,7 @@ table, emitting `build/sublime/aurora-<id>.sublime-color-scheme`.
 
 `.icls` general editor colors and the editor background/foreground:
 
-| Aurora token | `.icls` key | Section |
+| Candela token | `.icls` key | Section |
 | --- | --- | --- |
 | `surface` | `TEXT` → `BACKGROUND` | `<attributes>` |
 | `ink` | `TEXT` → `FOREGROUND` | `<attributes>` |
@@ -254,7 +254,7 @@ table, emitting `build/sublime/aurora-<id>.sublime-color-scheme`.
 
 `.icls` syntax attributes (`FOREGROUND` per key):
 
-| Aurora token | `.icls` attribute key(s) |
+| Candela token | `.icls` attribute key(s) |
 | --- | --- |
 | `kw` | `DEFAULT_KEYWORD` |
 | `str` | `DEFAULT_STRING` |
@@ -273,7 +273,7 @@ carries a modest `ui{}` frame (backgrounds from `bg`/`surface`, borders from
 
 ### Zed, Neovim, Helix
 
-- **Zed** → `build/zed/aurora.json`, one theme *family* file (`$schema` v0.2.0,
+- **Zed** → `build/zed/candela.json`, one theme *family* file (`$schema` v0.2.0,
   `themes[]`), each entry `appearance: "light"`. UI keys map
   `editor.background = surface`, `editor.foreground = ink`,
   `editor.active_line.background = lineHighlight`,
@@ -282,15 +282,15 @@ carries a modest `ui{}` frame (backgrounds from `bg`/`surface`, borders from
   `string→str`, `function→fn`, `number/constant→num`, `type/constructor→type`,
   `variable.special/attribute→builtin`, `operator/punctuation→punct`,
   `comment→faint`; `terminal.ansi.*` reuses `ansiMapping`.
-- **Neovim** → `build/nvim/aurora-<id>.lua`, a self-contained Lua colorscheme
-  (loads with `:colorscheme aurora-<id>`, no plugins). Sets
+- **Neovim** → `build/nvim/candela-<id>.lua`, a self-contained Lua colorscheme
+  (loads with `:colorscheme candela-<id>`, no plugins). Sets
   `vim.o.background = 'light'`, legacy highlight groups (`Keyword→kw`,
   `String→str`, `Function→fn`, `Number/Constant→num`, `Type→type`,
   `PreProc/Special→builtin`, `Operator/Delimiter→punct`, `Comment→faint` italic,
   `Normal = ink on bg`, `Visual = selection`, `CursorLine = lineHighlight`).
   Neovim links Treesitter groups to these by default. Plus the 16
   `vim.g.terminal_color_N` slots from `ansiMapping`.
-- **Helix** → `build/helix/aurora-<id>.toml`, a `[palette]` table of every token
+- **Helix** → `build/helix/candela-<id>.toml`, a `[palette]` table of every token
   with top-level scope keys: `ui.background = bg`, `ui.text = ink`,
   `ui.cursor = {fg=bg, bg=cursor}`, `ui.selection = {bg=selection}`,
   `ui.cursorline = {bg=lineHighlight}`, `ui.linenr = ink2`; syntax `keyword→kw`,
@@ -300,7 +300,7 @@ carries a modest `ui{}` frame (backgrounds from `bg`/`surface`, borders from
 
 ## Contributing / extending
 
-`themes/aurora-themes.json` is the single source of truth. Run `npm run build` to
+`themes/candela-themes.json` is the single source of truth. Run `npm run build` to
 regenerate `build/` and `npm run validate` to check the design rules. Read
 [`AGENTS.md`](AGENTS.md) for the token roles and the rules to preserve when you
 add or tweak a theme.
@@ -317,7 +317,7 @@ Then from the repo root, `npm run app` serves the explorer and
 [`docs/screenshots/README.md`](docs/screenshots/README.md).
 
 The explorer is a static multi-page site (built by Vite, no SPA/router): the
-home page at `/` pitches Aurora and indexes every theme, the gallery at
+home page at `/` pitches Candela and indexes every theme, the gallery at
 `/themes` shows each theme across sample panes (with a filter bar — fulltext
 search over name/tone/tags/fonts, a mode select, and multi-select tag chips — and a per-theme anchor
 so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a

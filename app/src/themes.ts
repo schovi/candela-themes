@@ -1,6 +1,6 @@
 // The single import of the source-of-truth JSON. If the JSON moves, only this
 // one line changes.
-import data from '../../themes/aurora-themes.json';
+import data from '../../themes/candela-themes.json';
 import type { CSSProperties } from 'react';
 
 export type ColorToken =

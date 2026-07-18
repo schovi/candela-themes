@@ -1,9 +1,9 @@
 {
-  "name": "aurora-theme-explorer",
+  "name": "candela-theme-explorer",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Local Vite app that previews every Aurora theme and drives automated gallery screenshots. Not published; run with npm run dev.",
+  "description": "Local Vite app that previews every Candela theme and drives automated gallery screenshots. Not published; run with npm run dev.",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

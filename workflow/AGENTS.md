@@ -1,19 +1,19 @@
-# Workflow Contract — Aurora Themes
+# Workflow Contract — Candela Themes
 
 Read by the `workflow` plugin skills (`/workflow:groom`, `/workflow:work`, `/workflow:batch-work`) before acting. This file holds repo-specific facts only; the process lives in the plugin. Keep it short and current.
 
 ## Project
 
-Aurora is a set of 14 light color themes for terminals and editors, tuned for eye-strain comfort. `themes/aurora-themes.json` is the single source of truth (all palettes, tokens, ANSI mapping). Tool themes (terminal, VS Code, etc.) are generated from it by `scripts/generate.js`; the `app/` explorer previews every theme live. Token roles and design invariants live in root `AGENTS.md`.
+Candela is a set of 14 light color themes for terminals and editors, tuned for eye-strain comfort. `themes/candela-themes.json` is the single source of truth (all palettes, tokens, ANSI mapping). Tool themes (terminal, VS Code, etc.) are generated from it by `scripts/generate.js`; the `app/` explorer previews every theme live. Token roles and design invariants live in root `AGENTS.md`.
 
 ## Validation
 
 ```bash
 # targeted, during implementation
-python3 -m json.tool themes/aurora-themes.json > /dev/null
+python3 -m json.tool themes/candela-themes.json > /dev/null
 
 # full gate, before every commit with non-trivial changes (run as separate steps)
-python3 -m json.tool themes/aurora-themes.json > /dev/null
+python3 -m json.tool themes/candela-themes.json > /dev/null
 node scripts/validate.js
 ```
 
@@ -38,7 +38,7 @@ Read the doc leaf before editing mapped paths — behavior and invariants live i
 
 | If you'll edit | Read |
 |---|---|
-| `themes/aurora-themes.json` | root `AGENTS.md` (token roles, design invariants, theme-change loop) |
+| `themes/candela-themes.json` | root `AGENTS.md` (token roles, design invariants, theme-change loop) |
 | `app/` (explorer / playground) | root `AGENTS.md` + root `README.md` (explorer/playground sections) |
 
 - Doc style rules: `docs/style.md`

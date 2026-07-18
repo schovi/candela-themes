@@ -1,7 +1,7 @@
 # Vision & color research
 
 What the vision-science and accessibility literature actually supports, gathered while
-auditing the Aurora design claims (2026-07). This is the normative reference for contrast
+auditing the Candela design claims (2026-07). This is the normative reference for contrast
 floors and color-vision rules; `AGENTS.md` ("Design rules to preserve") states the resulting
 invariants, this file records why they hold and where the original rationale was wrong.
 
@@ -11,7 +11,7 @@ invariants, this file records why they hold and where the original rationale was
 backgrounds blooms/glows ("halation"), and astigmatism makes it dramatically worse —
 dark backgrounds dilate the pupil, exposing more of the imperfect cornea/lens. This is
 the documented reason astigmatic users (roughly half the population to some degree) do
-better on light backgrounds, and it is Aurora's strongest selling point. What a pure
+better on light backgrounds, and it is Candela's strongest selling point. What a pure
 `#ffffff` background causes is *glare* — a real but weaker-documented complaint that
 off-white/tinted paper plausibly softens.
 Sources: [Level Access on astigmatism](https://www.levelaccess.com/blog/accessibility-for-people-with-astigmatism/),
@@ -78,7 +78,7 @@ Source: [VS Code theme-color reference](https://code.visualstudio.com/api/refere
 
 **Blue + orange is the canonical CVD-safe pair** — it survives protanopia, deuteranopia
 and tritanopia, which is exactly why Okabe-Ito (Color Universal Design) builds around
-blue/sky-blue/orange/vermillion. Aurora's anchor choice is validated.
+blue/sky-blue/orange/vermillion. Candela's anchor choice is validated.
 Source: [Okabe-Ito / CUD](https://jfly.uni-koeln.de/color/).
 
 **Purple is the trap next to blue.** For protans/deutans, purple's red component
@@ -98,7 +98,7 @@ users — treat that as the cautionary tale.
 Sources: [Okabe-Ito](https://jfly.uni-koeln.de/color/),
 [Primer colorblind-theme issues](https://github.com/primer/github-vscode-theme/issues/394).
 
-## Derived invariants for Aurora
+## Derived invariants for Candela
 
 The rules above condense to (enforced by `scripts/validate.js`, stated in
 `AGENTS.md`, "Design rules to preserve"):

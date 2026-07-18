@@ -1,8 +1,8 @@
 {
-  "name": "aurora-themes-tooling",
+  "name": "candela-themes-tooling",
   "version": "0.1.0",
   "private": true,
-  "description": "Build and packaging tooling for the Aurora light themes. The generator itself (scripts/generate.js) has zero runtime dependencies.",
+  "description": "Build and packaging tooling for the Candela light themes. The generator itself (scripts/generate.js) has zero runtime dependencies.",
   "license": "MIT",
   "scripts": {
     "build": "node scripts/generate.js",
