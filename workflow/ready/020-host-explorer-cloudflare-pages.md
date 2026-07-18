@@ -1,84 +1,104 @@
-# 020 — Host the theme explorer on Cloudflare Pages
+# 020 — Host & auto-publish the theme explorer on Cloudflare Pages
 
 priority: 5
 
 ## What & why
 
-The `app/` explorer is a self-contained Vite + React SPA that imports the
-source-of-truth JSON at build time (`app/src/themes.ts`), so `vite build`
-produces fully static assets — no backend. Ship it to a public URL so the
-themes are browsable without cloning the repo. Host: Cloudflare Pages
-(reuses the existing Cloudflare zone for schovi.cz), git-integration
-deploys on push to `main`, served at **aurora.schovi.cz**. Clipboard export
-already exists (`Playground.tsx`, `Guided.tsx`) — no export work here.
+The `app/` explorer is a self-contained Vite + React static site that imports the
+source-of-truth JSON at build time (`app/src/themes.ts`), so `vite build` produces fully
+static assets — no backend. Publish it to a public URL (**aurora.schovi.cz**) so the themes
+are browsable without cloning, and **gate every publish on the theme + app checks** so a
+broken source-of-truth or a broken build never ships. Host: Cloudflare Pages (reuses the
+existing Cloudflare zone for schovi.cz), git-integration deploys on push to `main`.
+Clipboard export already exists (`Playground.tsx`, `Guided.tsx`) — no export work here.
 
 ## Spec
 
-Cloudflare Pages **git integration** does the build and deploy; those steps
-are done by the owner in the Cloudflare dashboard, not by code. The repo
-deliverable is: make the build reproducible on CF's builders and document the
-exact settings + one-time runbook.
+Two pieces: a **validation-gated publish** (nothing ships unless themes + app build are
+green) and the **Cloudflare Pages setup**, which the agent provisions directly over the
+authorized **Cloudflare MCP** — no manual dashboard hand-off required.
 
-Repo-side work:
+### Publish flow
 
-- **Pin the Node version** so CF's builder matches local (Vite 6 needs Node
-  18+). Add a `.node-version` file (Node 20) at the CF build root. CF reads it
-  from the configured *root directory* — so `app/.node-version`. Verify CF's
-  lookup path; if it only honors repo-root, put it there instead, or fall back
-  to a `NODE_VERSION` dashboard env var and document that. One approach, not
-  all three.
-- **Verify `base`** is correct for subdomain-root hosting. Assets serve from
-  `/` at aurora.schovi.cz, which is Vite's default `base: '/'`. Confirm no
-  change is needed; only touch `app/vite.config.ts` if the built `dist/`
-  references break at the domain root.
-- **No SPA fallback needed** — single page, state-based tabs, no router, no
-  deep links. Do not add `_redirects`/`_headers` unless the built site
-  actually 404s; note the reason if skipped.
-- **Document hosting** in `README.md` (extend the explorer/"How themes are
-  generated" area, ~L145/L280): the explorer is live at aurora.schovi.cz on
-  Cloudflare Pages, plus the exact Pages settings — **production branch**
-  `main`, **root directory** `app`, **build command** `npm run build`,
-  **build output directory** `dist` (relative to root dir), and the one-time
-  dashboard runbook (connect GitHub repo `schovi/aurora-themes`, set the above,
-  add custom domain `aurora.schovi.cz` → CF creates the CNAME in the schovi.cz
-  zone automatically).
-- **Log the host decision** as `D1` in `docs/decisions.md` (Cloudflare Pages +
-  git integration + aurora.schovi.cz, and why: existing CF zone, static site,
-  zero new vendors). Optional but the contract routes decisions there.
+- **Cloudflare Pages git integration stays the deployer.** Push to `main` → CF builds from
+  the repo → deploys to aurora.schovi.cz. Keep it — simplest publish path, and it gives PR
+  preview URLs for free.
+- **Gate the CF build on validation.** Set the Pages **build command** so validation runs
+  before the build and a failure aborts the deploy: `node ../scripts/validate.js && npm run
+  build` (runs from root dir `app`; full repo is checked out and `validate.js` resolves its
+  paths via `__dirname`, so `../scripts` works). If `validate.js` exits non-zero (malformed
+  JSON or a broken invariant), CF fails the build and publishes nothing.
+- **GitHub Actions CI for pre-merge checks.** Add `.github/workflows/ci.yml` on
+  `pull_request` and `push` to `main`: Node 20, then the same gate — `python3 -m json.tool
+  themes/aurora-themes.json`, `node scripts/validate.js`, `cd app && npm ci && npm run
+  build`. This makes theme/app validity a PR status check (bad changes caught before merge),
+  mirroring the CF build gate. Keep the commands identical to the CF build command — one
+  gate expressed twice, not two that drift.
+- Screenshots (`npm run screenshots`, Playwright) stay **out** of the pipeline — heavy,
+  regenerates committed PNGs; run locally when the gallery changes. Note the exclusion.
 
-Owner runbook (handed off, not code): in Cloudflare dashboard → Pages →
-connect `schovi/aurora-themes` → apply the build settings above → add custom
-domain `aurora.schovi.cz`.
+### Cloudflare setup (agent-driven via Cloudflare MCP)
+
+- **Provision/configure the Pages project over the Cloudflare MCP**: connect GitHub repo
+  `schovi/aurora-themes`, production branch `main`, **root directory** `app`, **build
+  command** `node ../scripts/validate.js && npm run build`, **build output directory** `dist`
+  (relative to root dir), add custom domain `aurora.schovi.cz` (CF creates the CNAME in the
+  schovi.cz zone). If a step can't be done over MCP, document it as a one-time dashboard
+  fallback.
+- **Pin the Node version** so CF's builder matches CI/local (Vite needs Node 18+). Add
+  `app/.node-version` (Node 20) at the CF root dir; verify CF honors it there, else fall back
+  to a `NODE_VERSION` env var and document which.
+- **Verify `base`.** Assets serve from `/` at the subdomain root — Vite's default `base:
+  '/'`. Confirm no change; only touch `app/vite.config.ts` if built `dist/` paths break at
+  the domain root.
+- **No SPA fallback / `_redirects` needed.** The site is static multi-page (real `index.html`
+  / `themes.html` / `lab.html` after task 021; a single page today) — every route is a real
+  file, so CF serves them directly with clean URLs. Add `_redirects`/`_headers` only if the
+  built site actually 404s; note the reason if skipped.
+
+### Surface the live URL
+
+- Once live, add the URL to `README.md` (intro/top) and set the GitHub repo **About →
+  Website** field to `https://aurora.schovi.cz` (`gh repo edit schovi/aurora-themes
+  --homepage https://aurora.schovi.cz`, or a documented manual step if `gh` isn't available).
+- **Log the host decision** as `D1` in `docs/decisions.md`: Cloudflare Pages + git
+  integration + validation-gated build + aurora.schovi.cz, and why (existing CF zone, static
+  site, zero new vendors, gate keeps broken themes off prod).
 
 ### Implementation boundary
 
-- Production surfaces: `app/.node-version` (new), possibly `app/vite.config.ts`
-  (only if base breaks).
-- Docs: `README.md` (explorer/hosting), `docs/decisions.md` (`D1`).
-- Load-bearing: `app/src/themes.ts` build-time JSON import must survive the CF
-  build (root dir `app`, reads `../../themes/aurora-themes.json`; Vite
-  `fs.allow: ['..']` already permits it, full repo is checked out).
-- Excluded: the dashboard/DNS steps (owner does these), any export/clipboard
-  changes, any backend, CI workflow files (git integration replaces them).
+- Production surfaces: `.github/workflows/ci.yml` (new), `app/.node-version` (new), possibly
+  `app/vite.config.ts` (only if base breaks). The Pages project config is applied via the
+  Cloudflare MCP (not a repo file); the GitHub About/website via `gh` (repo setting, not a
+  file).
+- Docs: `README.md` (explorer/hosting + publish pipeline + live URL), `docs/decisions.md`
+  (`D1`).
+- Load-bearing: `app/src/themes.ts` build-time JSON import must survive the CF + CI build
+  (root dir `app`, reads `../../themes/aurora-themes.json`; Vite `fs.allow: ['..']` already
+  permits it, full repo checked out). Build settings (root `app`, build `npm run build`,
+  output `dist`) are intentionally architecture-agnostic so they survive the 021 multi-page
+  redesign.
+- Excluded: screenshot regeneration in CI, any export/clipboard changes, any backend,
+  `wrangler pages deploy` / an Actions-owned deploy (CF git-integration handles deploy).
 
 ## Acceptance criteria
 
-- `cd app && npm install && npm run build` succeeds and `app/dist/` opens as a
-  working static site with no dev server and no backend (open `dist/index.html`
-  via a static file server; themes render, clipboard export works).
-- Node version is pinned so the Cloudflare build is reproducible (committed
-  `.node-version`, or a documented `NODE_VERSION` fallback if CF's lookup
-  requires it).
-- `base`/asset paths verified correct for hosting at the aurora.schovi.cz root
-  (default `/` confirmed, or adjusted with a one-line reason).
-- `README.md` documents the live URL (aurora.schovi.cz), that it's on
-  Cloudflare Pages via git integration, the exact Pages build settings, and the
-  one-time connect + custom-domain runbook.
+- `cd app && npm install && npm run build` succeeds and `app/dist/` opens as a working static site with no dev server and no backend (open via a static file server; themes render, clipboard export works).
+- The Cloudflare Pages build command runs `node ../scripts/validate.js` before the app build, so an invariant failure or malformed source JSON aborts the deploy (nothing publishes).
+- `.github/workflows/ci.yml` runs on PRs and on `main` and fails when `scripts/validate.js` fails or `cd app && npm run build` fails; it runs the same gate the CF build does.
+- Node version is pinned for a reproducible CF build (committed `.node-version`, or documented `NODE_VERSION` fallback).
+- `base`/asset paths verified correct for hosting at the aurora.schovi.cz root (default `/` confirmed, or adjusted with a one-line reason).
+- The Cloudflare Pages project is provisioned via the Cloudflare MCP (repo connected, production branch `main`, root dir `app`, the gated build command, output `dist`, custom domain aurora.schovi.cz) — or the exact remaining manual step is documented where MCP can't cover it.
+- The live URL is surfaced: `README.md` links it and the GitHub repo About/website field is set to `https://aurora.schovi.cz`.
+- `README.md` documents that publishing is Cloudflare Pages via git-integration gated by validation, the GitHub Actions CI, the exact Pages settings, and how PR previews work.
 - Host decision recorded in `docs/decisions.md` as `D1`.
 
 ## Notes
 
-Deploy trigger, host, and hostname were decided at groom (Cloudflare Pages /
-git integration / aurora.schovi.cz). The dashboard connect + custom-domain
-steps are the owner's to run; this task makes the repo build cleanly on CF and
-documents the settings so the setup is reproducible.
+Deploy trigger, host, hostname, and the validation-gated publish were decided at groom
+(Cloudflare Pages / git-integration gated on `validate.js` + app build / aurora.schovi.cz).
+The Pages project is set up by the agent over the authorized Cloudflare MCP, with a
+documented dashboard fallback. CI (GitHub Actions) and the CF build command run the *same*
+gate so a broken theme or build can't publish. This task doesn't depend on the 021 redesign —
+the build settings are architecture-agnostic — but publishing after 021 lands means the
+public site is the redesigned multi-page one.
