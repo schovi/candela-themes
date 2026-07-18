@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { activeBrand, withBrand } from './branding';
 
 type Page = 'home' | 'themes' | 'editor' | 'builder';
 
@@ -12,13 +13,14 @@ const NAV: { page: Page; label: string; href: string }[] = [
 // Shared chrome for every page. Cross-page nav is plain <a href> to real static
 // files (Cloudflare serves themes.html at /themes) — no router, no SPA.
 export function SiteShell({ page, children }: { page: Page; children: ReactNode }) {
+  const brand = activeBrand();
   return (
     <div className="site">
       <header className="site-header">
-        <a className="wordmark" href="/">Aurora</a>
+        <a className="wordmark" href={withBrand('/')}>{brand.name}</a>
         <nav className="site-nav">
           {NAV.map((n) => (
-            <a key={n.page} href={n.href} aria-current={page === n.page ? 'page' : undefined}>
+            <a key={n.page} href={withBrand(n.href)} aria-current={page === n.page ? 'page' : undefined}>
               {n.label}
             </a>
           ))}
@@ -26,7 +28,7 @@ export function SiteShell({ page, children }: { page: Page; children: ReactNode 
       </header>
       <main className="site-main">{children}</main>
       <footer className="site-footer">
-        <span>Aurora — light themes for tired eyes.</span>
+        <span>{brand.name} — light themes for tired eyes.</span>
         <a href="https://github.com/schovi/aurora-themes">Source on GitHub</a>
       </footer>
     </div>

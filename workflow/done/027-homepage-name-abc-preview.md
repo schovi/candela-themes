@@ -1,5 +1,7 @@
 # 027 — Homepage A/B/C name preview (Aurora / Fovea / Candela)
 
+done: 2026-07-18
+
 ## What & why
 
 We're weighing a rebrand away from "Aurora" (a light-theme project, but the name reads

@@ -1,4 +1,5 @@
 import { SiteShell } from './SiteShell';
+import { activeBrand, withBrand } from './branding';
 import { themes, lightThemes, darkThemes, themeVars, type Theme } from './themes';
 
 const REPO = 'https://github.com/schovi/aurora-themes';
@@ -28,7 +29,7 @@ function TinyPreview({ theme }: { theme: Theme }) {
 
 function ThemeIndexCard({ theme }: { theme: Theme }) {
   return (
-    <a className="home-card" href={`/themes#${theme.id}`}>
+    <a className="home-card" href={withBrand(`/themes#${theme.id}`)}>
       <div className="home-card-head">
         <span className="home-card-name">{theme.name}</span>
         <span className="home-card-tone">{theme.tone}</span>
@@ -39,11 +40,12 @@ function ThemeIndexCard({ theme }: { theme: Theme }) {
 }
 
 export function Home() {
+  const brand = activeBrand();
   return (
     <SiteShell page="home">
       <section className="hero">
         <p className="hero-what">
-          Aurora is a set of {themes.length} color themes for terminals and editors,
+          {brand.name} is a set of {themes.length} color themes for terminals and editors,
           tuned for eye-strain comfort.
         </p>
         <p className="hero-why">
@@ -52,6 +54,9 @@ export function Home() {
           pure white), dark-gray ink (never pure black), and desaturated pastel syntax keep
           the calm, low-contrast feel without the glare. {lightThemes.length} light
           themes and {darkThemes.length} dark companions tuned to the same contrast rules.
+        </p>
+        <p className="hero-tagline">
+          <a href={brand.href}>{brand.tagline}</a>
         </p>
       </section>
 
@@ -63,9 +68,9 @@ export function Home() {
           VS Code, JetBrains, Zed, Sublime, Neovim, and Helix.
         </p>
         <p>
-          Browse all {themes.length} in the <a href="/themes">gallery</a>, tweak one in the{' '}
-          <a href="/editor">Theme Editor</a>, or derive your own in the{' '}
-          <a href="/builder">Theme Builder</a>.
+          Browse all {themes.length} in the <a href={withBrand('/themes')}>gallery</a>, tweak one in the{' '}
+          <a href={withBrand('/editor')}>Theme Editor</a>, or derive your own in the{' '}
+          <a href={withBrand('/builder')}>Theme Builder</a>.
         </p>
         <p>
           Install instructions and the full format list live in the{' '}

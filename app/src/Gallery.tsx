@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { withBrand } from './branding';
 import { themes } from './themes';
 import { ThemeCard } from './ThemeCard';
 import { PANE_ORDER, DEFAULT_PANES, type PaneKey } from './samples/Panes';
@@ -125,7 +126,7 @@ export function Gallery() {
         <p className="gallery-empty">No themes match these filters.</p>
       ) : (
         visible.map((t) => (
-          <ThemeCard key={t.id} theme={t} panes={panes} customizeHref={`/editor?theme=${t.id}`} />
+          <ThemeCard key={t.id} theme={t} panes={panes} customizeHref={withBrand(`/editor?theme=${t.id}`)} />
         ))
       )}
     </>
