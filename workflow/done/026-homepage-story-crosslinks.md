@@ -1,6 +1,6 @@
 # 026 — Homepage story cross-links to Themes, Editor, and Builder
 
-priority: 8
+done: 2026-07-18
 depends: 024
 
 ## What & why
