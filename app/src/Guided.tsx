@@ -100,7 +100,17 @@ export function Guided() {
   };
 
   return (
-    <div className="playground guided">
+    <section className="lab-tool" id="theme-builder">
+      <header className="lab-tool-head">
+        <h2>Theme Builder</h2>
+        <p>
+          The guided path: pick a background mood and darkness, choose accent hues on a
+          wheel, and set the three diagnostic hues. It derives a full, valid palette for
+          you — each step is constrained so the result clears the invariants by
+          construction.
+        </p>
+      </header>
+      <div className="playground guided">
       <aside className="pg-editor">
         <label className="pg-field">Name
           <input value={choices.name} onChange={(e) => update({ name: e.target.value })} />
@@ -209,6 +219,7 @@ export function Guided() {
         </div>
         <ThemeCard theme={draft} panes={ALL_PANES} />
       </div>
-    </div>
+      </div>
+    </section>
   );
 }

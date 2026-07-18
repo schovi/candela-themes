@@ -320,12 +320,12 @@ search over name/tone/fonts plus mode and tone selects — and a per-theme ancho
 so any theme is directly linkable, e.g. `/themes#lagoon`), and the **Lab** at
 `/lab` holds the two theme-building tools:
 
-- **Playground** forks any theme or starts blank, with hex plus H/S/L sliders per
-  token and live preview. The lightness track shades the range that still clears
-  each token's contrast floor.
-- **Guided** is the beginner path: pick a background mood and darkness, choose
-  accent hues on a wheel, set the three diagnostic hues, and it derives a full
-  valid palette for you.
+- **Theme Editor** forks any theme or starts blank, with hex plus H/S/L sliders
+  per token and live preview. The lightness track shades the range that still
+  clears each token's contrast floor.
+- **Theme Builder** is the guided path: pick a background mood and darkness,
+  choose accent hues on a wheel, set the three diagnostic hues, and it derives a
+  full valid palette for you.
 
 Both run the same invariants as `scripts/validate.js` (shared code in `lib/`), so
 **Copy theme JSON** stays disabled until every hard rule passes. Paste the result

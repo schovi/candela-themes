@@ -1,6 +1,6 @@
 # 023 — The Lab: rename & recopy Playground + Guided
 
-priority: 8
+done: 2026-07-18
 
 depends: 021
 

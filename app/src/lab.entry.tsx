@@ -1,26 +1,27 @@
-import { StrictMode, useState } from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { SiteShell } from './SiteShell';
 import { Playground } from './Playground';
 import { Guided } from './Guided';
 import './styles.css';
 
-// Lab keeps the theme-building tools reachable. Playground/Guided are mounted
-// as-is; their rename and final home is task 023.
+// The Lab hosts both theme-building tools on one page, each under a clear name
+// with a short intro. No switcher — the landing blurb links to each by anchor.
 function Lab() {
-  const [tool, setTool] = useState<'playground' | 'guided'>('playground');
   return (
     <SiteShell page="lab">
-      <div className="lab-controls">
-        <label>
-          Tool{' '}
-          <select value={tool} onChange={(e) => setTool(e.target.value as typeof tool)}>
-            <option value="playground">Playground</option>
-            <option value="guided">Guided</option>
-          </select>
-        </label>
-      </div>
-      {tool === 'playground' ? <Playground /> : <Guided />}
+      <section className="lab-intro">
+        <p>
+          The Lab holds two ways to build an Aurora theme, both previewing live and
+          validated against the same invariants <code>scripts/validate.js</code> enforces.
+        </p>
+        <nav className="lab-links">
+          <a href="#theme-editor">Theme Editor</a>
+          <a href="#theme-builder">Theme Builder</a>
+        </nav>
+      </section>
+      <Playground />
+      <Guided />
     </SiteShell>
   );
 }

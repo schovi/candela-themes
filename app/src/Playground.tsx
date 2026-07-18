@@ -236,7 +236,17 @@ export function Playground() {
   };
 
   return (
-    <div className="playground">
+    <section className="lab-tool" id="theme-editor">
+      <header className="lab-tool-head">
+        <h2>Theme Editor</h2>
+        <p>
+          Edit any theme's tokens by hex or H/S/L slider and watch every contrast and
+          invariant check pass or fail live — the same <code>lib/rules.js</code> rules{' '}
+          <code>scripts/validate.js</code> gates on. Green means it would ship as-is; a red
+          list names each failing rule, and export stays blocked until all pass.
+        </p>
+      </header>
+      <div className="playground">
       <aside className="pg-editor">
         <label className="pg-field">
           Start from
@@ -340,6 +350,7 @@ export function Playground() {
         </div>
         <ThemeCard theme={draft} panes={ALL_PANES} />
       </div>
-    </div>
+      </div>
+    </section>
   );
 }
