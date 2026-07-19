@@ -475,6 +475,8 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .pg-fix:hover { background: #fdf0ee; }
 .pg-warns { color: #8a6d00; }
 .pg-fails ul, .pg-warns ul { margin: 4px 0 0; padding-left: 20px; }
+.pg-rule-explanation, .pg-rule-technical { display: block; }
+.pg-rule-technical { margin-top: 2px; color: var(--site-faint); font: 11px/1.4 var(--font-mono); }
 .pg-validation { border: 1px solid var(--site-border); border-radius: 8px; background: var(--site-surface); font-size: 13px; }
 .pg-validation > summary { cursor: pointer; padding: 11px 13px; color: var(--site-ink2); font-weight: 600; }
 .pg-validation-body { display: flex; flex-direction: column; gap: 12px; padding: 2px 13px 13px; }
@@ -487,9 +489,13 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .pg-export button:disabled { background: #d4cbb6; border-color: #d4cbb6; color: var(--site-faint); cursor: not-allowed; }
 .pg-blocked { color: #b5341f; }
 .pg-export-status { flex: 1 0 190px; min-width: 0; white-space: nowrap; font-weight: 600; }
+.pg-export button.pg-export-status { border: 0; padding: 0; background: none; color: #b5341f; text-align: left; font-size: 13px; }
+.pg-export button.pg-export-status:hover { background: none; text-decoration: underline; }
 .format-export { display: flex; align-items: end; gap: 8px; flex-wrap: wrap; }
 .format-export label { display: grid; gap: 3px; color: var(--site-ink2); font-size: 11px; }
+.format-export-description { max-width: 220px; line-height: 1.3; color: var(--site-faint); }
 .format-export select { min-width: 150px; padding: 7px 9px; border: 1px solid var(--site-border); border-radius: 7px; background: var(--site-surface); color: var(--site-ink); }
+.format-export > a { align-self: center; white-space: nowrap; }
 .pg-json pre { margin: 8px 0 0; padding: 12px 14px; background: var(--site-surface); border: 1px solid var(--site-border); border-radius: 8px; overflow: auto; font: 12px/1.5 var(--font-mono); max-height: 320px; }
 @media (max-width: 600px) {
   .pg-export { align-items: flex-end; }

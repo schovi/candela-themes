@@ -408,8 +408,12 @@ so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
 - Export readiness stays above the preview while detailed hard failures, allowed
   warnings, and per-token contrast values live in a collapsible **Validation** panel
   below it, so recalculation never moves the preview. Hard failures block export;
-  warnings do not. A tool-specific zip contains that tool's emitted theme and install
-  manual. The full zip contains every supported format, every manual, and the raw theme.
+  warnings do not. Each result pairs plain adjustment guidance with the exact rule output,
+  and the blocked status jumps to the failing list. The contrast table shows only enforced
+  checks, including their required floor and pass/fail status. A tool-specific zip contains
+  that tool's emitted theme and install manual; the selected tool explains its contents and
+  links to installation instructions. The full zip contains every supported format, every
+  manual, and the raw theme.
 - The editor first offers four starting points: a balanced blank theme, any Candela
   theme, the Simple editor, or a saved JSON draft. A saved draft can be opened only
   as a starting point, and the chooser hides after a selection.

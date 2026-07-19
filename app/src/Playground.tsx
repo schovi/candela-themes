@@ -9,7 +9,7 @@ import { applyPaletteHelperValues, type PaletteHelper, type PaletteHelperValues 
 import { DEFAULT_CHOICES, deriveChoices, deriveTheme, SYNTAX_TOKENS, type GuidedChoices, type SyntaxToken } from './derive';
 // Shared rule module — the exact same invariants scripts/validate.js enforces
 // (both import the same lib/ ESM; change a rule once and both reflect it).
-import { expectedTokens, checkTheme } from '../../lib/rules.js';
+import { AA_CONTRAST, AAA_CONTRAST, expectedTokens, checkTheme } from '../../lib/rules.js';
 import { contrastRatio, hexToHsl, hslToHex } from '../../lib/colors.js';
 
 // Curated Google Fonts — exactly the families already loaded in index.html, so
@@ -53,6 +53,50 @@ const TOKEN_GROUPS: { label: string; tokens: ColorToken[] }[] = [
   { label: 'Diagnostics', tokens: Object.keys(tokenReference.diagnostics) as ColorToken[] },
 ];
 
+const CONTRAST_CHECKS: { token: ColorToken; background: 'bg' | 'surface' | 'selection'; floor: number }[] = [
+  { token: 'ink', background: 'surface', floor: AAA_CONTRAST },
+  ...(['kw', 'str', 'fn', 'num', 'type', 'builtin', 'punct', 'error', 'warning', 'ok', 'faint'] as ColorToken[])
+    .map((token) => ({ token, background: 'bg' as const, floor: AA_CONTRAST })),
+  { token: 'ink', background: 'selection', floor: AA_CONTRAST },
+];
+
+function controlGroupForToken(token: string): string {
+  if (tokenReference.ui[token]) return 'UI';
+  if (tokenReference.syntax[token]) return 'Syntax';
+  return 'Diagnostics';
+}
+
+function explainRuleMessage(message: string): string | null {
+  const invalidHex = message.match(/^(\w+) is not a #rrggbb hex color$/);
+  if (invalidHex) return `Enter a six-digit hex color for ${invalidHex[1]} (${controlGroupForToken(invalidHex[1])}).`;
+  const missingToken = message.match(/^missing token '(\w+)'$/);
+  if (missingToken) return `Restore the ${missingToken[1]} color (${controlGroupForToken(missingToken[1])}).`;
+  if (message.includes('is not one of light/dark')) return 'Use Start over and choose a built-in theme or a valid saved draft (Starting point).';
+  if (message.startsWith('mode ')) return 'Move Background darkness to the other side of the midpoint (Simple), or adjust bg lightness (UI).';
+  if (message.startsWith('tags must ')) return 'Use Start over and choose a built-in theme or a valid saved draft (Starting point).';
+  if (message.startsWith('bg is pure ')) return 'Move the bg color away from pure white (UI).';
+  if (message.startsWith('surface is pure ')) return 'Move the surface color away from pure white (UI).';
+  if (message.startsWith('surface ') && message.includes('not lighter than bg')) return 'Make surface slightly lighter than bg (UI).';
+  if (message.startsWith('ink is pure ')) return 'Move the ink color away from pure black (UI).';
+  const contrastFailure = message.match(/^(\w+) on (bg|surface|selection) /);
+  if (contrastFailure) return `Lighten or darken ${contrastFailure[1]} until it passes (${controlGroupForToken(contrastFailure[1])}).`;
+  const collision = message.match(/^diagnostic collision: (\w+) and (\w+) share/);
+  if (collision) {
+    const groups = [...new Set([controlGroupForToken(collision[1]), controlGroupForToken(collision[2])])].join(' and ');
+    return `Choose different colors for ${collision[1]} and ${collision[2]} (${groups}).`;
+  }
+  if (message.includes('distinct accent hues')) return 'Spread the accent colors across 6–8 distinct hues (Syntax).';
+  if (message.startsWith('error/ok grayscale separation')) return 'Your error red and success green look too similar in grayscale. Lighten or darken one of them (Diagnostics).';
+  if (message.startsWith('error/ok protan/deutan distance')) return 'Your error red and success green may look too similar with red-green color blindness. Change one hue (Diagnostics).';
+  return null;
+}
+
+function RuleMessage({ message }: { message: string }) {
+  const explanation = explainRuleMessage(message);
+  if (!explanation) return <>{message}</>;
+  return <><span className="pg-rule-explanation">{explanation}</span><span className="pg-rule-technical">{message}</span></>;
+}
+
 function slugify(name: string): string {
   return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'my-theme';
 }
@@ -80,7 +124,8 @@ function validImportedTheme(value: unknown): value is Theme {
   if (!value || typeof value !== 'object') return false;
   const theme = value as Partial<Theme>;
   const tokens = expectedTokens(tokenReference) as ColorToken[];
-  return typeof theme.name === 'string' && typeof theme.tone === 'string' &&
+  return typeof theme.name === 'string' && typeof theme.tone === 'string' && (theme.mode === 'light' || theme.mode === 'dark') &&
+    Array.isArray(theme.tags) && theme.tags.length > 0 && theme.tags.every((tag) => typeof tag === 'string' && tag.length > 0) &&
     !!theme.fonts && typeof theme.fonts.code === 'string' && typeof theme.fonts.prose === 'string' &&
     !!theme.colors && tokens.every((token) => HEX.test(theme.colors?.[token] ?? ''));
 }
@@ -238,6 +283,7 @@ export function Playground() {
   const [importError, setImportError] = useState('');
   const [copied, setCopied] = useState(false);
   const [validationOpenOverride, setValidationOpenOverride] = useState<boolean | null>(null);
+  const validationRef = useRef<HTMLDetailsElement | null>(null);
   const [helperValues, setHelperValues] = useState<PaletteHelperValues>({ contrast: 0, saturation: 0, warmth: 0, darkness: 0 });
   const helperBaseline = useRef<Theme>(cloneTheme(initial.draft));
 
@@ -355,14 +401,13 @@ export function Playground() {
       return {
         failures: badHex.map((t) => `${t} is not a #rrggbb hex color`),
         warnings: [] as string[],
-        contrast: [] as { token: string; onBg: number; onSurface: number }[],
+        contrast: [] as { token: ColorToken; background: 'bg' | 'surface' | 'selection'; floor: number; ratio: number }[],
       };
     }
     const result = checkTheme(draft, expected) as { failures: string[]; warnings: string[] };
-    const contrast = expected.map((t) => ({
-      token: t,
-      onBg: contrastRatio(draft.colors[t as ColorToken], draft.colors.bg),
-      onSurface: contrastRatio(draft.colors[t as ColorToken], draft.colors.surface),
+    const contrast = CONTRAST_CHECKS.map((check) => ({
+      ...check,
+      ratio: contrastRatio(draft.colors[check.token], draft.colors[check.background]),
     }));
     return { failures: result.failures, warnings: result.warnings, contrast };
   }, [draft]);
@@ -531,14 +576,19 @@ export function Playground() {
               {copied ? 'Copied!' : 'Copy theme JSON'}
             </button>
             <ExportControls theme={draft} canExport={canExport} />
-            <span className={canExport ? 'pg-export-status pg-ok' : 'pg-export-status pg-blocked'}>
-              {canExport ? 'Ready to export' : `Export blocked · ${failures.length} hard ${failures.length === 1 ? 'failure' : 'failures'}`}
-            </span>
+            {canExport ? <span className="pg-export-status pg-ok">Ready to export</span> : (
+              <button className="pg-export-status pg-blocked" type="button" aria-controls="editor-validation" aria-expanded={validationOpenOverride ?? failures.length > 0} onClick={() => {
+                setValidationOpenOverride(true);
+                requestAnimationFrame(() => validationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+              }}>
+                Export blocked · {failures.length} hard {failures.length === 1 ? 'failure' : 'failures'}
+              </button>
+            )}
           </div>
         </div>
         <PanePicker panes={panes} onChange={setPanes} />
         <ThemeCard theme={draft} panes={panes} highlightToken={highlightedToken ?? (mode === 'simple' ? selectedAccent : undefined)} />
-        <details className="pg-validation" open={validationOpenOverride ?? failures.length > 0}>
+        <details id="editor-validation" ref={validationRef} className="pg-validation" open={validationOpenOverride ?? failures.length > 0}>
           <summary onClick={(event) => {
             event.preventDefault();
             setValidationOpenOverride(!(validationOpenOverride ?? failures.length > 0));
@@ -560,26 +610,28 @@ export function Playground() {
                     Auto-fix colors
                   </button>
                 </div>
-                <ul>{failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul>
+                <ul>{failures.map((failure, index) => <li key={index}><RuleMessage message={failure} /></li>)}</ul>
               </div>
             )}
             {warnings.length > 0 && (
               <div className="pg-warns">
                 <strong>Warnings (allowed at export):</strong>
-                <ul>{warnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul>
+                <ul>{warnings.map((warning, index) => <li key={index}><RuleMessage message={warning} /></li>)}</ul>
               </div>
             )}
             {contrast.length > 0 && (
               <details className="pg-contrast">
-                <summary>Per-token contrast (vs bg / surface)</summary>
+                <summary>Required contrast checks</summary>
                 <table>
-                  <thead><tr><th>token</th><th>on bg</th><th>on surface</th></tr></thead>
+                  <thead><tr><th>token</th><th>against</th><th>ratio</th><th>required</th><th>status</th></tr></thead>
                   <tbody>
                     {contrast.map((tokenContrast) => (
-                      <tr key={tokenContrast.token}>
+                      <tr key={`${tokenContrast.token}-${tokenContrast.background}`}>
                         <td>{tokenContrast.token}</td>
-                        <td>{tokenContrast.onBg.toFixed(2)}:1</td>
-                        <td>{tokenContrast.onSurface.toFixed(2)}:1</td>
+                        <td>{tokenContrast.background}</td>
+                        <td>{tokenContrast.ratio.toFixed(2)}:1</td>
+                        <td>{tokenContrast.floor}:1</td>
+                        <td aria-label={tokenContrast.ratio >= tokenContrast.floor ? 'Pass' : 'Fail'}>{tokenContrast.ratio >= tokenContrast.floor ? '✓' : '✕'}</td>
                       </tr>
                     ))}
                   </tbody>

@@ -1,6 +1,6 @@
 # 036 — Validation clarity and export guidance
 
-priority: 40
+done: 2026-07-19
 
 ## What & why
 
