@@ -361,11 +361,13 @@ The exact Pages settings (project `candela-themes`):
 | Root directory | `app` |
 | Build command | `node ../scripts/validate.js && npm run build` |
 | Build output directory | `dist` |
-| Custom domain | `candela.schovi.cz` |
-| Node version | pinned by `app/.node-version` (20); fallback: set a `NODE_VERSION=20` env var |
+| Custom domain | `candela.schovi.cz` (proxied CNAME → `candela-themes.pages.dev`) |
+| Node version | `NODE_VERSION=20` env var on the project (production + preview); `app/.node-version` pins the same for local tooling |
 
-One-time setup that the Cloudflare API cannot do: installing the **Cloudflare
-Workers & Pages GitHub App** (the git integration) requires a browser OAuth flow.
-In the Cloudflare dashboard: **Workers & Pages → Create → Pages → Connect to
-Git**, authorize the GitHub App for `schovi/candela-themes`, then enter the
-settings above. Everything after that (domain, config changes) works over the API.
+The project is provisioned and live. If it ever needs re-creating: everything
+(project, build config, domain, env vars) is manageable over the Cloudflare API
+*except* the **Cloudflare Workers & Pages GitHub App** installation — that is a
+browser OAuth flow, done in the dashboard via **Workers & Pages → Create → Pages
+→ Connect to Git** (authorize the app for `schovi/candela-themes` from within
+that flow; installing it from GitHub's side alone does not link the Cloudflare
+account).
