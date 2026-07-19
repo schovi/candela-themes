@@ -103,6 +103,8 @@ protan/deutan separation. It reads the JSON read-only — it reports, humans dec
    writes a plugin `.zip`; `npm run package:zed` writes a clean extension directory.
    `npm run package:sublime` writes an installable `.sublime-package` archive.
    `npm run package:nvim` writes a plugin-manager-ready `.tar.gz` archive.
+   `npm run package:bundles` writes per-tool archives for the drop-in terminal
+   formats and Helix.
    All artifacts go into `dist/` (also gitignored).
 
 ### Adding a 15th theme or new format

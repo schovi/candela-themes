@@ -166,6 +166,10 @@ The generated plugin does not yet include a Marketplace icon.
 The same ANSI palette is generated for six terminals. Pick your file and import
 per that terminal's docs:
 
+Run `npm run package:bundles` to regenerate the themes and create one release
+archive per terminal under `dist/`. Each archive contains all 16 theme files and
+short installation instructions; loose files remain available under `build/`.
+
 | Terminal | File |
 | --- | --- |
 | iTerm2 | `build/iterm2/<id>.itermcolors` |
@@ -200,7 +204,9 @@ release archive to `dist/candela-themes-nvim-<version>.tar.gz`.
 ### Helix
 
 Drop-in files for all 16 themes live under `build/helix/`. Install them per
-Helix's documentation.
+Helix's documentation. Run `npm run package:bundles` to regenerate the themes
+and create `dist/candela-themes-helix-<version>.tar.gz`, containing all 16 files
+and installation instructions.
 
 ## How themes are generated
 

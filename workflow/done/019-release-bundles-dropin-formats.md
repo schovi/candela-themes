@@ -1,6 +1,6 @@
 # 019 — Release bundles for drop-in formats (terminals + Helix)
 
-priority: 50
+done: 2026-07-19
 
 ## What & why
 
