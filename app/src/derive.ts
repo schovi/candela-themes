@@ -8,7 +8,7 @@
 // darkness). Result is always rule-valid and exportable.
 import { fitLightness } from './autofix';
 import { SYNTAX_ACCENTS, expectedTokens } from '../../lib/rules.js';
-import { hslToHex } from '../../lib/colors.js';
+import { hexToHsl, hslToHex } from '../../lib/colors.js';
 import { tokenReference, type Theme, type ColorToken } from './themes';
 
 export type Mood = 'warm' | 'cool' | 'neutral';
@@ -23,6 +23,7 @@ export interface GuidedChoices {
   darkness: number; // 0..100, higher = dimmer background
   accentHues: Record<SyntaxToken, number>; // 0..360 per syntax token
   diagnosticHues: { error: number; warning: number; ok: number };
+  sourceDraft?: Theme;
 }
 
 // Low-chroma, mood-tinted gray the whole UI scale is stepped from. Neutral is
@@ -62,11 +63,68 @@ export const DEFAULT_CHOICES: GuidedChoices = {
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
+function hueDistance(first: number, second: number): number {
+  const distance = Math.abs(first - second) % 360;
+  return Math.min(distance, 360 - distance) / 180;
+}
+
+const roundHue = (hue: number) => Math.round(hue) % 360;
+
+export function deriveChoices(draft: Theme): GuidedChoices {
+  const background = hexToHsl(draft.colors.bg);
+  const mood = (Object.entries(MOOD_BG) as [Mood, { h: number; s: number }][]).reduce(
+    (nearest, candidate) => {
+      const nearestDistance = Math.hypot(hueDistance(background.h, nearest[1].h), background.s - nearest[1].s);
+      const candidateDistance = Math.hypot(hueDistance(background.h, candidate[1].h), background.s - candidate[1].s);
+      return candidateDistance < nearestDistance ? candidate : nearest;
+    },
+  )[0];
+
+  return {
+    name: draft.name,
+    tone: draft.tone,
+    description: draft.description,
+    fonts: { ...draft.fonts },
+    mood,
+    darkness: clamp(((0.94 - background.l) / 0.06) * 100, 0, 100),
+    accentHues: Object.fromEntries(
+      SYNTAX_TOKENS.map((token) => [token, roundHue(hexToHsl(draft.colors[token]).h)]),
+    ) as Record<SyntaxToken, number>,
+    diagnosticHues: {
+      error: roundHue(hexToHsl(draft.colors.error).h),
+      warning: roundHue(hexToHsl(draft.colors.warning).h),
+      ok: roundHue(hexToHsl(draft.colors.ok).h),
+    },
+    sourceDraft: { ...draft, fonts: { ...draft.fonts }, colors: { ...draft.colors } },
+  };
+}
+
+function hasUnchangedDerivedColors(choices: GuidedChoices): boolean {
+  if (!choices.sourceDraft) return false;
+  const sourceChoices = deriveChoices(choices.sourceDraft);
+  return choices.mood === sourceChoices.mood &&
+    choices.darkness === sourceChoices.darkness &&
+    SYNTAX_TOKENS.every((token) => choices.accentHues[token] === sourceChoices.accentHues[token]) &&
+    (['error', 'warning', 'ok'] as const).every(
+      (token) => choices.diagnosticHues[token] === sourceChoices.diagnosticHues[token],
+    );
+}
+
 export function slugify(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'my-theme';
 }
 
 export function deriveTheme(choices: GuidedChoices): Theme {
+  if (hasUnchangedDerivedColors(choices)) {
+    return {
+      ...choices.sourceDraft!,
+      name: choices.name,
+      tone: choices.tone,
+      description: choices.description,
+      fonts: { ...choices.fonts },
+      colors: { ...choices.sourceDraft!.colors },
+    };
+  }
   const base = MOOD_BG[choices.mood];
   const t = clamp(choices.darkness, 0, 100) / 100;
   // Ceiling kept off pure white so surface (bgL + 0.03) has headroom and never

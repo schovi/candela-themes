@@ -1,6 +1,6 @@
 # 034 — Two-way Simple↔Pro and wizard simplification
 
-priority: 20
+done: 2026-07-19
 
 ## What & why
 

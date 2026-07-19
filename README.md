@@ -399,7 +399,7 @@ so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
 - **Simple** mode derives a palette from background mood, darkness, accent hues,
   and diagnostic hues. **Pro** mode exposes hex plus H/S/L sliders per token.
   Both edit one browser-local autosaved draft and share configurable preview panes.
-  **Save draft** downloads that working theme as JSON for backup or later upload.
+  **Download draft JSON** downloads that working theme for backup or later reopening.
   Global palette helpers are fixed `-50` to `50` controls: each thumb keeps its
   exact value, and the combined palette is recalculated from one stable baseline
   instead of accumulating incremental nudges.
@@ -408,9 +408,9 @@ so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
   below it, so recalculation never moves the preview. Hard failures block export;
   warnings do not. A tool-specific zip contains that tool's emitted theme and install
   manual. The full zip contains every supported format, every manual, and the raw theme.
-- The editor first offers four starting points: a balanced blank theme, a fork of
-  any Candela theme, a three-step guided wizard, or a JSON theme upload. JSON upload
-  is available only as a starting point, and the chooser hides after a selection.
+- The editor first offers four starting points: a balanced blank theme, any Candela
+  theme, the Simple editor, or a saved JSON draft. A saved draft can be opened only
+  as a starting point, and the chooser hides after a selection.
   A saved browser draft or valid `/editor?theme=<id>` link opens the editor directly.
   Confirmed **Start over** clears that browser draft and returns to the chooser. The
   old `/builder` URL redirects to `/editor`.

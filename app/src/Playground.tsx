@@ -6,7 +6,7 @@ import { DEFAULT_PANES, type PaneKey } from './samples/Panes';
 import { PanePicker } from './PanePicker';
 import { ExportControls } from './ExportControls';
 import { applyPaletteHelperValues, type PaletteHelper, type PaletteHelperValues } from './paletteHelpers';
-import { DEFAULT_CHOICES, deriveTheme, SYNTAX_TOKENS, type GuidedChoices, type SyntaxToken } from './derive';
+import { DEFAULT_CHOICES, deriveChoices, deriveTheme, SYNTAX_TOKENS, type GuidedChoices, type SyntaxToken } from './derive';
 // Shared rule module — the exact same invariants scripts/validate.js enforces
 // (both import the same lib/ ESM; change a rule once and both reflect it).
 import { expectedTokens, checkTheme } from '../../lib/rules.js';
@@ -221,7 +221,6 @@ export function Playground() {
   const [panes, setPanes] = useState<Set<PaneKey>>(() => new Set(initial.panes));
   const [editing, setEditing] = useState(initial.editing);
   const [selectedAccent, setSelectedAccent] = useState<SyntaxToken>('kw');
-  const [wizardStep, setWizardStep] = useState(0);
   const [importError, setImportError] = useState('');
   const [copied, setCopied] = useState(false);
   const [validationOpenOverride, setValidationOpenOverride] = useState<boolean | null>(null);
@@ -264,18 +263,27 @@ export function Playground() {
     setCopied(false);
   };
 
+  const updateChoiceMetadata = (patch: Partial<Pick<GuidedChoices, 'name' | 'tone' | 'description' | 'fonts'>>) => {
+    setChoices((current) => ({ ...current, ...patch }));
+    helperBaseline.current = { ...helperBaseline.current, ...patch };
+    setDraft((current) => ({ ...current, ...patch }));
+    setCopied(false);
+  };
+
   const switchMode = (next: EditorMode) => {
     if (next === mode) return;
-    if (next === 'simple' && !window.confirm('Switching to Simple will discard manual token edits and re-derive the palette. Continue?')) return;
-    if (next === 'simple') replaceDraftAndResetHelpers(deriveTheme(choices));
+    if (next === 'simple') {
+      const nextChoices = deriveChoices(draft);
+      setChoices(nextChoices);
+      replaceDraftAndResetHelpers(deriveTheme(nextChoices));
+    }
     setMode(next);
   };
 
-  const startWizard = () => {
+  const startSimple = () => {
     setChoices(structuredClone(DEFAULT_CHOICES));
     replaceDraftAndResetHelpers(deriveTheme(DEFAULT_CHOICES));
     setMode('simple');
-    setWizardStep(1);
     setEditing(true);
   };
 
@@ -283,7 +291,7 @@ export function Playground() {
     if (!window.confirm('Start over? This clears your saved draft and all current edits.')) return;
     localStorage.removeItem(STORAGE_KEY);
     setSeed(themes[0].id); replaceDraftAndResetHelpers(cloneTheme(BLANK_TEMPLATE)); setChoices(structuredClone(DEFAULT_CHOICES));
-    setMode('pro'); setPanes(new Set(DEFAULT_PANES)); setWizardStep(0); setImportError('');
+    setMode('pro'); setPanes(new Set(DEFAULT_PANES)); setImportError('');
     setCopied(false); setEditing(false);
   };
 
@@ -306,7 +314,7 @@ export function Playground() {
       const parsed = JSON.parse(await file.text());
       if (!validImportedTheme(parsed)) throw new Error('Theme must include every token as a #rrggbb color.');
       replaceDraftAndResetHelpers({ ...parsed, id: parsed.id || slugify(parsed.name), tags: parsed.tags ?? ['custom'], mode: parsed.mode ?? 'light' });
-      setChoices(structuredClone(DEFAULT_CHOICES)); setMode('pro'); setWizardStep(0);
+      setChoices(structuredClone(DEFAULT_CHOICES)); setMode('pro');
       setCopied(false); setValidationOpenOverride(null); setImportError(''); setEditing(true);
     } catch (error) { setImportError(error instanceof Error ? error.message : 'Could not import this file.'); }
   };
@@ -397,19 +405,19 @@ export function Playground() {
             <span>Start with a balanced neutral palette and edit every detail.</span>
           </button>
           <div className="studio-start-card studio-fork-card">
-            <strong>Fork existing</strong>
+            <strong>Start from a theme</strong>
             <span>Use a Candela theme as your starting point.</span>
-            <select value={seed} onChange={(event) => setSeed(event.target.value)} aria-label="Theme to fork">
+            <select value={seed} onChange={(event) => setSeed(event.target.value)} aria-label="Theme to start from">
               {themes.map((theme) => <option key={theme.id} value={theme.id}>{theme.name}</option>)}
             </select>
-            <button type="button" onClick={() => reseed(seed)}>Fork theme</button>
+            <button type="button" onClick={() => reseed(seed)}>Start with theme</button>
           </div>
-          <button className="studio-start-card" type="button" onClick={startWizard}>
-            <strong>Guided wizard</strong>
-            <span>Build a palette step by step from mood, accents, and diagnostics.</span>
+          <button className="studio-start-card" type="button" onClick={startSimple}>
+            <strong>Simple editor</strong>
+            <span>Build a palette from the background, accents, and status colors.</span>
           </button>
           <label className="studio-start-card studio-upload-card">
-            <strong>Upload JSON</strong>
+            <strong>Open a saved draft (.json)</strong>
             <span>Continue editing a Candela theme saved as JSON.</span>
             <input
               className="studio-upload-input"
@@ -424,7 +432,7 @@ export function Playground() {
       <div className="studio-toolbar">
         <div className="studio-draft-actions">
           <span className="studio-save-status">Saved automatically</span>
-          <button type="button" onClick={downloadRaw}>Save draft</button>
+          <button type="button" onClick={downloadRaw}>Download draft JSON</button>
           <button className="studio-start-over" type="button" onClick={startOver}>Start over</button>
         </div>
         <div className="studio-modes" role="group" aria-label="Editing mode">
@@ -472,9 +480,9 @@ export function Playground() {
         ))}
         </> : <>
           <label className="pg-field">Name
-            <input maxLength={60} value={choices.name} onChange={(event) => updateChoices({ name: event.target.value })} />
+            <input maxLength={60} value={choices.name} onChange={(event) => updateChoiceMetadata({ name: event.target.value })} />
           </label>
-          {(wizardStep === 0 || wizardStep === 1) && <fieldset className="pg-group gd-step">
+          <fieldset className="pg-group gd-step">
             <legend>1 · Background</legend>
             <div className="gd-moods">{MOODS.map((mood) => (
               <label key={mood.value} className={choices.mood === mood.value ? 'gd-mood gd-mood-on' : 'gd-mood'}>
@@ -482,17 +490,16 @@ export function Playground() {
               </label>
             ))}</div>
             <label className="gd-slider"><span>Darkness</span><input type="range" min={0} max={100} value={choices.darkness} onChange={(event) => updateChoices({ darkness: Number(event.target.value) })} /></label>
-          </fieldset>}
-          {(wizardStep === 0 || wizardStep === 2) && <fieldset className="pg-group gd-step">
+          </fieldset>
+          <fieldset className="pg-group gd-step">
             <legend>2 · Accents</legend>
             <HueWheel hue={choices.accentHues[selectedAccent]} onChange={(hue) => updateChoices({ accentHues: { ...choices.accentHues, [selectedAccent]: hue } })} />
             <div className="gd-tokens">{SYNTAX_TOKENS.map((token) => <button key={token} type="button" className={selectedAccent === token ? 'gd-token gd-token-on' : 'gd-token'} onClick={() => setSelectedAccent(token)}><span className="gd-chip" style={{ background: draft.colors[token] }} />{token}</button>)}</div>
-          </fieldset>}
-          {(wizardStep === 0 || wizardStep === 3) && <fieldset className="pg-group gd-step">
+          </fieldset>
+          <fieldset className="pg-group gd-step">
             <legend>3 · Diagnostics</legend>
             {DIAG_TOKENS.map((diagnostic) => <label key={diagnostic.key} className="gd-slider gd-diag"><span className="gd-chip" style={{ background: draft.colors[diagnostic.key] }} /><span className="gd-diag-label">{diagnostic.label}</span><input type="range" min={0} max={360} value={choices.diagnosticHues[diagnostic.key]} style={{ backgroundImage: HUE_TRACK }} onChange={(event) => updateChoices({ diagnosticHues: { ...choices.diagnosticHues, [diagnostic.key]: Number(event.target.value) } })} /></label>)}
-          </fieldset>}
-          {wizardStep > 0 && <div className="wizard-nav"><button type="button" disabled={wizardStep === 1} onClick={() => setWizardStep((step) => step - 1)}>Back</button><button type="button" onClick={() => wizardStep === 3 ? setWizardStep(0) : setWizardStep((step) => step + 1)}>{wizardStep === 3 ? 'Finish wizard' : 'Next'}</button></div>}
+          </fieldset>
         </>}
 
         <fieldset className="pg-group studio-helpers">
