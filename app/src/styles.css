@@ -482,6 +482,11 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
   overflow: auto;
   font-size: 13px;
 }
+/* Stacked layout: a viewport-locked sticky rail overlaps the content below it
+   and hides the previews — let it flow. (Must come after the base rule.) */
+@media (max-width: 980px) {
+  .pg-editor { position: static; max-height: none; overflow: visible; }
+}
 .pg-field { display: flex; flex-direction: column; gap: 4px; font-weight: 500; color: var(--site-ink); }
 .pg-field input, .pg-field select, .pg-field textarea {
   font: inherit; padding: 5px 7px; border: 1px solid #cbc2ac; border-radius: 6px; background: var(--site-surface);

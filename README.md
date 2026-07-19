@@ -396,9 +396,21 @@ so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
 **Customize** action that opens the Editor preloaded with that theme via
 `/editor?theme=<id>`). The unified theme tool lives at `/editor`:
 
+- A header bar names the draft (inline-editable, with its id and autosave state),
+  holds the Simple/Pro toggle and quiet Download draft JSON / Start over actions, and
+  shows a live status chip — green "all checks pass" or red "N checks failing" — that
+  jumps to the validation panel. The page then reads in workflow order: controls on
+  the left, previews → validation → export on the right.
 - **Simple** mode derives a palette from background mood, darkness, accent hues,
-  and diagnostic hues. **Pro** mode exposes hex plus H/S/L sliders per token.
-  Both edit one browser-local autosaved draft and share configurable preview panes.
+  and diagnostic hues; the accent wheel is a hue dial rendered at the desaturated
+  band guided accents actually ship at, with every syntax token's hue plotted on the
+  ring and the selected token + angle read out in the center. **Pro** mode exposes
+  hex plus H/S/L per token in compact rows (swatch, name, hex, HSL readout) that
+  expand one at a time into sliders. Every slider is a calibrated gauge: channel-true
+  gradient track, tick marks, and a numeric readout; lightness tracks keep the
+  green pass-zone shading. Theme name lives in the header bar; tone, description,
+  and fonts sit behind a Details disclosure at the end of the control rail.
+  Both modes edit one browser-local autosaved draft and share configurable preview panes.
   Token controls pair their abbreviations with plain-language labels; hover, keyboard
   focus, and the selected Simple accent highlight matching preview text.
   **Download draft JSON** downloads that working theme for backup or later reopening.
@@ -409,11 +421,15 @@ so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
   Global palette helpers are fixed `-50` to `50` controls: each thumb keeps its
   exact value, and the combined palette is recalculated from one stable baseline
   instead of accumulating incremental nudges.
-- Export readiness stays above the preview while detailed hard failures, allowed
-  warnings, and per-token contrast values live in a collapsible **Validation** panel
-  below it, so recalculation never moves the preview. Hard failures block export;
-  warnings do not. Each result pairs plain adjustment guidance with the exact rule output,
-  and the blocked status jumps to the failing list. The contrast table shows only enforced
+- Export readiness is always visible in the header status chip while detailed hard
+  failures, allowed warnings, and per-token contrast values live in a collapsible
+  **Validation** panel between the previews and the export section. Hard failures
+  block export; warnings do not. Each result pairs plain adjustment guidance with the
+  exact rule output, and both the chip and the blocked-export line jump to the failing
+  list. Export is the page's finale: verdict first, then the target-tool download,
+  with secondary actions (all-formats zip, Copy theme JSON, Copy link) each captioned;
+  when validation flips to all-pass, the status sweeps green (instant under reduced
+  motion). The contrast table shows only enforced
   checks, including their required floor and pass/fail status. Colorblind or grayscale
   warnings can switch the preview directly to the relevant vision simulation. The Normal,
   Grayscale, Protan, and Deutan views affect only palette swatches and preview panes, and

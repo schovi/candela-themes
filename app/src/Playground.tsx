@@ -28,11 +28,11 @@ const BLANK_TEMPLATE: Theme = {
   fonts: { code: 'JetBrains Mono', prose: 'IBM Plex Sans' },
   colors: {
     bg: '#f4f2ee', surface: '#fbfaf7', border: '#dcd8d0',
-    ink: '#2b2a27', ink2: '#5c5a54', faint: '#8f8c84',
+    ink: '#2b2a27', ink2: '#5c5a54', faint: '#706d66',
     selection: '#e6e1d6', cursor: '#2b2a27', lineHighlight: '#f0ede6',
-    kw: '#8a5a2b', str: '#5a7d4a', fn: '#3a6ea5', num: '#a05a3a',
-    type: '#7a5aa5', builtin: '#2f8f8f', punct: '#6b6862',
-    error: '#b5442f', warning: '#9a7420', ok: '#5a7d4a',
+    kw: '#8a5a2b', str: '#557746', fn: '#3a6ea5', num: '#a05a3a',
+    type: '#7a5aa5', builtin: '#277777', punct: '#6b6862',
+    error: '#b5442f', warning: '#8b691d', ok: '#557746',
   },
 };
 
@@ -178,7 +178,7 @@ function GaugeSlider({ label, min, max, value, onChange, track, zone, unit, disa
           aria-label={ariaLabel}
         />
       </div>
-      <output className="gauge-readout">{value}{unit ?? ''}</output>
+      <output className="gauge-readout">{Math.round(value)}{unit ?? ''}</output>
     </div>
   );
 }
@@ -611,9 +611,11 @@ export function Playground() {
     }
   }, [failures.length]);
 
+  // Instant jump: smooth scrolling overshoots while the details element is
+  // expanding in the same frame, and it ignores prefers-reduced-motion.
   const jumpToValidation = () => {
     setValidationOpenOverride(true);
-    requestAnimationFrame(() => validationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    requestAnimationFrame(() => validationRef.current?.scrollIntoView({ block: 'start' }));
   };
 
   const copy = () => {

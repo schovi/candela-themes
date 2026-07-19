@@ -126,3 +126,18 @@ over-invest in the page frame itself — 041 replaces it.
 - Keyboard-only walkthrough reaches every control with visible focus; reduced motion
   honored; screenshots at desktop and 600px in the work log.
 - `npm run build` (app) type-checks clean; `npm run app` eyeball pass done.
+
+## Notes
+
+- Deviation: the validation jump (status chip / blocked line) scrolls instantly, not
+  smoothly — smooth scrolling overshot while the details element expanded in the same
+  frame, and it ignores `prefers-reduced-motion`.
+- Incidental repairs found during the responsive pass: the sticky control rail
+  escaped its grid row in the stacked ≤980px layout and overlapped
+  validation/export (now static below 980px); `BLANK_TEMPLATE` had gone stale
+  against the current rule floors (5 AA failures on a "blank opens green" promise) —
+  five hexes re-fitted minimally.
+- Simple mode gained tone/description/fonts editing via the shared Details
+  disclosure (they were Pro-only fields before the meta moved).
+- Work-log screenshots: desktop/980/600 in the session scratchpad (`shots/`);
+  horizontal overflow 0px at all three widths.
