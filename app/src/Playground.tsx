@@ -121,14 +121,51 @@ function warningVisionMode(message: string): VisionMode | null {
   return null;
 }
 
-function RuleMessage({ message, onVisionMode }: { message: string; onVisionMode?: (mode: VisionMode) => void }) {
+// The rail control a rule/warning names, so its inspector row can jump there.
+// Matches the message shapes lib/rules.js emits (plus our own hex-format error);
+// null for messages that name no single token (invalid mode/tags, hue count).
+function jumpTokenForMessage(message: string): ColorToken | null {
+  const patterns = [
+    /^missing token '(\w+)'$/,
+    /^(\w+) is not a #rrggbb hex color$/,
+    /^(\w+) on (?:bg|surface|selection) /,
+    /^(\w+) is pure #/,
+    /^(surface) #[0-9a-f]{6} not lighter than /,
+    /^diagnostic collision: (\w+) and /,
+  ];
+  for (const pattern of patterns) {
+    const match = message.match(pattern);
+    if (match) return match[1] as ColorToken;
+  }
+  if (message.includes('requires bg lightness')) return 'bg';
+  if (message.startsWith('error/ok ')) return 'error';
+  return null;
+}
+
+function RuleMessageText({ message }: { message: string }) {
   const explanation = explainRuleMessage(message);
-  const visionMode = warningVisionMode(message);
   return <>
     {explanation && <span className="pg-rule-explanation">{explanation}</span>}
     <span className={explanation ? 'pg-rule-technical' : undefined}>{message}</span>
-    {visionMode && onVisionMode && <button className="pg-see-warning" type="button" onClick={() => onVisionMode(visionMode)}>See in {VISION_MODES.find((mode) => mode.value === visionMode)?.label}</button>}
   </>;
+}
+
+// One inspector row. When the message names a token, the text becomes a jump
+// button to that token's rail controls; the vision-sim button (warnings only)
+// stays a sibling so we never nest buttons.
+function RuleRow({ message, onJump, onVisionMode }: {
+  message: string;
+  onJump: (token: ColorToken) => void;
+  onVisionMode?: (mode: VisionMode) => void;
+}) {
+  const token = jumpTokenForMessage(message);
+  const visionMode = onVisionMode ? warningVisionMode(message) : null;
+  return <li>
+    {token
+      ? <button type="button" className="pg-rule-jump" onClick={() => onJump(token)}><RuleMessageText message={message} /></button>
+      : <RuleMessageText message={message} />}
+    {visionMode && onVisionMode && <button className="pg-see-warning" type="button" onClick={() => onVisionMode(visionMode)}>See in {VISION_MODES.find((simulation) => simulation.value === visionMode)?.label}</button>}
+  </li>;
 }
 
 function VisionFilterDefinitions() {
@@ -156,7 +193,7 @@ interface DraftReplacement { draft: Theme; mode: EditorMode }
 // Calibrated scale: gradient track (channel-true where the axis is a color
 // channel), engraved ticks under it, and a mono numeric readout. The optional
 // zone overlay (lightness pass range) layers on top of the track gradient.
-function GaugeSlider({ label, min, max, value, onChange, track, zone, unit, disabled, ariaLabel }: {
+function GaugeSlider({ label, min, max, value, onChange, track, zone, unit, disabled, ariaLabel, id }: {
   label: string;
   min: number;
   max: number;
@@ -167,6 +204,7 @@ function GaugeSlider({ label, min, max, value, onChange, track, zone, unit, disa
   unit?: string;
   disabled?: boolean;
   ariaLabel: string;
+  id?: string;
 }) {
   const layers = [zone, track].filter(Boolean).join(', ');
   return (
@@ -174,6 +212,7 @@ function GaugeSlider({ label, min, max, value, onChange, track, zone, unit, disa
       <span className="gauge-label" aria-hidden="true">{label}</span>
       <div className={track ? 'gauge-track has-gradient' : 'gauge-track'} style={layers ? { backgroundImage: layers } : undefined}>
         <input
+          id={id}
           type="range" min={min} max={max} value={value} disabled={disabled}
           onChange={(event) => onChange(Number(event.target.value))}
           aria-label={ariaLabel}
@@ -361,7 +400,7 @@ function TokenEditor({ token, value, gradient, open, onToggle, setColor, setHigh
           onChange={(e) => setColor(token, e.target.value)}
           aria-label={`${token} color`}
         />
-        <button type="button" className="pg-token-toggle" aria-expanded={open} onClick={onToggle}>
+        <button type="button" id={`rail-token-${token}`} className="pg-token-toggle" aria-expanded={open} onClick={onToggle}>
           <span className="pg-token">{token} · {TOKEN_LABELS[token]}</span>
           <span className="pg-token-hsl">{Math.round(h)}° {Math.round(s * 100)} {Math.round(l * 100)}</span>
         </button>
@@ -616,7 +655,26 @@ export function Playground() {
   // expanding in the same frame, and it ignores prefers-reduced-motion.
   const jumpToValidation = () => {
     setValidationOpenOverride(true);
+    (validationRef.current?.querySelector('summary') as HTMLElement | null)?.focus();
     requestAnimationFrame(() => validationRef.current?.scrollIntoView({ block: 'start' }));
+  };
+
+  // Inspector → rail: reveal and focus the controls for the named token. Pro
+  // opens its disclosure (one-at-a-time via setOpenToken); Simple selects the
+  // accent for syntax tokens. UI tokens have no dedicated Simple control, so
+  // they route to the Background step. The focus target (toggle button, accent
+  // button, or slider) exists in every mode regardless of open/selected state,
+  // so we scroll+focus synchronously within the click — no rAF race, and the
+  // gesture keeps :focus-visible on for keyboard users. Instant, per 040.
+  const jumpToToken = (token: ColorToken) => {
+    const isSyntax = (SYNTAX_TOKENS as string[]).includes(token);
+    if (mode === 'pro') setOpenToken(token);
+    else if (isSyntax) setSelectedAccent(token as SyntaxToken);
+    const target = mode === 'pro' || isSyntax || ['error', 'warning', 'ok'].includes(token) ? token : 'bg';
+    const element = document.getElementById(`rail-token-${target}`);
+    if (!element) return;
+    element.scrollIntoView({ block: 'nearest' });
+    element.focus();
   };
 
   const copy = () => {
@@ -732,6 +790,7 @@ export function Playground() {
               </label>
             ))}</div>
             <div className="gd-slider"><span>Darkness</span><GaugeSlider
+              id="rail-token-bg"
               label="" min={0} max={100} value={choices.darkness}
               track={`linear-gradient(90deg, ${hslToHex({ ...MOOD_BG[choices.mood], l: 0.94 })}, ${hslToHex({ ...MOOD_BG[choices.mood], l: 0.88 })})`}
               onChange={(v) => updateChoices({ darkness: v })} ariaLabel="Background darkness"
@@ -745,7 +804,7 @@ export function Playground() {
               colors={draft.colors}
               onChange={(hue) => updateChoices({ accentHues: { ...choices.accentHues, [selectedAccent]: hue } })}
             />
-            <div className="gd-tokens">{SYNTAX_TOKENS.map((token) => <button key={token} type="button" className={selectedAccent === token ? 'gd-token gd-token-on' : 'gd-token'} onClick={() => setSelectedAccent(token)} onPointerEnter={() => setHighlightedToken(token)} onPointerLeave={() => setHighlightedToken(null)} onFocus={() => setHighlightedToken(token)} onBlur={() => setHighlightedToken(null)}><span className="gd-chip" style={{ background: draft.colors[token] }} />{token} · {TOKEN_LABELS[token]}</button>)}</div>
+            <div className="gd-tokens">{SYNTAX_TOKENS.map((token) => <button key={token} type="button" id={`rail-token-${token}`} className={selectedAccent === token ? 'gd-token gd-token-on' : 'gd-token'} onClick={() => setSelectedAccent(token)} onPointerEnter={() => setHighlightedToken(token)} onPointerLeave={() => setHighlightedToken(null)} onFocus={() => setHighlightedToken(token)} onBlur={() => setHighlightedToken(null)}><span className="gd-chip" style={{ background: draft.colors[token] }} />{token} · {TOKEN_LABELS[token]}</button>)}</div>
           </fieldset>
           <fieldset className="pg-group gd-step">
             <legend>3 · Diagnostics</legend>
@@ -753,6 +812,7 @@ export function Playground() {
               <span className="gd-chip" style={{ background: draft.colors[diagnostic.key] }} />
               <span className="gd-diag-label">{diagnostic.label}</span>
               <GaugeSlider
+                id={`rail-token-${diagnostic.key}`}
                 label="" min={0} max={360} unit="°" value={choices.diagnosticHues[diagnostic.key]}
                 track={hueTrack(DIAG[diagnostic.key].s, DIAG[diagnostic.key].l)}
                 onChange={(v) => updateChoices({ diagnosticHues: { ...choices.diagnosticHues, [diagnostic.key]: v } })}
@@ -828,13 +888,13 @@ export function Playground() {
                     Auto-fix colors
                   </button>
                 </div>
-                <ul>{failures.map((failure, index) => <li key={index}><RuleMessage message={failure} /></li>)}</ul>
+                <ul>{failures.map((failure, index) => <RuleRow key={index} message={failure} onJump={jumpToToken} />)}</ul>
               </div>
             )}
             {warnings.length > 0 && (
               <div className="pg-warns">
                 <strong>Warnings (allowed at export):</strong>
-                <ul>{warnings.map((warning, index) => <li key={index}><RuleMessage message={warning} onVisionMode={setVisionMode} /></li>)}</ul>
+                <ul>{warnings.map((warning, index) => <RuleRow key={index} message={warning} onJump={jumpToToken} onVisionMode={setVisionMode} />)}</ul>
               </div>
             )}
             {contrast.length > 0 && (
@@ -845,7 +905,7 @@ export function Playground() {
                   <tbody>
                     {contrast.map((tokenContrast) => (
                       <tr key={`${tokenContrast.token}-${tokenContrast.background}`}>
-                        <td>{tokenContrast.token}</td>
+                        <td><button type="button" className="pg-rule-jump pg-contrast-jump" onClick={() => jumpToToken(tokenContrast.token)}>{tokenContrast.token}</button></td>
                         <td>{tokenContrast.background}</td>
                         <td>{tokenContrast.ratio.toFixed(2)}:1</td>
                         <td>{tokenContrast.floor}:1</td>

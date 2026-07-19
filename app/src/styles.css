@@ -625,6 +625,11 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .pg-rule-explanation, .pg-rule-technical { display: block; }
 .pg-rule-technical { margin-top: 2px; color: var(--site-faint); font: 11px/1.4 var(--font-mono); }
 .pg-see-warning { margin-top: 5px; padding: 0; border: 0; background: none; color: var(--site-accent); cursor: pointer; font: 600 12px/1.4 inherit; text-decoration: underline; text-underline-offset: 2px; }
+/* Inspector rows are jump buttons to the rail: reset button chrome, keep the
+   surrounding text color, hint interactivity on hover. */
+.pg-rule-jump { display: block; width: 100%; margin: 0; padding: 3px 5px; border: 0; border-radius: 5px; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.pg-rule-jump:hover { background: rgba(120, 90, 30, 0.08); }
+.pg-contrast-jump { display: inline; width: auto; padding: 0; font: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .pg-validation { border: 1px solid var(--site-border); border-radius: 8px; background: var(--site-surface); font-size: 13px; }
 .pg-validation > summary { cursor: pointer; padding: 11px 13px; color: var(--site-ink2); font-weight: 600; border-radius: 8px; }
 .pg-validation > summary:hover { color: var(--site-ink); }
