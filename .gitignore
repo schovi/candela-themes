@@ -2,3 +2,8 @@ build/
 dist/
 node_modules/
 bun.lock
+
+# The global ~/.gitignore "Icon" pattern (macOS junk files) case-insensitively
+# swallows assets/icon/ — re-include it explicitly.
+!assets/icon/
+!assets/icon/**

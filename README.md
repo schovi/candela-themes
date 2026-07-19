@@ -1,16 +1,35 @@
-# Candela — Light Themes for Tired Eyes
+<p align="center">
+  <img src="assets/icon/candela-icon-256.png" alt="Candela" width="128">
+</p>
 
-**14 light color themes** for terminals and editors, plus two dark companions.
-For people who like dark mode but can't use it comfortably: prescription lenses,
-astigmatism, glare sensitivity, plain eye strain. The idea is to keep the calm,
-low-contrast feel of a good pastel dark theme, but on a light background — and
-for the times you do want the lights off, two dark themes tuned to the same
-contrast rules.
+<h1 align="center">Candela</h1>
 
-**Browse every theme live at [candela.schovi.cz](https://candela.schovi.cz)** — no
-clone needed. The token model and the rules to keep if you extend the set are in
-[`AGENTS.md`](AGENTS.md). The vision-science behind those rules is in
-[`docs/vision-research.md`](docs/vision-research.md).
+<p align="center">
+  <strong>Light themes for tired eyes</strong>
+</p>
+
+<p align="center">
+  14 light color themes for terminals and editors, plus two dark companions.
+  For people who like dark mode but can't use it comfortably: prescription lenses,
+  astigmatism, glare sensitivity, plain eye strain. Candela keeps the calm,
+  low-contrast feel of a good pastel dark theme — on paper instead of pitch black.
+</p>
+
+<p align="center">
+  <a href="https://github.com/schovi/candela-themes/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/schovi/candela-themes/ci.yml?branch=main&style=flat-square" alt="Build"></a>
+  <a href="https://candela.ink"><img src="https://img.shields.io/badge/explorer-candela.ink-3a7bc8?style=flat-square" alt="Theme explorer"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License"></a>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/candela-sepia-paper.png" alt="Candela 01 · Sepia Paper across a terminal, Ruby, Kotlin, Markdown, and diagnostics">
+</p>
+
+<p align="center">
+  <strong><a href="https://candela.ink">Browse every theme live at candela.ink</a></strong> — no clone needed.<br>
+  All 16 themes are in the <a href="#gallery">gallery below</a>; the design rules live in
+  <a href="AGENTS.md">AGENTS.md</a>, the vision science in <a href="docs/vision-research.md">docs/vision-research.md</a>.
+</p>
 
 ## Why most light themes hurt
 
@@ -338,7 +357,7 @@ into a new `themes[]` entry and it clears `node scripts/validate.js` as-is.
 
 ## Publishing the explorer
 
-The explorer is published at **<https://candela.schovi.cz>** by **Cloudflare Pages
+The explorer is published at **<https://candela.ink>** by **Cloudflare Pages
 git integration**: every push to `main` triggers a Cloudflare build of the repo, and
 every PR gets a free preview URL (commented on the PR). There is no deploy step in
 this repo — Cloudflare owns the build and deploy.
@@ -361,7 +380,7 @@ The exact Pages settings (project `candela-themes`):
 | Root directory | `app` |
 | Build command | `node ../scripts/validate.js && npm run build` |
 | Build output directory | `dist` |
-| Custom domain | `candela.schovi.cz` (proxied CNAME → `candela-themes.pages.dev`) |
+| Custom domain | `candela.ink` (proxied apex CNAME → `candela-themes.pages.dev`); `candela.schovi.cz` 301-redirects here via [`app/public/_redirects`](app/public/_redirects) |
 | Node version | `NODE_VERSION=20` env var on the project (production + preview); `app/.node-version` pins the same for local tooling |
 
 The project is provisioned and live. If it ever needs re-creating: everything
