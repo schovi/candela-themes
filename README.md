@@ -248,8 +248,9 @@ npm run build   # or: node scripts/generate.js
 
 It wipes and rewrites `build/`, emitting one file per theme per tool at
 `build/<tool>/<theme-id>.<ext>`. Output is deterministic (re-running gives
-byte-identical files). Hex helpers live in `lib/colors.js`; per-format emitters
-live in `scripts/generate.js`, which is where new tools plug in.
+byte-identical files). Hex helpers live in `lib/colors.js`; pure per-format emitters
+and their install manuals live in `lib/emitters.js`. The Node generator is only the
+filesystem shell, while the browser editor calls the same emitters for downloads.
 
 The tables below are the token → format mappings each emitter uses.
 
@@ -394,7 +395,9 @@ so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
 - **Simple** mode derives a palette from background mood, darkness, accent hues,
   and diagnostic hues. **Pro** mode exposes hex plus H/S/L sliders per token.
   Both edit one autosaved draft, share validation and configurable preview panes,
-  and support global palette helpers plus raw JSON import and download.
+  and support global palette helpers plus raw JSON import and download. Once every
+  hard rule passes, the editor also downloads ready-to-install zip archives for any
+  supported tool, or one full archive containing all formats and their install manuals.
 - Start by forking any theme, choosing a blank template, or walking through the
   three-step wizard. The old `/builder` URL redirects to `/editor`.
 

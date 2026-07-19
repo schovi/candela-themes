@@ -4,6 +4,7 @@ import { ThemeCard } from './ThemeCard';
 import { autoFix } from './autofix';
 import { DEFAULT_PANES, type PaneKey } from './samples/Panes';
 import { PanePicker } from './PanePicker';
+import { ExportControls } from './ExportControls';
 import { applyPaletteHelper, type PaletteHelper } from './paletteHelpers';
 import { DEFAULT_CHOICES, deriveTheme, SYNTAX_TOKENS, type GuidedChoices, type SyntaxToken } from './derive';
 // Shared rule module — the exact same invariants scripts/validate.js enforces
@@ -485,6 +486,7 @@ export function Playground() {
             <button onClick={copy} disabled={!canExport}>
               {copied ? 'Copied!' : 'Copy theme JSON'}
             </button>
+            <ExportControls theme={draft} canExport={canExport} />
             {!canExport && <span className="pg-blocked">Fix the failing rules to enable export.</span>}
           </div>
           <details className="pg-json">

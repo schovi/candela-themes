@@ -113,7 +113,7 @@ protan/deutan separation. It reads the JSON read-only — it reports, humans dec
 - *New theme*: add one entry to `themes[]` with every token filled in (nothing implicit) —
   `id`, `name`, `tone`, `tags` (non-empty; the gallery's tag filter), `mode` (`light`/`dark`), `fonts`, and the full `colors` block. `build/` regenerates for all
   formats automatically; add the theme to README's theme table (and the gallery) by hand.
-- *New tool format*: add an emitter in `scripts/generate.js` (hex helpers in `lib/colors.js`);
+- *New tool format*: add a pure emitter and install manual in `lib/emitters.js` (hex helpers in `lib/colors.js`);
   terminal formats derive from the top-level `ansiMapping` block. See README's "How themes are
   generated" for the token→format mappings.
 

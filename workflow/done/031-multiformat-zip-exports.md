@@ -1,6 +1,6 @@
 # 031 — Multi-format theme exports: client-side zips with install manuals
 
-priority: 8
+done: 2026-07-19
 depends: 030
 
 ## What & why

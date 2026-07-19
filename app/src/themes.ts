@@ -20,7 +20,15 @@ export interface Theme {
   colors: Record<ColorToken, string>;
 }
 
-export const themes: Theme[] = (data as { themes: Theme[] }).themes;
+export interface AnsiMapping {
+  normal: Record<string, ColorToken>;
+  bright: Record<string, ColorToken>;
+}
+
+const themeData = data as { themes: Theme[]; ansiMapping: AnsiMapping };
+
+export const themes: Theme[] = themeData.themes;
+export const ansiMapping = themeData.ansiMapping;
 export const themesById = new Map(themes.map((t) => [t.id, t]));
 
 // Light/dark comes from the explicit, validated `mode` field on each theme.

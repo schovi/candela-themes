@@ -409,11 +409,14 @@ a:focus-visible, button:focus-visible {
 .pg-contrast summary, .pg-json summary { cursor: pointer; color: var(--site-ink2); font-weight: 500; }
 .pg-contrast table { border-collapse: collapse; margin-top: 8px; font: 12px/1.4 var(--font-mono); }
 .pg-contrast th, .pg-contrast td { text-align: left; padding: 2px 14px 2px 0; }
-.pg-export { display: flex; align-items: center; gap: 12px; }
+.pg-export { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .pg-export button { font: 500 14px/1 inherit; padding: 8px 16px; border-radius: 7px; border: 1px solid var(--site-accent); background: var(--site-accent); color: #fbf7ee; cursor: pointer; }
 .pg-export button:hover { background: #274664; }
 .pg-export button:disabled { background: #d4cbb6; border-color: #d4cbb6; color: var(--site-faint); cursor: not-allowed; }
 .pg-blocked { color: #b5341f; }
+.format-export { display: flex; align-items: end; gap: 8px; flex-wrap: wrap; }
+.format-export label { display: grid; gap: 3px; color: var(--site-ink2); font-size: 11px; }
+.format-export select { min-width: 150px; padding: 7px 9px; border: 1px solid var(--site-border); border-radius: 7px; background: var(--site-surface); color: var(--site-ink); }
 .pg-json pre { margin: 8px 0 0; padding: 12px 14px; background: var(--site-surface); border: 1px solid var(--site-border); border-radius: 8px; overflow: auto; font: 12px/1.5 var(--font-mono); max-height: 320px; }
 
 /* Guided view — reuses the .playground grid; adds stepped choice controls. */
