@@ -1,6 +1,6 @@
 # 018 — Neovim plugin layout + packaging
 
-priority: 40
+done: 2026-07-19
 
 ## What & why
 

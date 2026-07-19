@@ -783,7 +783,7 @@ function emitSublime(themes) {
 }
 
 // --- Neovim emitter --------------------------------------------------------
-// One self-contained Lua colorscheme per theme (dist/nvim/candela-<id>.lua).
+// One self-contained Lua colorscheme per theme (build/nvim/colors/candela-<id>.lua).
 // Chosen over a base16 YAML: a Lua colorscheme drops into runtimepath and loads
 // with `:colorscheme candela-<id>` and zero plugins, where a base16 YAML needs
 // the base16 builder/plugin to apply at all. It sets legacy highlight groups
@@ -860,12 +860,39 @@ function emitNvimTheme(theme, ansiMapping) {
   return lines.join('\n');
 }
 
+function nvimReadme() {
+  return [
+    '# Candela Themes for Neovim',
+    '',
+    'Candela includes 14 light colorschemes for tired eyes and two dark companions.',
+    'Every colorscheme is self-contained and requires no Neovim plugins.',
+    '',
+    'Extract the release archive, then install that directory with your plugin manager.',
+    'For lazy.nvim:',
+    '',
+    '```lua',
+    "{ dir = '/path/to/candela-themes-nvim' }",
+    '```',
+    '',
+    'For a manual install, copy `colors/` into a directory on your Neovim runtimepath.',
+    'Then run `:colorscheme candela-sepia-paper` (or another Candela theme id).',
+    '',
+    'Generated from the Candela source of truth. Do not edit these files by hand.',
+    '',
+  ].join('\n');
+}
+
 function emitNvim(themes, ansiMapping) {
   const dir = path.join(BUILD, 'nvim');
-  fs.mkdirSync(dir, { recursive: true });
+  const colorsDir = path.join(dir, 'colors');
+  fs.mkdirSync(colorsDir, { recursive: true });
   for (const theme of themes) {
-    fs.writeFileSync(path.join(dir, `candela-${theme.id}.lua`), emitNvimTheme(theme, ansiMapping));
+    fs.writeFileSync(
+      path.join(colorsDir, `candela-${theme.id}.lua`),
+      emitNvimTheme(theme, ansiMapping),
+    );
   }
+  fs.writeFileSync(path.join(dir, 'README.md'), nvimReadme());
   return themes.length;
 }
 

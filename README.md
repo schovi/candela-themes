@@ -189,10 +189,18 @@ Run `npm run package:sublime`, then copy
 folder. For a loose-file install, copy the `.sublime-color-scheme` files from
 `build/sublime/` into `Packages/User/`. Package Control publishing is a follow-up.
 
-### Other editors (Neovim, Helix)
+### Neovim
 
-Drop-in files, all 16 themes, live under `build/{nvim,helix}/`. They are not
-published to a registry; install them per that editor's docs.
+The generated plugin (all 16 themes) lives at `build/nvim/`. Extract the release
+archive and point lazy.nvim or packer at that local plugin directory, or copy its
+`colors/` directory onto your runtimepath. Then run `:colorscheme
+candela-sepia-paper` (or another theme id). `npm run package:nvim` writes the
+release archive to `dist/candela-themes-nvim-<version>.tar.gz`.
+
+### Helix
+
+Drop-in files for all 16 themes live under `build/helix/`. Install them per
+Helix's documentation.
 
 ## How themes are generated
 
@@ -329,14 +337,15 @@ carries a modest `ui{}` frame (backgrounds from `bg`/`surface`, borders from
   `string→str`, `function→fn`, `number/constant→num`, `type/constructor→type`,
   `variable.special/attribute→builtin`, `operator/punctuation→punct`,
   `comment→faint`; `terminal.ansi.*` reuses `ansiMapping`.
-- **Neovim** → `build/nvim/candela-<id>.lua`, a self-contained Lua colorscheme
+- **Neovim** → `build/nvim/colors/candela-<id>.lua`, a self-contained Lua colorscheme
   (loads with `:colorscheme candela-<id>`, no plugins). Sets
   `vim.o.background = 'light'`, legacy highlight groups (`Keyword→kw`,
   `String→str`, `Function→fn`, `Number/Constant→num`, `Type→type`,
   `PreProc/Special→builtin`, `Operator/Delimiter→punct`, `Comment→faint` italic,
   `Normal = ink on bg`, `Visual = selection`, `CursorLine = lineHighlight`).
   Neovim links Treesitter groups to these by default. Plus the 16
-  `vim.g.terminal_color_N` slots from `ansiMapping`.
+  `vim.g.terminal_color_N` slots from `ansiMapping`. The generated plugin root
+  also includes a README with plugin-manager and manual installation instructions.
 - **Helix** → `build/helix/candela-<id>.toml`, a `[palette]` table of every token
   with top-level scope keys: `ui.background = bg`, `ui.text = ink`,
   `ui.cursor = {fg=bg, bg=cursor}`, `ui.selection = {bg=selection}`,
