@@ -171,13 +171,12 @@ a:focus-visible, button:focus-visible {
 .why {
   padding-top: 52px;
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  grid-template-columns: minmax(0, 10fr) minmax(0, 11fr);
   gap: 48px;
   align-items: start;
 }
 @media (max-width: 960px) { .why { grid-template-columns: 1fr; gap: 20px; } }
-.why-lead .home-body { max-width: 420px; }
-.why .home-list { max-width: 620px; }
+.why .home-list { max-width: none; }
 .why .home-list li { margin-bottom: 12px; }
 
 .theme-index { padding-top: 52px; padding-bottom: 72px; }
