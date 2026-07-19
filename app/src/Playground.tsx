@@ -48,7 +48,7 @@ const TOKEN_GROUPS: { label: string; tokens: ColorToken[] }[] = [
 ];
 
 function slugify(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'my-theme';
+  return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'my-theme';
 }
 
 function cloneTheme(t: Theme): Theme {
@@ -144,8 +144,10 @@ function TokenEditor({ token, value, gradient, setColor }: {
   gradient: string | null;
   setColor: (token: ColorToken, hex: string) => void;
 }) {
-  const valid = HEX.test(value);
-  const { h, s, l } = valid ? hexToHsl(value) : { h: 0, s: 0, l: 0 };
+  const [hexInput, setHexInput] = useState(value);
+  useEffect(() => setHexInput(value), [value]);
+  const valid = HEX.test(hexInput);
+  const { h, s, l } = hexToHsl(value);
   const setHsl = (part: 'h' | 's' | 'l', v: number) => setColor(token, hslToHex({ h, s, l, [part]: v }));
   return (
     <div className="pg-token-editor">
@@ -159,8 +161,12 @@ function TokenEditor({ token, value, gradient, setColor }: {
         <span className="pg-token">{token}</span>
         <input
           className={valid ? 'pg-hex' : 'pg-hex pg-hex-bad'}
-          value={value}
-          onChange={(e) => setColor(token, e.target.value)}
+          value={hexInput}
+          onChange={(event) => {
+            const next = event.target.value;
+            setHexInput(next);
+            if (HEX.test(next)) setColor(token, next);
+          }}
           aria-label={`${token} hex`}
         />
       </div>
@@ -194,7 +200,7 @@ function TokenEditor({ token, value, gradient, setColor }: {
 // the Editor. Missing and unknown ids leave the starting-point choice to the user.
 function initialFork(): { seed: string; theme: Theme; validDeepLink: boolean } {
   const id = new URLSearchParams(window.location.search).get('theme');
-  const match = id ? themes.find((t) => t.id === id) : undefined;
+  const match = id ? themes.find((theme) => theme.id === id || slugify(theme.name) === id) : undefined;
   return match
     ? { seed: match.id, theme: cloneTheme(match), validDeepLink: true }
     : { seed: themes[0].id, theme: cloneTheme(BLANK_TEMPLATE), validDeepLink: false };
@@ -355,6 +361,8 @@ export function Playground() {
     id,
     name: draft.name,
     tone: draft.tone,
+    tags: draft.tags?.length ? draft.tags : ['custom'],
+    mode: draft.mode,
     description: draft.description,
     fonts: draft.fonts,
     colors: draft.colors,
@@ -428,7 +436,7 @@ export function Playground() {
       <aside className="pg-editor">
         {mode === 'pro' ? <>
         <label className="pg-field">Name
-          <input value={draft.name} onChange={(e) => setField('name', e.target.value)} />
+          <input maxLength={60} value={draft.name} onChange={(e) => setField('name', e.target.value)} />
           <span className="pg-hint">id: {id}</span>
         </label>
         <label className="pg-field">Tone
@@ -464,7 +472,7 @@ export function Playground() {
         ))}
         </> : <>
           <label className="pg-field">Name
-            <input value={choices.name} onChange={(event) => updateChoices({ name: event.target.value })} />
+            <input maxLength={60} value={choices.name} onChange={(event) => updateChoices({ name: event.target.value })} />
           </label>
           {(wizardStep === 0 || wizardStep === 1) && <fieldset className="pg-group gd-step">
             <legend>1 · Background</legend>

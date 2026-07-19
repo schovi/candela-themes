@@ -4,7 +4,7 @@ Read by the `workflow` plugin skills (`/workflow:groom`, `/workflow:work`, `/wor
 
 ## Project
 
-Candela is a set of 14 light color themes for terminals and editors, tuned for eye-strain comfort. `themes/candela-themes.json` is the single source of truth (all palettes, tokens, ANSI mapping). Tool themes (terminal, VS Code, etc.) are generated from it by `scripts/generate.js`; the `app/` explorer previews every theme live. Token roles and design invariants live in root `AGENTS.md`.
+Candela is a set of 16 color themes (14 light and 2 dark) for terminals and editors, tuned for eye-strain comfort. `themes/candela-themes.json` is the single source of truth (all palettes, tokens, ANSI mapping). Tool themes (terminal, VS Code, etc.) are generated from it by `scripts/generate.js`; the `app/` explorer previews every theme live. Token roles and design invariants live in root `AGENTS.md`.
 
 ## Validation
 
@@ -20,7 +20,7 @@ node scripts/validate.js
 Two automated gates: JSON validity of the source of truth (malformed JSON silently
 breaks every generated theme), and `node scripts/validate.js` (Node, no deps), which
 enforces the design invariants — no pure-white `bg`/`surface`, `surface` lighter than
-`bg`, no pure-black `ink`, `ink`/`surface` ≥ 7:1 (AAA), every token present in all 14
+`bg`, no pure-black `ink`, `ink`/`surface` ≥ 7:1 (AAA), every token present in all 16
 themes, and ANSI mappings that reference real tokens. It exits non-zero on any hard
 violation, naming the theme + token. Accent-hue count is a warn-only judgement call and
 never fails the gate. Remaining visual correctness (exact hues, feel) is verified by eye
@@ -46,6 +46,6 @@ Read the doc leaf before editing mapped paths — behavior and invariants live i
 
 ## Local notes
 
-Design invariants that must survive any theme change (from root `AGENTS.md`): `bg`/`surface` never `#ffffff` (surface slightly lighter than bg); `ink` never `#000000` and clears ~7:1 (AAA) on `surface`; every syntax + diagnostic token and `faint` clears 4.5:1 (AA) on `bg`; `ink` on `selection` clears 4.5:1; diagnostics use unique hexes (`error`≠`num`, `warning`≠`kw`/`num`, `ok`≠`error`) with `error` vermillion / `ok` blue-green, luminance-separated; desaturation is the load-bearing anti-fringing rule (6–8 hues is taste); blue + orange carry the most meaning (colorblind-safe); every token filled in for all 14 themes — nothing implicit. Rules + rationale: `docs/vision-research.md`.
+Design invariants that must survive any theme change (from root `AGENTS.md`): `bg`/`surface` never `#ffffff` (surface slightly lighter than bg); `ink` never `#000000` and clears ~7:1 (AAA) on `surface`; every syntax + diagnostic token and `faint` clears 4.5:1 (AA) on `bg`; `ink` on `selection` clears 4.5:1; diagnostics use unique hexes (`error`≠`num`, `warning`≠`kw`/`num`, `ok`≠`error`) with `error` vermillion / `ok` blue-green, luminance-separated; desaturation is the load-bearing anti-fringing rule (6–8 hues is taste); blue + orange carry the most meaning (colorblind-safe); every token filled in for all 16 themes — nothing implicit. Rules + rationale: `docs/vision-research.md`.
 
 Theme explorer app lives in `app/` (Vite + React + TS, self-contained; repo root stays dependency-light). It reads the source-of-truth JSON directly. Run it with `cd app && npm install && npm run dev`; type-check/build with `npm run build`. Gallery screenshots regenerate via `cd app && npm run screenshots` (Playwright, needs `npx playwright install chromium` once) — see `docs/screenshots/README.md`. Editing the app is not gated by the theme validators above; run the app's `npm run build` to type-check app changes.

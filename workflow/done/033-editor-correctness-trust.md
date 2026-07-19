@@ -1,6 +1,6 @@
 # 033 — Editor correctness & trust fixes
 
-priority: 10
+done: 2026-07-19
 
 ## What & why
 

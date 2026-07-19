@@ -1,6 +1,6 @@
 # Candela Themes
 
-A set of 14 light color themes for terminals and editors, tuned for eye-strain comfort.
+A set of 16 color themes (14 light and 2 dark) for terminals and editors, tuned for eye-strain comfort.
 `themes/candela-themes.json` is the single source of truth (all palettes, tokens, ANSI
 mapping). User-facing docs (rationale, install, how themes are generated) live in the root
 [`README.md`](README.md); the vision-science rationale behind the invariants lives in
@@ -76,7 +76,8 @@ re-deriving the numbers.
   protans/deutans).
 - Fill in **all** tokens — nothing implicit — so generation never needs per-theme hacks.
 - `mode` is **`"light"` or `"dark"`** on every theme — the explicit light/dark signal. The
-  app's gallery filter and light/dark counts read it; never infer it from `tone`.
+  app's gallery filter and light/dark counts read it; never infer it from `tone`. A light
+  theme's `bg` HSL lightness is above 0.5; a dark theme's is below 0.5.
 
 `scripts/validate.js` (via `lib/rules.js`, Node, no deps) hard-gates the above: no pure-white
 `bg`/`surface`, `surface` lighter than `bg`, no pure-black `ink`, `ink`/`surface` ≥ 7:1 (AAA),
@@ -108,7 +109,7 @@ protan/deutan separation. It reads the JSON read-only — it reports, humans dec
    formats and Helix.
    All artifacts go into `dist/` (also gitignored).
 
-### Adding a 15th theme or new format
+### Adding a 17th theme or new format
 
 - *New theme*: add one entry to `themes[]` with every token filled in (nothing implicit) —
   `id`, `name`, `tone`, `tags` (non-empty; the gallery's tag filter), `mode` (`light`/`dark`), `fonts`, and the full `colors` block. `build/` regenerates for all
