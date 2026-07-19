@@ -33,7 +33,7 @@ export const DEFAULT_PANES: PaneKey[] = ['terminal', 'typescript', 'markdown', '
 // Token-colored span. Every sample reads its colors from the theme's CSS
 // variables (set on the card root), exactly like the original .dc.html showcase.
 function C({ t, children }: { t: ColorToken; children: ReactNode }) {
-  return <span style={{ color: `var(--${t})` }}>{children}</span>;
+  return <span data-token={t} style={{ color: `var(--${t})` }}>{children}</span>;
 }
 
 const preStyle: React.CSSProperties = {
@@ -131,13 +131,13 @@ function Markdown() {
         </p>
         <ul style={{ margin: '0 0 14px', paddingLeft: 20 }}>
           <li style={{ marginBottom: 4 }}>Soft, off-white paper background</li>
-          <li>Desaturated <a href="#" style={{ color: 'var(--fn)', textDecoration: 'underline', textUnderlineOffset: 2 }}>pastel syntax</a></li>
+          <li>Desaturated <a href="#" data-token="fn" style={{ color: 'var(--fn)', textDecoration: 'underline', textUnderlineOffset: 2 }}>pastel syntax</a></li>
         </ul>
         <blockquote style={{ margin: '0 0 14px', padding: '6px 14px', borderLeft: '3px solid var(--fn)', color: 'var(--ink2)', fontStyle: 'italic' }}>
           Body contrast tuned to ~9:1 — comfortably AAA.
         </blockquote>
         <p style={{ margin: 0 }}>
-          <code style={{ font: '13px var(--code-font), monospace', background: 'var(--bg)', color: 'var(--builtin)', padding: '2px 7px', borderRadius: 5, border: '1px solid var(--border)' }}>
+          <code data-token="builtin" style={{ font: '13px var(--code-font), monospace', background: 'var(--bg)', color: 'var(--builtin)', padding: '2px 7px', borderRadius: 5, border: '1px solid var(--border)' }}>
             brew install candela
           </code>
         </p>
@@ -157,8 +157,8 @@ function Diagnostics() {
     <Pane title="Problems — diagnostics">
       <pre style={preStyle}>
         <div><C t="faint"># squiggles</C></div>
-        <div><C t="kw">def</C> <C t="fn">totalDue</C><C t="punct">(</C><span style={squiggle('warning')}>invoices</span><C t="punct">)</C>   <C t="warning"># warning: unused</C></div>
-        <div>{'  '}<span style={squiggle('error')}>totl</span> <C t="punct">=</C> <C t="num">0</C>   <C t="error"># error: undefined name</C></div>
+        <div><C t="kw">def</C> <C t="fn">totalDue</C><C t="punct">(</C><span data-token="warning" style={squiggle('warning')}>invoices</span><C t="punct">)</C>   <C t="warning"># warning: unused</C></div>
+        <div>{'  '}<span data-token="error" style={squiggle('error')}>totl</span> <C t="punct">=</C> <C t="num">0</C>   <C t="error"># error: undefined name</C></div>
         <div>{'  '}<C t="fn">puts</C> <C t="str">"ok"</C>   <C t="ok">✓ passes</C></div>
         <div>{'​'}</div>
         <div><C t="faint"># diff</C></div>
@@ -183,10 +183,10 @@ function TypeScript() {
         <div><C t="kw">function</C> <C t="fn">totalDue</C><C t="punct">(</C>invoices<C t="punct">:</C> <C t="type">Invoice</C><C t="punct">[]):</C> <C t="type">number</C> <C t="punct">{'{'}</C></div>
         <div>{'  '}<C t="kw">return</C> invoices</div>
         <div>{'    '}<C t="punct">.</C><C t="fn">filter</C><C t="punct">((</C>i<C t="punct">)</C> <C t="kw">=&gt;</C> i<C t="punct">.</C>cents <C t="punct">&gt;</C> <C t="num">0</C><C t="punct">)</C></div>
-        <div>{'    '}<C t="punct">.</C><C t="fn">reduce</C><C t="punct">((</C>sum<C t="punct">,</C> i<C t="punct">)</C> <C t="kw">=&gt;</C> sum <C t="punct">+</C> i<C t="punct">.</C><span style={squiggle('error')}>cetns</span><C t="punct">,</C> <C t="num">0</C><C t="punct">)</C>  <C t="error">// no 'cetns'</C></div>
+        <div>{'    '}<C t="punct">.</C><C t="fn">reduce</C><C t="punct">((</C>sum<C t="punct">,</C> i<C t="punct">)</C> <C t="kw">=&gt;</C> sum <C t="punct">+</C> i<C t="punct">.</C><span data-token="error" style={squiggle('error')}>cetns</span><C t="punct">,</C> <C t="num">0</C><C t="punct">)</C>  <C t="error">// no 'cetns'</C></div>
         <div><C t="punct">{'}'}</C></div>
         <div>{'​'}</div>
-        <div><C t="kw">const</C> <span style={squiggle('warning')}>unused</span> <C t="punct">=</C> <C t="fn">totalDue</C><C t="punct">([])</C>  <C t="warning">// warning: never read</C></div>
+        <div><C t="kw">const</C> <span data-token="warning" style={squiggle('warning')}>unused</span> <C t="punct">=</C> <C t="fn">totalDue</C><C t="punct">([])</C>  <C t="warning">// warning: never read</C></div>
       </pre>
     </Pane>
   );

@@ -1,6 +1,6 @@
 # 035 — Token↔preview highlighting and plain-language labels
 
-priority: 30
+done: 2026-07-19
 
 ## What & why
 

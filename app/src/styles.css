@@ -342,6 +342,35 @@ a:focus-visible, button:focus-visible {
   color: var(--ink2);
   margin-left: 8px;
 }
+.theme-card[data-highlight] [data-token] {
+  opacity: 0.38;
+  transition: opacity 120ms ease, filter 120ms ease;
+}
+.theme-card[data-highlight="bg"] [data-token="bg"],
+.theme-card[data-highlight="surface"] [data-token="surface"],
+.theme-card[data-highlight="border"] [data-token="border"],
+.theme-card[data-highlight="ink"] [data-token="ink"],
+.theme-card[data-highlight="ink2"] [data-token="ink2"],
+.theme-card[data-highlight="faint"] [data-token="faint"],
+.theme-card[data-highlight="selection"] [data-token="selection"],
+.theme-card[data-highlight="cursor"] [data-token="cursor"],
+.theme-card[data-highlight="lineHighlight"] [data-token="lineHighlight"],
+.theme-card[data-highlight="kw"] [data-token="kw"],
+.theme-card[data-highlight="str"] [data-token="str"],
+.theme-card[data-highlight="fn"] [data-token="fn"],
+.theme-card[data-highlight="num"] [data-token="num"],
+.theme-card[data-highlight="type"] [data-token="type"],
+.theme-card[data-highlight="builtin"] [data-token="builtin"],
+.theme-card[data-highlight="punct"] [data-token="punct"],
+.theme-card[data-highlight="error"] [data-token="error"],
+.theme-card[data-highlight="warning"] [data-token="warning"],
+.theme-card[data-highlight="ok"] [data-token="ok"] {
+  opacity: 1;
+  filter: drop-shadow(0 0 0.22em currentColor);
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-card[data-highlight] [data-token] { transition: none; }
+}
 
 /* Playground */
 .playground {
@@ -505,6 +534,7 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .gd-chip { width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(0, 0, 0, 0.2); display: inline-block; flex-shrink: 0; }
 .gd-diag { gap: 8px; }
 .gd-diag-label { min-width: 96px; font: 12px/1 var(--font-mono); font-weight: 500; }
+.gd-axis { min-width: auto !important; font-size: 11px; color: var(--site-faint); }
 .gd-diag input[type="range"] { background-repeat: no-repeat; background-size: 100% 8px; background-position: center; }
 
 .gallery-head {

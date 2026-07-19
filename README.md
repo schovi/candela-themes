@@ -399,6 +399,8 @@ so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
 - **Simple** mode derives a palette from background mood, darkness, accent hues,
   and diagnostic hues. **Pro** mode exposes hex plus H/S/L sliders per token.
   Both edit one browser-local autosaved draft and share configurable preview panes.
+  Token controls pair their abbreviations with plain-language labels; hover, keyboard
+  focus, and the selected Simple accent highlight matching preview text.
   **Download draft JSON** downloads that working theme for backup or later reopening.
   Global palette helpers are fixed `-50` to `50` controls: each thumb keeps its
   exact value, and the combined palette is recalculated from one stable baseline

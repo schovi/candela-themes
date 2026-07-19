@@ -39,7 +39,13 @@ const STORAGE_KEY = 'candela-editor-state-v1';
 const CODE_FONTS = ['JetBrains Mono', 'IBM Plex Mono', 'Fira Code', 'Source Code Pro', 'DM Mono', 'Space Mono', 'Spline Sans Mono', 'Red Hat Mono', 'Roboto Mono', 'Overpass Mono', 'Comic Code'];
 const PROSE_FONTS = ['Source Serif 4', 'IBM Plex Sans', 'Atkinson Hyperlegible', 'Newsreader', 'DM Sans', 'Work Sans', 'Spline Sans', 'Hanken Grotesk', 'Public Sans', 'Lora'];
 const MOODS = [{ value: 'warm', label: 'Warm' }, { value: 'cool', label: 'Cool' }, { value: 'neutral', label: 'Neutral' }] as const;
-const DIAG_TOKENS = [{ key: 'error', label: 'error (red)' }, { key: 'warning', label: 'warning (amber)' }, { key: 'ok', label: 'ok (green)' }] as const;
+const DIAG_TOKENS = [{ key: 'error', label: 'error · errors' }, { key: 'warning', label: 'warning · warnings' }, { key: 'ok', label: 'ok · success' }] as const;
+const TOKEN_LABELS: Record<ColorToken, string> = {
+  bg: 'background', surface: 'surface', border: 'borders', ink: 'primary text', ink2: 'secondary text',
+  faint: 'comments', selection: 'selection', cursor: 'cursor', lineHighlight: 'active line',
+  kw: 'keywords', str: 'strings', fn: 'functions', num: 'numbers', type: 'types',
+  builtin: 'built-ins', punct: 'punctuation', error: 'errors', warning: 'warnings', ok: 'success',
+};
 const HUE_TRACK = 'linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)';
 const TOKEN_GROUPS: { label: string; tokens: ColorToken[] }[] = [
   { label: 'UI', tokens: Object.keys(tokenReference.ui) as ColorToken[] },
@@ -138,11 +144,12 @@ function lightnessZone(work: Theme, token: ColorToken, expected: ColorToken[]): 
   return allPass ? null : passZoneGradient(pass);
 }
 
-function TokenEditor({ token, value, gradient, setColor }: {
+function TokenEditor({ token, value, gradient, setColor, setHighlightedToken }: {
   token: ColorToken;
   value: string;
   gradient: string | null;
   setColor: (token: ColorToken, hex: string) => void;
+  setHighlightedToken: (token: ColorToken | null) => void;
 }) {
   const [hexInput, setHexInput] = useState(value);
   useEffect(() => setHexInput(value), [value]);
@@ -150,7 +157,13 @@ function TokenEditor({ token, value, gradient, setColor }: {
   const { h, s, l } = hexToHsl(value);
   const setHsl = (part: 'h' | 's' | 'l', v: number) => setColor(token, hslToHex({ h, s, l, [part]: v }));
   return (
-    <div className="pg-token-editor">
+    <div
+      className="pg-token-editor"
+      onPointerEnter={() => setHighlightedToken(token)}
+      onPointerLeave={() => setHighlightedToken(null)}
+      onFocus={() => setHighlightedToken(token)}
+      onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setHighlightedToken(null); }}
+    >
       <div className="pg-color">
         <input
           type="color"
@@ -158,7 +171,7 @@ function TokenEditor({ token, value, gradient, setColor }: {
           onChange={(e) => setColor(token, e.target.value)}
           aria-label={`${token} color`}
         />
-        <span className="pg-token">{token}</span>
+        <span className="pg-token">{token} · {TOKEN_LABELS[token]}</span>
         <input
           className={valid ? 'pg-hex' : 'pg-hex pg-hex-bad'}
           value={hexInput}
@@ -221,6 +234,7 @@ export function Playground() {
   const [panes, setPanes] = useState<Set<PaneKey>>(() => new Set(initial.panes));
   const [editing, setEditing] = useState(initial.editing);
   const [selectedAccent, setSelectedAccent] = useState<SyntaxToken>('kw');
+  const [highlightedToken, setHighlightedToken] = useState<ColorToken | null>(null);
   const [importError, setImportError] = useState('');
   const [copied, setCopied] = useState(false);
   const [validationOpenOverride, setValidationOpenOverride] = useState<boolean | null>(null);
@@ -474,6 +488,7 @@ export function Playground() {
                 value={draft.colors[token] ?? ''}
                 gradient={passZones[token] ?? null}
                 setColor={setColor}
+                setHighlightedToken={setHighlightedToken}
               />
             ))}
           </fieldset>
@@ -494,11 +509,11 @@ export function Playground() {
           <fieldset className="pg-group gd-step">
             <legend>2 · Accents</legend>
             <HueWheel hue={choices.accentHues[selectedAccent]} onChange={(hue) => updateChoices({ accentHues: { ...choices.accentHues, [selectedAccent]: hue } })} />
-            <div className="gd-tokens">{SYNTAX_TOKENS.map((token) => <button key={token} type="button" className={selectedAccent === token ? 'gd-token gd-token-on' : 'gd-token'} onClick={() => setSelectedAccent(token)}><span className="gd-chip" style={{ background: draft.colors[token] }} />{token}</button>)}</div>
+            <div className="gd-tokens">{SYNTAX_TOKENS.map((token) => <button key={token} type="button" className={selectedAccent === token ? 'gd-token gd-token-on' : 'gd-token'} onClick={() => setSelectedAccent(token)} onPointerEnter={() => setHighlightedToken(token)} onPointerLeave={() => setHighlightedToken(null)} onFocus={() => setHighlightedToken(token)} onBlur={() => setHighlightedToken(null)}><span className="gd-chip" style={{ background: draft.colors[token] }} />{token} · {TOKEN_LABELS[token]}</button>)}</div>
           </fieldset>
           <fieldset className="pg-group gd-step">
             <legend>3 · Diagnostics</legend>
-            {DIAG_TOKENS.map((diagnostic) => <label key={diagnostic.key} className="gd-slider gd-diag"><span className="gd-chip" style={{ background: draft.colors[diagnostic.key] }} /><span className="gd-diag-label">{diagnostic.label}</span><input type="range" min={0} max={360} value={choices.diagnosticHues[diagnostic.key]} style={{ backgroundImage: HUE_TRACK }} onChange={(event) => updateChoices({ diagnosticHues: { ...choices.diagnosticHues, [diagnostic.key]: Number(event.target.value) } })} /></label>)}
+            {DIAG_TOKENS.map((diagnostic) => <label key={diagnostic.key} className="gd-slider gd-diag" onPointerEnter={() => setHighlightedToken(diagnostic.key)} onPointerLeave={() => setHighlightedToken(null)} onFocus={() => setHighlightedToken(diagnostic.key)} onBlur={() => setHighlightedToken(null)}><span className="gd-chip" style={{ background: draft.colors[diagnostic.key] }} /><span className="gd-diag-label">{diagnostic.label}</span><span className="gd-axis">Hue</span><input type="range" min={0} max={360} value={choices.diagnosticHues[diagnostic.key]} style={{ backgroundImage: HUE_TRACK }} aria-label={`${diagnostic.key} hue`} onChange={(event) => updateChoices({ diagnosticHues: { ...choices.diagnosticHues, [diagnostic.key]: Number(event.target.value) } })} /></label>)}
           </fieldset>
         </>}
 
@@ -522,7 +537,7 @@ export function Playground() {
           </div>
         </div>
         <PanePicker panes={panes} onChange={setPanes} />
-        <ThemeCard theme={draft} panes={panes} />
+        <ThemeCard theme={draft} panes={panes} highlightToken={highlightedToken ?? (mode === 'simple' ? selectedAccent : undefined)} />
         <details className="pg-validation" open={validationOpenOverride ?? failures.length > 0}>
           <summary onClick={(event) => {
             event.preventDefault();

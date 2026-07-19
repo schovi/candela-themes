@@ -1,10 +1,10 @@
-import type { Theme } from './themes';
+import type { ColorToken, Theme } from './themes';
 import { themeVars } from './themes';
 import { SamplePanes, type PaneKey } from './samples/Panes';
 
-export function ThemeCard({ theme, panes, customizeHref }: { theme: Theme; panes: Set<PaneKey>; customizeHref?: string }) {
+export function ThemeCard({ theme, panes, customizeHref, highlightToken }: { theme: Theme; panes: Set<PaneKey>; customizeHref?: string; highlightToken?: ColorToken }) {
   return (
-    <section id={theme.id} className="theme-card" data-theme-id={theme.id} style={{ ...themeVars(theme), background: 'var(--bg)' }}>
+    <section id={theme.id} className="theme-card" data-theme-id={theme.id} data-highlight={highlightToken} style={{ ...themeVars(theme), background: 'var(--bg)' }}>
       <div className="card-inner">
         <div className="card-head">
           <h2 style={{ font: "600 30px/1 var(--prose-font), serif", color: 'var(--ink)' }}>{theme.name}</h2>
