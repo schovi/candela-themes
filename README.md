@@ -417,8 +417,11 @@ so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
 - The editor first offers four starting points: a balanced blank theme, any Candela
   theme, the Simple editor, or a saved JSON draft. A saved draft can be opened only
   as a starting point, and the chooser hides after a selection.
-  A saved browser draft or valid `/editor?theme=<id>` link opens the editor directly.
-  Confirmed **Start over** clears that browser draft and returns to the chooser. The
+  A saved browser draft opens the editor directly with a resume notice. A valid
+  `/editor?theme=<id>` link opens directly unless a draft is present, in which case the
+  editor keeps the draft visible until the visitor chooses whether to replace it. Unknown
+  theme ids show a notice and fall back to the saved draft or starting-point chooser.
+  Confirmed **Start over** clears the browser draft and returns to the chooser. The
   old `/builder` URL redirects to `/editor`.
 
 The editor runs the same invariants as `scripts/validate.js` (shared code in `lib/`), so

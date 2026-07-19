@@ -1,6 +1,6 @@
 # 037 — In-app dialogs, resume banner, and notices
 
-priority: 50
+done: 2026-07-19
 
 ## What & why
 
@@ -41,3 +41,7 @@ Excluded: share-link payloads (039 reuses this flow), visual re-skin (040).
 - Unknown theme id shows the not-found notice and falls back gracefully.
 - Dialog is keyboard-usable (focus moves in, Escape cancels, focus returns).
 - `npm run build` (app) type-checks clean.
+
+## Notes
+
+Task 034 shipped first, so the Pro-to-Simple confirmation no longer exists.

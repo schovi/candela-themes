@@ -5,6 +5,7 @@ import { autoFix } from './autofix';
 import { DEFAULT_PANES, type PaneKey } from './samples/Panes';
 import { PanePicker } from './PanePicker';
 import { ExportControls } from './ExportControls';
+import { Dialog } from './Dialog';
 import { applyPaletteHelperValues, type PaletteHelper, type PaletteHelperValues } from './paletteHelpers';
 import { DEFAULT_CHOICES, deriveChoices, deriveTheme, SYNTAX_TOKENS, type GuidedChoices, type SyntaxToken } from './derive';
 // Shared rule module — the exact same invariants scripts/validate.js enforces
@@ -256,21 +257,22 @@ function TokenEditor({ token, value, gradient, setColor, setHighlightedToken }: 
 
 // A valid ?theme=<id> deep-link (from a gallery card's Customize action) preloads
 // the Editor. Missing and unknown ids leave the starting-point choice to the user.
-function initialFork(): { seed: string; theme: Theme; validDeepLink: boolean } {
+function initialFork(): { seed: string; theme: Theme; validDeepLink: boolean; requestedId: string | null } {
   const id = new URLSearchParams(window.location.search).get('theme');
   const match = id ? themes.find((theme) => theme.id === id || slugify(theme.name) === id) : undefined;
   return match
-    ? { seed: match.id, theme: cloneTheme(match), validDeepLink: true }
-    : { seed: themes[0].id, theme: cloneTheme(BLANK_TEMPLATE), validDeepLink: false };
+    ? { seed: match.id, theme: cloneTheme(match), validDeepLink: true, requestedId: id }
+    : { seed: themes[0].id, theme: cloneTheme(BLANK_TEMPLATE), validDeepLink: false, requestedId: id };
 }
 
 export function Playground() {
   const initial = useMemo(() => {
     const fork = initialFork();
     const stored = loadStoredState();
-    if (fork.validDeepLink && stored && !window.confirm('Replace your saved working draft with this theme?')) return { ...stored, editing: true };
-    if (fork.validDeepLink) return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: true };
-    return stored ? { ...stored, editing: true } : { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: false };
+    if (fork.validDeepLink && stored) return { ...stored, editing: true, replacement: fork.theme, notice: null };
+    if (fork.validDeepLink) return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: true, replacement: null, notice: null };
+    if (stored) return { ...stored, editing: true, replacement: null, notice: fork.requestedId ? `Theme '${fork.requestedId}' not found.` : `Resuming your draft '${stored.draft.name}'` };
+    return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: false, replacement: null, notice: fork.requestedId ? `Theme '${fork.requestedId}' not found.` : null };
   }, []);
   const [seed, setSeed] = useState(() => initialFork().seed);
   const [draft, setDraft] = useState<Theme>(initial.draft);
@@ -278,6 +280,9 @@ export function Playground() {
   const [mode, setMode] = useState<EditorMode>(initial.mode);
   const [panes, setPanes] = useState<Set<PaneKey>>(() => new Set(initial.panes));
   const [editing, setEditing] = useState(initial.editing);
+  const [replacement, setReplacement] = useState<Theme | null>(initial.replacement);
+  const [notice, setNotice] = useState<string | null>(initial.notice);
+  const [startOverDialogOpen, setStartOverDialogOpen] = useState(false);
   const [selectedAccent, setSelectedAccent] = useState<SyntaxToken>('kw');
   const [highlightedToken, setHighlightedToken] = useState<ColorToken | null>(null);
   const [importError, setImportError] = useState('');
@@ -347,12 +352,22 @@ export function Playground() {
     setEditing(true);
   };
 
-  const startOver = () => {
-    if (!window.confirm('Start over? This clears your saved draft and all current edits.')) return;
+  const startOver = () => setStartOverDialogOpen(true);
+
+  const confirmStartOver = () => {
     localStorage.removeItem(STORAGE_KEY);
     setSeed(themes[0].id); replaceDraftAndResetHelpers(cloneTheme(BLANK_TEMPLATE)); setChoices(structuredClone(DEFAULT_CHOICES));
     setMode('pro'); setPanes(new Set(DEFAULT_PANES)); setImportError('');
-    setCopied(false); setEditing(false);
+    setCopied(false); setEditing(false); setNotice(null); setStartOverDialogOpen(false);
+  };
+
+  const openReplacement = () => {
+    if (!replacement) return;
+    setSeed(replacement.id);
+    replaceDraftAndResetHelpers(cloneTheme(replacement));
+    setChoices(structuredClone(DEFAULT_CHOICES));
+    setMode('pro'); setPanes(new Set(DEFAULT_PANES)); setImportError('');
+    setCopied(false); setEditing(true); setReplacement(null);
   };
 
   const setHelperValue = (helper: PaletteHelper, value: number) => {
@@ -453,6 +468,11 @@ export function Playground() {
           until all pass.
         </p>
       </header>
+      {notice && <div className="studio-notice" role="status">
+        <span>{notice}{notice.startsWith('Resuming') && ' — '}</span>
+        {notice.startsWith('Resuming') && <button type="button" onClick={startOver}>Start fresh?</button>}
+        <button className="studio-notice-dismiss" type="button" aria-label="Dismiss notice" onClick={() => setNotice(null)}>×</button>
+      </div>}
       {!editing ? <div className="studio-welcome">
         <div className="studio-welcome-head">
           <h3>How would you like to begin?</h3>
@@ -647,6 +667,21 @@ export function Playground() {
       </div>
       </div>
       </>}
+      {replacement && <Dialog
+        title="Open theme?"
+        message={`Open ${replacement.name}? This replaces your draft '${draft.name}'.`}
+        confirmLabel="Open"
+        cancelLabel="Keep my draft"
+        onConfirm={openReplacement}
+        onCancel={() => setReplacement(null)}
+      />}
+      {startOverDialogOpen && <Dialog
+        title="Start over?"
+        message="This clears your saved draft and all current edits."
+        confirmLabel="Start over"
+        onConfirm={confirmStartOver}
+        onCancel={() => setStartOverDialogOpen(false)}
+      />}
     </section>
   );
 }

@@ -399,6 +399,16 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .studio-upload-card:focus-within { outline: 2px solid var(--site-accent); outline-offset: 2px; }
 .studio-upload-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; clip-path: inset(50%); }
 .studio-import-error { margin: 16px 0 0; color: #a12d1b; text-align: center; }
+.studio-notice { max-width: 1100px; margin: 18px auto 0; padding: 10px 14px; display: flex; align-items: center; gap: 4px; border: 1px solid var(--site-border); border-radius: 8px; background: var(--site-surface); color: var(--site-ink2); }
+.studio-notice button { padding: 0; border: 0; background: none; color: var(--site-accent); font: inherit; text-decoration: underline; cursor: pointer; }
+.studio-notice .studio-notice-dismiss { margin-left: auto; padding: 0 4px; color: var(--site-faint); font-size: 20px; line-height: 1; text-decoration: none; }
+.studio-dialog { width: min(420px, calc(100% - 40px)); padding: 24px; border: 1px solid var(--site-border); border-radius: 12px; background: var(--site-surface); color: var(--site-ink); box-shadow: 0 18px 60px rgba(40, 34, 22, 0.24); }
+.studio-dialog::backdrop { background: rgba(50, 47, 40, 0.42); }
+.studio-dialog h3 { margin: 0 0 8px; font-size: 20px; }
+.studio-dialog p { margin: 0; color: var(--site-ink2); line-height: 1.5; }
+.studio-dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 22px; }
+.studio-dialog-actions button { padding: 8px 12px; border: 1px solid var(--site-border); border-radius: 6px; background: var(--site-surface); color: var(--site-ink); font: inherit; cursor: pointer; }
+.studio-dialog-actions .studio-dialog-confirm { border-color: var(--site-accent); background: var(--site-accent); color: #fbf7ee; }
 .studio-toolbar { max-width: 1180px; margin: 0 auto; padding: 16px 40px 0; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
 .studio-draft-actions, .studio-modes { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .studio-toolbar button, .studio-toolbar select, .studio-start-card select, .studio-fork-card button, .wizard-nav button { padding: 7px 10px; border: 1px solid var(--site-border); border-radius: 6px; background: var(--site-surface); color: var(--site-ink); font: inherit; cursor: pointer; }
@@ -418,6 +428,7 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 @media (max-width: 600px) {
   .studio-start-options { grid-template-columns: 1fr; }
   .studio-welcome, .studio-toolbar { padding-left: 20px; padding-right: 20px; }
+  .studio-notice { margin-left: 20px; margin-right: 20px; }
   .studio-toolbar { align-items: stretch; }
   .studio-draft-actions { width: 100%; }
   .studio-save-status { width: 100%; }
