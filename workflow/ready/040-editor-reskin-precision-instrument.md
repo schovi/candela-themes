@@ -88,6 +88,12 @@ inherited (kept for cross-page coherence, not chosen); the added layer derives f
 the subject (photometry), numbering encodes the real wizard sequence, and the
 signature encodes real data.
 
+**Direction note (041 follows).** The editor will move to a full-width three-zone app
+shell in task 041; this task keeps the current page frame. Build the new anatomy
+(dial, gauge sliders, token rail, validation meter, export block) as portable,
+self-contained components/classes not welded to the two-column container, and don't
+over-invest in the page frame itself — 041 replaces it.
+
 ## Spec
 
 - Ownership surfaces: `app/src/styles.css` (dominant), `app/src/Playground.tsx` and
