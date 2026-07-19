@@ -8,6 +8,7 @@
     "build": "node scripts/generate.js",
     "validate": "node scripts/validate.js",
     "package:intellij": "node scripts/package-intellij.js",
+    "package:zed": "node scripts/package-zed.js",
     "package:vscode": "node scripts/package-vscode.js",
     "app": "cd app && npm run dev",
     "app:screenshots": "cd app && npm run screenshots"

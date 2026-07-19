@@ -100,7 +100,8 @@ protan/deutan separation. It reads the JSON read-only — it reports, humans dec
    more languages opt-in). The **Editor** page runs the same `lib/rules.js` invariants live.
 6. Commit the JSON only — `build/` is generated and gitignored, not committed. To package
    an extension, `npm run package:vscode` writes a `.vsix` and `npm run package:intellij`
-   writes a plugin `.zip` into `dist/` (also gitignored).
+   writes a plugin `.zip`; `npm run package:zed` writes a clean extension directory.
+   All artifacts go into `dist/` (also gitignored).
 
 ### Adding a 15th theme or new format
 

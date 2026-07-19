@@ -175,11 +175,17 @@ per that terminal's docs:
 | Windows Terminal | `build/windows-terminal/<id>.json` (fragment) |
 | Ghostty | `build/ghostty/<id>.conf` |
 
-### Other editors (Zed, Sublime, Neovim, Helix)
+### Zed
 
-Drop-in files, all 16 themes, under `build/{zed,sublime,nvim,helix}/`. Not
-published to any registry; install per that editor's docs. Zed is one
-theme-family file (`build/zed/candela.json`); the others are one file per theme.
+The generated extension (all 16 themes) lives at `build/zed/`. In Zed, open
+**Extensions**, choose **Install Dev Extension**, and select that directory.
+`npm run package:zed` copies the complete extension to `dist/zed/` for sharing or
+installation the same way. Registry publishing is a follow-up.
+
+### Other editors (Sublime, Neovim, Helix)
+
+Drop-in files, all 16 themes, under `build/{sublime,nvim,helix}/`. They are not
+published to any registry; install per that editor's docs.
 
 ## How themes are generated
 
@@ -300,7 +306,8 @@ carries a modest `ui{}` frame (backgrounds from `bg`/`surface`, borders from
 
 ### Zed, Neovim, Helix
 
-- **Zed** → `build/zed/candela.json`, one theme *family* file (`$schema` v0.2.0,
+- **Zed** → `build/zed/`, a theme extension with an `extension.toml` manifest
+  and one theme *family* at `themes/candela.json` (`$schema` v0.2.0,
   `themes[]`), each entry `appearance: "light"`. UI keys map
   `editor.background = surface`, `editor.foreground = ink`,
   `editor.active_line.background = lineHighlight`,

@@ -611,8 +611,8 @@ function emitIntellij(themes) {
 }
 
 // --- Zed emitter -----------------------------------------------------------
-// Zed consumes a single theme-family JSON: one file, all 14 themes as entries
-// with appearance "light" and a style{} block (editor UI + syntax{}). The
+// Zed consumes a theme extension with an extension.toml manifest and a single
+// theme-family JSON under themes/, with all themes as entries. The
 // integrated terminal ANSI keys reuse the shared ansiMapping so terminal and
 // editor stay in sync, exactly like VS Code.
 
@@ -685,7 +685,18 @@ function zedStyle(theme, ansiMapping) {
 
 function emitZed(themes, ansiMapping) {
   const dir = path.join(BUILD, 'zed');
-  fs.mkdirSync(dir, { recursive: true });
+  const themesDir = path.join(dir, 'themes');
+  fs.mkdirSync(themesDir, { recursive: true });
+  fs.writeFileSync(path.join(dir, 'extension.toml'), [
+    'id = "candela-themes-theme"',
+    'name = "Candela Themes"',
+    'version = "0.1.0"',
+    'schema_version = 1',
+    'authors = ["Candela <CHANGEME@example.com>"]',
+    'description = "Light themes for tired eyes"',
+    'repository = "https://github.com/CHANGEME/candela-themes"',
+    '',
+  ].join('\n'));
   const family = {
     $schema: 'https://zed.dev/schema/themes/v0.2.0.json',
     name: 'Candela',
@@ -696,7 +707,7 @@ function emitZed(themes, ansiMapping) {
       style: zedStyle(theme, ansiMapping),
     })),
   };
-  fs.writeFileSync(path.join(dir, 'candela.json'), JSON.stringify(family, null, 2) + '\n');
+  fs.writeFileSync(path.join(themesDir, 'candela.json'), JSON.stringify(family, null, 2) + '\n');
   return themes.length;
 }
 
@@ -935,7 +946,7 @@ function main() {
   console.log(`Generated ${count} files for ${themes.length} themes across ${FORMATS.length} formats.`);
   console.log(`Generated build/vscode/ extension: package.json + ${vscodeCount} theme files.`);
   console.log(`Generated build/intellij/ plugin: plugin.xml + ${intellijCount} .icls + ${intellijCount} .theme.json.`);
-  console.log(`Generated build/zed/candela.json family with ${zedCount} themes.`);
+  console.log(`Generated build/zed/ extension with ${zedCount} themes.`);
   console.log(`Generated build/sublime/ ${sublimeCount} .sublime-color-scheme files.`);
   console.log(`Generated build/nvim/ ${nvimCount} Lua colorschemes.`);
   console.log(`Generated build/helix/ ${helixCount} .toml themes.`);
