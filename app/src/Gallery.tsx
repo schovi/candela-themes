@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { themes } from './themes';
 import { ThemeCard } from './ThemeCard';
-import { PANE_ORDER, DEFAULT_PANES, type PaneKey } from './samples/Panes';
+import { DEFAULT_PANES, type PaneKey } from './samples/Panes';
+import { PanePicker } from './PanePicker';
 
 const ALL_TAGS = [...new Set(themes.flatMap((t) => t.tags))].sort();
 
@@ -44,13 +45,6 @@ export function Gallery() {
     setTags((prev) => {
       const next = new Set(prev);
       next.has(tag) ? next.delete(tag) : next.add(tag);
-      return next;
-    });
-
-  const togglePane = (key: PaneKey) =>
-    setPanes((prev) => {
-      const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
       return next;
     });
 
@@ -106,19 +100,7 @@ export function Gallery() {
             </button>
           )}
         </div>
-        <fieldset className="pane-toggles">
-          <legend>Previews</legend>
-          {PANE_ORDER.map((p) => (
-            <label key={p.key}>
-              <input
-                type="checkbox"
-                checked={panes.has(p.key)}
-                onChange={() => togglePane(p.key)}
-              />
-              {p.label}
-            </label>
-          ))}
-        </fieldset>
+        <PanePicker panes={panes} onChange={setPanes} />
       </div>
 
       {visible.length === 0 ? (

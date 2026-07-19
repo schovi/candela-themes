@@ -1,6 +1,6 @@
 # 030 — Unified theme tool: one page, simple/pro modes, helpers, persistence
 
-priority: 5
+done: 2026-07-19
 
 ## What & why
 

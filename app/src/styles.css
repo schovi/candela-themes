@@ -344,6 +344,15 @@ a:focus-visible, button:focus-visible {
   padding: 20px 40px 60px;
   align-items: start;
 }
+.studio-toolbar { max-width: 1180px; margin: 0 auto; padding: 16px 40px 0; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.studio-starts, .studio-modes { display: flex; align-items: end; gap: 8px; flex-wrap: wrap; }
+.studio-starts label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; }
+.studio-toolbar button, .studio-toolbar select, .wizard-nav button, .studio-raw button, .raw-import { padding: 7px 10px; border: 1px solid var(--site-border); border-radius: 6px; background: var(--site-surface); color: var(--site-ink); font: inherit; cursor: pointer; }
+.studio-modes .is-on { background: var(--site-accent); color: #fbf7ee; }
+.wizard-nav { display: flex; justify-content: space-between; gap: 8px; }
+.studio-helpers, .studio-raw { display: flex; flex-direction: column; gap: 9px; }
+.studio-helpers .gd-slider > span { min-width: 78px; }
+.raw-import { display: flex; flex-direction: column; gap: 5px; }
 @media (max-width: 980px) { .playground { grid-template-columns: 1fr; } }
 .pg-editor {
   position: sticky;

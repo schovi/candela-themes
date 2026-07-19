@@ -1,28 +1,18 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { themes, tokenReference, type Theme, type ColorToken } from './themes';
 import { ThemeCard } from './ThemeCard';
 import { autoFix } from './autofix';
-import { PANE_ORDER, type PaneKey } from './samples/Panes';
+import { DEFAULT_PANES, type PaneKey } from './samples/Panes';
+import { PanePicker } from './PanePicker';
+import { applyPaletteHelper, type PaletteHelper } from './paletteHelpers';
+import { DEFAULT_CHOICES, deriveTheme, SYNTAX_TOKENS, type GuidedChoices, type SyntaxToken } from './derive';
 // Shared rule module — the exact same invariants scripts/validate.js enforces
 // (both import the same lib/ ESM; change a rule once and both reflect it).
 import { expectedTokens, checkTheme } from '../../lib/rules.js';
 import { contrastRatio, hexToHsl, hslToHex } from '../../lib/colors.js';
 
-const ALL_PANES = new Set<PaneKey>(PANE_ORDER.map((p) => p.key));
-
 // Curated Google Fonts — exactly the families already loaded in index.html, so
 // every choice previews immediately with no extra network work.
-const CODE_FONTS = [
-  'JetBrains Mono', 'IBM Plex Mono', 'Fira Code', 'Source Code Pro', 'DM Mono',
-  'Space Mono', 'Spline Sans Mono', 'Red Hat Mono', 'Roboto Mono', 'Overpass Mono',
-  // Not a Google Font: previews for anyone with it installed, else falls back to monospace.
-  'Comic Code',
-];
-const PROSE_FONTS = [
-  'Source Serif 4', 'IBM Plex Sans', 'Atkinson Hyperlegible', 'Newsreader', 'DM Sans',
-  'Work Sans', 'Spline Sans', 'Hanken Grotesk', 'Public Sans', 'Lora',
-];
-
 // A neutral warm-paper starting point that already clears every hard invariant,
 // so "start from scratch" opens green rather than buried in failures.
 const BLANK_TEMPLATE: Theme = {
@@ -44,6 +34,12 @@ const BLANK_TEMPLATE: Theme = {
 };
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
+const STORAGE_KEY = 'candela-editor-state-v1';
+const CODE_FONTS = ['JetBrains Mono', 'IBM Plex Mono', 'Fira Code', 'Source Code Pro', 'DM Mono', 'Space Mono', 'Spline Sans Mono', 'Red Hat Mono', 'Roboto Mono', 'Overpass Mono', 'Comic Code'];
+const PROSE_FONTS = ['Source Serif 4', 'IBM Plex Sans', 'Atkinson Hyperlegible', 'Newsreader', 'DM Sans', 'Work Sans', 'Spline Sans', 'Hanken Grotesk', 'Public Sans', 'Lora'];
+const MOODS = [{ value: 'warm', label: 'Warm' }, { value: 'cool', label: 'Cool' }, { value: 'neutral', label: 'Neutral' }] as const;
+const DIAG_TOKENS = [{ key: 'error', label: 'error (red)' }, { key: 'warning', label: 'warning (amber)' }, { key: 'ok', label: 'ok (green)' }] as const;
+const HUE_TRACK = 'linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)';
 const TOKEN_GROUPS: { label: string; tokens: ColorToken[] }[] = [
   { label: 'UI', tokens: Object.keys(tokenReference.ui) as ColorToken[] },
   { label: 'Syntax', tokens: Object.keys(tokenReference.syntax) as ColorToken[] },
@@ -56,6 +52,37 @@ function slugify(name: string): string {
 
 function cloneTheme(t: Theme): Theme {
   return { ...t, fonts: { ...t.fonts }, colors: { ...t.colors } };
+}
+
+type EditorMode = 'simple' | 'pro';
+interface StoredState { draft: Theme; choices: GuidedChoices; mode: EditorMode; panes: PaneKey[] }
+
+function HueWheel({ hue, onChange }: { hue: number; onChange: (hue: number) => void }) {
+  const element = useRef<HTMLDivElement | null>(null);
+  const pick = (clientX: number, clientY: number) => {
+    if (!element.current) return;
+    const bounds = element.current.getBoundingClientRect();
+    const angle = Math.atan2(clientX - bounds.left - bounds.width / 2, -(clientY - bounds.top - bounds.height / 2)) * 180 / Math.PI;
+    onChange(Math.round((angle + 360) % 360));
+  };
+  const radians = hue * Math.PI / 180;
+  return <div ref={element} className="gd-wheel" role="slider" aria-label="Accent hue" aria-valuemin={0} aria-valuemax={360} aria-valuenow={hue} onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); pick(event.clientX, event.clientY); }} onPointerMove={(event) => { if (event.buttons) pick(event.clientX, event.clientY); }}><div className="gd-wheel-marker" style={{ left: `${50 + 42 * Math.sin(radians)}%`, top: `${50 - 42 * Math.cos(radians)}%` }} /></div>;
+}
+
+function validImportedTheme(value: unknown): value is Theme {
+  if (!value || typeof value !== 'object') return false;
+  const theme = value as Partial<Theme>;
+  const tokens = expectedTokens(tokenReference) as ColorToken[];
+  return typeof theme.name === 'string' && typeof theme.tone === 'string' &&
+    !!theme.fonts && typeof theme.fonts.code === 'string' && typeof theme.fonts.prose === 'string' &&
+    !!theme.colors && tokens.every((token) => HEX.test(theme.colors?.[token] ?? ''));
+}
+
+function loadStoredState(): StoredState | null {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null') as StoredState | null;
+    return parsed && validImportedTheme(parsed.draft) && (parsed.mode === 'simple' || parsed.mode === 'pro') ? parsed : null;
+  } catch { return null; }
 }
 
 const ZONE_STEPS = 100;
@@ -173,15 +200,77 @@ function initialFork(): { seed: string; theme: Theme } {
 }
 
 export function Playground() {
+  const initial = useMemo(() => {
+    const fork = initialFork();
+    const stored = loadStoredState();
+    const hasDeepLink = new URLSearchParams(window.location.search).has('theme');
+    if (hasDeepLink && stored && !window.confirm('Replace your saved working draft with this theme?')) return stored;
+    if (hasDeepLink) return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES] };
+    return stored ?? { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES] };
+  }, []);
   const [seed, setSeed] = useState(() => initialFork().seed);
-  const [draft, setDraft] = useState<Theme>(() => initialFork().theme);
+  const [draft, setDraft] = useState<Theme>(initial.draft);
+  const [choices, setChoices] = useState<GuidedChoices>(initial.choices);
+  const [mode, setMode] = useState<EditorMode>(initial.mode);
+  const [panes, setPanes] = useState<Set<PaneKey>>(() => new Set(initial.panes));
+  const [selectedAccent, setSelectedAccent] = useState<SyntaxToken>('kw');
+  const [wizardStep, setWizardStep] = useState(0);
+  const [importError, setImportError] = useState('');
   const [copied, setCopied] = useState(false);
+  const helperBaseline = useRef<Theme | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ draft, choices, mode, panes: [...panes] }));
+  }, [draft, choices, mode, panes]);
 
   const reseed = (value: string) => {
     setSeed(value);
     setCopied(false);
     const source = value === 'blank' ? BLANK_TEMPLATE : themes.find((t) => t.id === value)!;
     setDraft(cloneTheme(source));
+    setMode('pro');
+  };
+
+  const updateChoices = (patch: Partial<GuidedChoices>) => {
+    const next = { ...choices, ...patch };
+    setChoices(next);
+    setDraft(deriveTheme(next));
+    setCopied(false);
+  };
+
+  const switchMode = (next: EditorMode) => {
+    if (next === mode) return;
+    if (next === 'simple' && !window.confirm('Switching to Simple will discard manual token edits and re-derive the palette. Continue?')) return;
+    if (next === 'simple') setDraft(deriveTheme(choices));
+    setMode(next);
+  };
+
+  const reset = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setSeed('blank'); setDraft(cloneTheme(BLANK_TEMPLATE)); setChoices(structuredClone(DEFAULT_CHOICES));
+    setMode('pro'); setPanes(new Set(DEFAULT_PANES)); setWizardStep(0); setImportError('');
+  };
+
+  const runHelper = (helper: PaletteHelper, value: number) => {
+    const baseline = helperBaseline.current ?? draft;
+    setDraft(applyPaletteHelper(baseline, helper, value / 50));
+    setCopied(false);
+  };
+
+  const rawJson = JSON.stringify(draft, null, 2);
+  const downloadRaw = () => {
+    const url = URL.createObjectURL(new Blob([rawJson], { type: 'application/json' }));
+    const link = document.createElement('a'); link.href = url; link.download = `${slugify(draft.name)}.json`; link.click();
+    URL.revokeObjectURL(url);
+  };
+  const importRaw = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      const parsed = JSON.parse(await file.text());
+      if (!validImportedTheme(parsed)) throw new Error('Theme must include every token as a #rrggbb color.');
+      setDraft({ ...parsed, id: parsed.id || slugify(parsed.name), tags: parsed.tags ?? ['custom'], mode: parsed.mode ?? 'light' });
+      setMode('pro'); setImportError('');
+    } catch (error) { setImportError(error instanceof Error ? error.message : 'Could not import this file.'); }
   };
 
   const setColor = (token: ColorToken, hex: string) => {
@@ -257,18 +346,26 @@ export function Playground() {
           list names each failing rule, and export stays blocked until all pass.
         </p>
       </header>
+      <div className="studio-toolbar">
+        <div className="studio-starts" role="group" aria-label="Start a theme">
+          <label>Fork existing
+            <select value={seed} onChange={(event) => reseed(event.target.value)}>
+              <option value="blank">Blank template</option>
+              {themes.map((theme) => <option key={theme.id} value={theme.id}>{theme.name}</option>)}
+            </select>
+          </label>
+          <button type="button" onClick={() => reseed('blank')}>Blank template</button>
+          <button type="button" onClick={() => { reset(); setMode('simple'); setWizardStep(1); }}>Start wizard</button>
+          <button type="button" onClick={reset}>Reset / start over</button>
+        </div>
+        <div className="studio-modes" role="group" aria-label="Editing mode">
+          <button type="button" className={mode === 'simple' ? 'is-on' : ''} onClick={() => switchMode('simple')}>Simple</button>
+          <button type="button" className={mode === 'pro' ? 'is-on' : ''} onClick={() => switchMode('pro')}>Pro</button>
+        </div>
+      </div>
       <div className="playground">
       <aside className="pg-editor">
-        <label className="pg-field">
-          Start from
-          <select value={seed} onChange={(e) => reseed(e.target.value)}>
-            <option value="blank">Blank template</option>
-            {themes.map((t) => (
-              <option key={t.id} value={t.id}>Fork · {t.name}</option>
-            ))}
-          </select>
-        </label>
-
+        {mode === 'pro' ? <>
         <label className="pg-field">Name
           <input value={draft.name} onChange={(e) => setField('name', e.target.value)} />
           <span className="pg-hint">id: {id}</span>
@@ -304,6 +401,42 @@ export function Playground() {
             ))}
           </fieldset>
         ))}
+        </> : <>
+          <label className="pg-field">Name
+            <input value={choices.name} onChange={(event) => updateChoices({ name: event.target.value })} />
+          </label>
+          {(wizardStep === 0 || wizardStep === 1) && <fieldset className="pg-group gd-step">
+            <legend>1 · Background</legend>
+            <div className="gd-moods">{MOODS.map((mood) => (
+              <label key={mood.value} className={choices.mood === mood.value ? 'gd-mood gd-mood-on' : 'gd-mood'}>
+                <input type="radio" name="mood" checked={choices.mood === mood.value} onChange={() => updateChoices({ mood: mood.value })} />{mood.label}
+              </label>
+            ))}</div>
+            <label className="gd-slider"><span>Darkness</span><input type="range" min={0} max={100} value={choices.darkness} onChange={(event) => updateChoices({ darkness: Number(event.target.value) })} /></label>
+          </fieldset>}
+          {(wizardStep === 0 || wizardStep === 2) && <fieldset className="pg-group gd-step">
+            <legend>2 · Accents</legend>
+            <HueWheel hue={choices.accentHues[selectedAccent]} onChange={(hue) => updateChoices({ accentHues: { ...choices.accentHues, [selectedAccent]: hue } })} />
+            <div className="gd-tokens">{SYNTAX_TOKENS.map((token) => <button key={token} type="button" className={selectedAccent === token ? 'gd-token gd-token-on' : 'gd-token'} onClick={() => setSelectedAccent(token)}><span className="gd-chip" style={{ background: draft.colors[token] }} />{token}</button>)}</div>
+          </fieldset>}
+          {(wizardStep === 0 || wizardStep === 3) && <fieldset className="pg-group gd-step">
+            <legend>3 · Diagnostics</legend>
+            {DIAG_TOKENS.map((diagnostic) => <label key={diagnostic.key} className="gd-slider gd-diag"><span className="gd-chip" style={{ background: draft.colors[diagnostic.key] }} /><span className="gd-diag-label">{diagnostic.label}</span><input type="range" min={0} max={360} value={choices.diagnosticHues[diagnostic.key]} style={{ backgroundImage: HUE_TRACK }} onChange={(event) => updateChoices({ diagnosticHues: { ...choices.diagnosticHues, [diagnostic.key]: Number(event.target.value) } })} /></label>)}
+          </fieldset>}
+          {wizardStep > 0 && <div className="wizard-nav"><button type="button" disabled={wizardStep === 1} onClick={() => setWizardStep((step) => step - 1)}>Back</button><button type="button" onClick={() => wizardStep === 3 ? setWizardStep(0) : setWizardStep((step) => step + 1)}>{wizardStep === 3 ? 'Finish wizard' : 'Next'}</button></div>}
+        </>}
+
+        <fieldset className="pg-group studio-helpers">
+          <legend>Palette helpers</legend>
+          {(['contrast', 'saturation', 'warmth', 'darkness'] as PaletteHelper[]).map((helper) => <label key={helper} className="gd-slider"><span>{helper[0].toUpperCase() + helper.slice(1)}</span><input type="range" min={-50} max={50} defaultValue={0} onPointerDown={() => { helperBaseline.current = cloneTheme(draft); }} onFocus={() => { helperBaseline.current ??= cloneTheme(draft); }} onChange={(event) => runHelper(helper, Number(event.target.value))} onPointerUp={(event) => { helperBaseline.current = null; event.currentTarget.value = '0'; }} onBlur={(event) => { helperBaseline.current = null; event.currentTarget.value = '0'; }} /></label>)}
+        </fieldset>
+
+        <fieldset className="pg-group studio-raw">
+          <legend>Working JSON</legend>
+          <button type="button" onClick={downloadRaw}>Download raw JSON</button>
+          <label className="raw-import">Import raw JSON<input type="file" accept="application/json,.json" onChange={(event) => { void importRaw(event.target.files?.[0]); event.currentTarget.value = ''; }} /></label>
+          {importError && <p className="pg-fails" role="alert">{importError}</p>}
+        </fieldset>
       </aside>
 
       <div className="pg-preview">
@@ -359,7 +492,8 @@ export function Playground() {
             <pre>{json}</pre>
           </details>
         </div>
-        <ThemeCard theme={draft} panes={ALL_PANES} />
+        <PanePicker panes={panes} onChange={setPanes} />
+        <ThemeCard theme={draft} panes={panes} />
       </div>
       </div>
     </section>

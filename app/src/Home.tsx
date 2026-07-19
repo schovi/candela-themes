@@ -112,9 +112,8 @@ export function Home() {
           VS Code, JetBrains, Zed, Sublime, Neovim, and Helix.
         </p>
         <p>
-          Browse all {themes.length} in the <a href="/themes">gallery</a>, tweak one in the{' '}
-          <a href="/editor">Theme Editor</a>, or derive your own in the{' '}
-          <a href="/builder">Theme Builder</a>.
+          Browse all {themes.length} in the <a href="/themes">gallery</a>, then fork one or
+          build your own in the <a href="/editor">Theme Editor</a>.
         </p>
         <p>
           Install instructions and the full format list live in the{' '}

@@ -1,13 +1,12 @@
 import type { ReactNode } from 'react';
 import { brand } from './branding';
 
-type Page = 'home' | 'themes' | 'editor' | 'builder';
+type Page = 'home' | 'themes' | 'editor';
 
 const NAV: { page: Page; label: string; href: string }[] = [
   { page: 'home', label: 'Home', href: '/' },
   { page: 'themes', label: 'Themes', href: '/themes' },
   { page: 'editor', label: 'Editor', href: '/editor' },
-  { page: 'builder', label: 'Builder', href: '/builder' },
 ];
 
 // Shared chrome for every page. Cross-page nav is plain <a href> to real static

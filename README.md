@@ -383,22 +383,22 @@ Then from the repo root, `npm run app` serves the explorer and
 
 The explorer is a static multi-page site (built by Vite, no SPA/router). Its
 home page and gallery are pre-rendered into the built HTML, then React hydrates
-them for interactivity; the Editor and Builder remain client-rendered. The home
+them for interactivity; the Editor remains client-rendered. The home
 page at `/` pitches Candela and indexes every theme, the gallery at
 `/themes` shows each theme across sample panes (with a filter bar — fulltext
 search over name/tone/tags/fonts, a mode select, and multi-select tag chips — and a per-theme anchor
 so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
 **Customize** action that opens the Editor preloaded with that theme via
-`/editor?theme=<id>`), and the two theme-building tools each get their own page:
+`/editor?theme=<id>`). The unified theme tool lives at `/editor`:
 
-- **Editor** (`/editor`) forks any theme or starts blank, with hex plus H/S/L
-  sliders per token and live preview. The lightness track shades the range that
-  still clears each token's contrast floor.
-- **Builder** (`/builder`) is the guided path: pick a background mood and
-  darkness, choose accent hues on a wheel, set the three diagnostic hues, and it
-  derives a full valid palette for you.
+- **Simple** mode derives a palette from background mood, darkness, accent hues,
+  and diagnostic hues. **Pro** mode exposes hex plus H/S/L sliders per token.
+  Both edit one autosaved draft, share validation and configurable preview panes,
+  and support global palette helpers plus raw JSON import and download.
+- Start by forking any theme, choosing a blank template, or walking through the
+  three-step wizard. The old `/builder` URL redirects to `/editor`.
 
-Both run the same invariants as `scripts/validate.js` (shared code in `lib/`), so
+The editor runs the same invariants as `scripts/validate.js` (shared code in `lib/`), so
 **Copy theme JSON** stays disabled until every hard rule passes. Paste the result
 into a new `themes[]` entry and it clears `node scripts/validate.js` as-is.
 

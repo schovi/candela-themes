@@ -66,3 +66,16 @@ candela.schovi.cz stays attached and 301-redirects with path preserved via
 `app/public/_redirects` (a zone redirect rule was blocked by API token permissions; the
 `_redirects` file is repo-versioned, which is better anyway). All docs and the GitHub
 homepage point at candela.ink only.
+
+## D5 — Theme building is one persisted tool with Simple and Pro modes (2026-07-19)
+
+**Problem.** Separate Editor and Builder pages created two drafts, duplicated previews and
+validation, and made users choose a tool before they understood the difference.
+
+**Options.** (A) Keep `/editor` and `/builder` separate as chosen in D2. (B) Put both editing
+surfaces over one draft on `/editor`, with Simple and Pro modes and a redirect from the old
+Builder URL.
+
+**Choice.** B, superseding D2. One persisted working draft now moves between guided Simple
+controls and per-token Pro controls. `/builder` redirects permanently to `/editor`. This
+keeps D1's static multi-page architecture and does not add a client-side router.
