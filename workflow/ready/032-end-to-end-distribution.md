@@ -1,6 +1,6 @@
 # 032 — End-to-end release distribution
 
-priority: 10
+priority: 90
 
 ## What & why
 
