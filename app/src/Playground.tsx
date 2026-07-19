@@ -7,7 +7,7 @@ import { PanePicker } from './PanePicker';
 import { ExportControls } from './ExportControls';
 import { Dialog } from './Dialog';
 import { applyPaletteHelperValues, type PaletteHelper, type PaletteHelperValues } from './paletteHelpers';
-import { DEFAULT_CHOICES, deriveChoices, deriveTheme, SYNTAX_TOKENS, type GuidedChoices, type SyntaxToken } from './derive';
+import { ACCENT_L, ACCENT_SAT, DEFAULT_CHOICES, DIAG, MOOD_BG, deriveChoices, deriveTheme, SYNTAX_TOKENS, type GuidedChoices, type SyntaxToken } from './derive';
 import { decodeSharedDraft, encodeSharedDraft, type SharedDraft, type SharedDraftMode } from './shareDraft';
 // Shared rule module — the exact same invariants scripts/validate.js enforces
 // (both import the same lib/ ESM; change a rule once and both reflect it).
@@ -48,7 +48,19 @@ const TOKEN_LABELS: Record<ColorToken, string> = {
   kw: 'keywords', str: 'strings', fn: 'functions', num: 'numbers', type: 'types',
   builtin: 'built-ins', punct: 'punctuation', error: 'errors', warning: 'warnings', ok: 'success',
 };
-const HUE_TRACK = 'linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)';
+// Channel-true gradient tracks, always rendered at the saturation/lightness the
+// control actually produces — never the full-RGB neon band (the anti-fringing rule).
+function hueTrack(s: number, l: number): string {
+  const stops = Array.from({ length: 13 }, (_, i) => hslToHex({ h: (i * 30) % 360, s, l }));
+  return `linear-gradient(90deg, ${stops.join(', ')})`;
+}
+function satTrack(h: number, l: number): string {
+  return `linear-gradient(90deg, ${hslToHex({ h, s: 0, l })}, ${hslToHex({ h, s: 1, l })})`;
+}
+function lightTrack(h: number, s: number): string {
+  const stops = [0, 0.25, 0.5, 0.75, 1].map((l) => hslToHex({ h, s, l }));
+  return `linear-gradient(90deg, ${stops.join(', ')})`;
+}
 const VISION_MODES = [
   { value: 'normal', label: 'Normal' },
   { value: 'grayscale', label: 'Grayscale' },
@@ -140,16 +152,95 @@ type EditorMode = SharedDraftMode;
 interface StoredState { draft: Theme; choices: GuidedChoices; mode: EditorMode; panes: PaneKey[] }
 interface DraftReplacement { draft: Theme; mode: EditorMode }
 
-function HueWheel({ hue, onChange }: { hue: number; onChange: (hue: number) => void }) {
+// Calibrated scale: gradient track (channel-true where the axis is a color
+// channel), engraved ticks under it, and a mono numeric readout. The optional
+// zone overlay (lightness pass range) layers on top of the track gradient.
+function GaugeSlider({ label, min, max, value, onChange, track, zone, unit, disabled, ariaLabel }: {
+  label: string;
+  min: number;
+  max: number;
+  value: number;
+  onChange: (value: number) => void;
+  track?: string;
+  zone?: string | null;
+  unit?: string;
+  disabled?: boolean;
+  ariaLabel: string;
+}) {
+  const layers = [zone, track].filter(Boolean).join(', ');
+  return (
+    <div className="gauge">
+      <span className="gauge-label" aria-hidden="true">{label}</span>
+      <div className={track ? 'gauge-track has-gradient' : 'gauge-track'} style={layers ? { backgroundImage: layers } : undefined}>
+        <input
+          type="range" min={min} max={max} value={value} disabled={disabled}
+          onChange={(event) => onChange(Number(event.target.value))}
+          aria-label={ariaLabel}
+        />
+      </div>
+      <output className="gauge-readout">{value}{unit ?? ''}</output>
+    </div>
+  );
+}
+
+// The signature element: an engraved hue dial. The ring is rendered exactly at
+// the saturation/lightness band guided accents ship at (never full RGB), with
+// degree ticks and every syntax token's hue plotted as a marker on the ring.
+const DIAL_RING = `conic-gradient(from 0deg, ${Array.from({ length: 25 }, (_, i) => hslToHex({ h: (i * 15) % 360, s: ACCENT_SAT, l: ACCENT_L })).join(', ')})`;
+const DIAL_TICKS = Array.from({ length: 24 }, (_, i) => i * 15);
+
+function HueDial({ hues, selected, colors, onChange }: {
+  hues: Record<SyntaxToken, number>;
+  selected: SyntaxToken;
+  colors: Record<string, string>;
+  onChange: (hue: number) => void;
+}) {
   const element = useRef<HTMLDivElement | null>(null);
+  const hue = hues[selected];
   const pick = (clientX: number, clientY: number) => {
     if (!element.current) return;
     const bounds = element.current.getBoundingClientRect();
     const angle = Math.atan2(clientX - bounds.left - bounds.width / 2, -(clientY - bounds.top - bounds.height / 2)) * 180 / Math.PI;
     onChange(Math.round((angle + 360) % 360));
   };
-  const radians = hue * Math.PI / 180;
-  return <div ref={element} className="gd-wheel" role="slider" aria-label="Accent hue" aria-valuemin={0} aria-valuemax={360} aria-valuenow={hue} onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); pick(event.clientX, event.clientY); }} onPointerMove={(event) => { if (event.buttons) pick(event.clientX, event.clientY); }}><div className="gd-wheel-marker" style={{ left: `${50 + 42 * Math.sin(radians)}%`, top: `${50 - 42 * Math.cos(radians)}%` }} /></div>;
+  const markerStyle = (tokenHue: number) => {
+    const radians = tokenHue * Math.PI / 180;
+    return { left: `${50 + 39.5 * Math.sin(radians)}%`, top: `${50 - 39.5 * Math.cos(radians)}%` };
+  };
+  return (
+    <div className="gd-dial-wrap">
+      <span className="gd-dial-degree gd-dial-degree-n" aria-hidden="true">0°</span>
+      <span className="gd-dial-degree gd-dial-degree-e" aria-hidden="true">90°</span>
+      <span className="gd-dial-degree gd-dial-degree-s" aria-hidden="true">180°</span>
+      <span className="gd-dial-degree gd-dial-degree-w" aria-hidden="true">270°</span>
+      <div
+        ref={element} className="gd-dial" role="slider" tabIndex={0}
+        aria-label={`${selected} hue`} aria-valuemin={0} aria-valuemax={360} aria-valuenow={hue}
+        onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); pick(event.clientX, event.clientY); }}
+        onPointerMove={(event) => { if (event.buttons) pick(event.clientX, event.clientY); }}
+        onKeyDown={(event) => {
+          const step = event.key === 'ArrowRight' || event.key === 'ArrowUp' ? 1 : event.key === 'ArrowLeft' || event.key === 'ArrowDown' ? -1 : event.key === 'PageUp' ? 15 : event.key === 'PageDown' ? -15 : 0;
+          if (!step) return;
+          event.preventDefault();
+          onChange((hue + step + 360) % 360);
+        }}
+      >
+        <div className="gd-dial-ring" style={{ background: DIAL_RING }} />
+        {DIAL_TICKS.map((angle) => <span key={angle} className={angle % 90 === 0 ? 'gd-dial-tick gd-dial-tick-major' : 'gd-dial-tick'} style={{ transform: `rotate(${angle}deg)` }} />)}
+        {SYNTAX_TOKENS.map((token) => (
+          <span
+            key={token}
+            className={token === selected ? 'gd-dial-marker is-selected' : 'gd-dial-marker'}
+            style={{ ...markerStyle(hues[token]), background: colors[token] }}
+          />
+        ))}
+        <div className="gd-dial-center" aria-hidden="true">
+          <strong>{hue}°</strong>
+          <span>{selected}</span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function validImportedTheme(value: unknown): value is Theme {
@@ -240,10 +331,12 @@ function lightnessZone(work: Theme, token: ColorToken, expected: ColorToken[]): 
   return allPass ? null : passZoneGradient(pass);
 }
 
-function TokenEditor({ token, value, gradient, setColor, setHighlightedToken }: {
+function TokenEditor({ token, value, gradient, open, onToggle, setColor, setHighlightedToken }: {
   token: ColorToken;
   value: string;
   gradient: string | null;
+  open: boolean;
+  onToggle: () => void;
   setColor: (token: ColorToken, hex: string) => void;
   setHighlightedToken: (token: ColorToken | null) => void;
 }) {
@@ -254,7 +347,7 @@ function TokenEditor({ token, value, gradient, setColor, setHighlightedToken }: 
   const setHsl = (part: 'h' | 's' | 'l', v: number) => setColor(token, hslToHex({ h, s, l, [part]: v }));
   return (
     <div
-      className="pg-token-editor"
+      className={open ? 'pg-token-editor is-open' : 'pg-token-editor'}
       onPointerEnter={() => setHighlightedToken(token)}
       onPointerLeave={() => setHighlightedToken(null)}
       onFocus={() => setHighlightedToken(token)}
@@ -267,7 +360,10 @@ function TokenEditor({ token, value, gradient, setColor, setHighlightedToken }: 
           onChange={(e) => setColor(token, e.target.value)}
           aria-label={`${token} color`}
         />
-        <span className="pg-token">{token} · {TOKEN_LABELS[token]}</span>
+        <button type="button" className="pg-token-toggle" aria-expanded={open} onClick={onToggle}>
+          <span className="pg-token">{token} · {TOKEN_LABELS[token]}</span>
+          <span className="pg-token-hsl">{Math.round(h)}° {Math.round(s * 100)} {Math.round(l * 100)}</span>
+        </button>
         <input
           className={valid ? 'pg-hex' : 'pg-hex pg-hex-bad'}
           value={hexInput}
@@ -279,28 +375,14 @@ function TokenEditor({ token, value, gradient, setColor, setHighlightedToken }: 
           aria-label={`${token} hex`}
         />
       </div>
-      <div className="pg-sliders">
-        <label>H</label>
-        <input
-          type="range" min={0} max={360} value={Math.round(h)} disabled={!valid}
-          onChange={(e) => setHsl('h', Number(e.target.value))}
-          aria-label={`${token} hue`}
-        />
-        <label>S</label>
-        <input
-          type="range" min={0} max={100} value={Math.round(s * 100)} disabled={!valid}
-          onChange={(e) => setHsl('s', Number(e.target.value) / 100)}
-          aria-label={`${token} saturation`}
-        />
-        <label>L</label>
-        <div className="pg-l-wrap" style={gradient ? { backgroundImage: gradient } : undefined}>
-          <input
-            type="range" className="pg-l-slider" min={0} max={100} value={Math.round(l * 100)} disabled={!valid}
-            onChange={(e) => setHsl('l', Number(e.target.value) / 100)}
-            aria-label={`${token} lightness`}
-          />
-        </div>
-      </div>
+      {open && <div className="pg-sliders">
+        <GaugeSlider label="H" min={0} max={360} value={Math.round(h)} disabled={!valid} unit="°"
+          track={hueTrack(s, l)} onChange={(v) => setHsl('h', v)} ariaLabel={`${token} hue`} />
+        <GaugeSlider label="S" min={0} max={100} value={Math.round(s * 100)} disabled={!valid}
+          track={satTrack(h, l)} onChange={(v) => setHsl('s', v / 100)} ariaLabel={`${token} saturation`} />
+        <GaugeSlider label="L" min={0} max={100} value={Math.round(l * 100)} disabled={!valid}
+          track={lightTrack(h, s)} zone={gradient} onChange={(v) => setHsl('l', v / 100)} ariaLabel={`${token} lightness`} />
+      </div>}
     </div>
   );
 }
@@ -341,6 +423,7 @@ export function Playground() {
   const [notice, setNotice] = useState<string | null>(initial.notice);
   const [startOverDialogOpen, setStartOverDialogOpen] = useState(false);
   const [selectedAccent, setSelectedAccent] = useState<SyntaxToken>('kw');
+  const [openToken, setOpenToken] = useState<ColorToken | null>(null);
   const [highlightedToken, setHighlightedToken] = useState<ColorToken | null>(null);
   const [importError, setImportError] = useState('');
   const [copied, setCopied] = useState(false);
@@ -357,6 +440,11 @@ export function Playground() {
   }, [draft, choices, mode, panes, editing]);
 
   useEffect(() => setShareLinkCopied(false), [draft, mode]);
+
+  // The orchestrated moment: a short green sweep when validation flips to
+  // all-pass. CSS guards it behind prefers-reduced-motion.
+  const [justPassed, setJustPassed] = useState(false);
+  const prevFailureCount = useRef<number | null>(null);
 
   const replaceDraftAndResetHelpers = (next: Theme) => {
     helperBaseline.current = cloneTheme(next);
@@ -513,6 +601,21 @@ export function Playground() {
   const json = JSON.stringify(exportEntry, null, 2);
   const canExport = failures.length === 0;
 
+  useEffect(() => {
+    const was = prevFailureCount.current;
+    prevFailureCount.current = failures.length;
+    if (was !== null && was > 0 && failures.length === 0) {
+      setJustPassed(true);
+      const timer = setTimeout(() => setJustPassed(false), 1100);
+      return () => clearTimeout(timer);
+    }
+  }, [failures.length]);
+
+  const jumpToValidation = () => {
+    setValidationOpenOverride(true);
+    requestAnimationFrame(() => validationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  };
+
   const copy = () => {
     if (!canExport) return;
     navigator.clipboard?.writeText(json).then(() => setCopied(true), () => setCopied(false));
@@ -575,41 +678,37 @@ export function Playground() {
         </div>
         {importError && <p className="studio-import-error" role="alert">{importError}</p>}
       </div> : <>
-      <div className="studio-toolbar">
-        <div className="studio-draft-actions">
-          <span className="studio-save-status">Saved automatically</span>
-          <button type="button" onClick={downloadRaw}>Download draft JSON</button>
-          <button className="studio-start-over" type="button" onClick={startOver}>Start over</button>
+      <div className="studio-bar">
+        <div className="studio-bar-name">
+          <input
+            maxLength={60}
+            value={mode === 'pro' ? draft.name : choices.name}
+            onChange={(event) => mode === 'pro' ? setField('name', event.target.value) : updateChoiceMetadata({ name: event.target.value })}
+            aria-label="Theme name"
+          />
+          <span className="studio-bar-meta">id: {id} · <span className="studio-save-dot" aria-hidden="true" />saved</span>
         </div>
+        <button
+          type="button"
+          className={`studio-status-chip ${canExport ? 'is-pass' : 'is-fail'}${justPassed ? ' is-celebrating' : ''}`}
+          onClick={jumpToValidation}
+        >
+          {canExport
+            ? `✓ All checks pass${warnings.length ? ` · ${warnings.length} warning${warnings.length === 1 ? '' : 's'}` : ''}`
+            : `✕ ${failures.length} check${failures.length === 1 ? '' : 's'} failing`}
+        </button>
         <div className="studio-modes" role="group" aria-label="Editing mode">
           <button type="button" className={mode === 'simple' ? 'is-on' : ''} onClick={() => switchMode('simple')}>Simple</button>
           <button type="button" className={mode === 'pro' ? 'is-on' : ''} onClick={() => switchMode('pro')}>Pro</button>
+        </div>
+        <div className="studio-bar-actions">
+          <button type="button" onClick={downloadRaw}>Download draft JSON</button>
+          <button className="studio-start-over" type="button" onClick={startOver}>Start over</button>
         </div>
       </div>
       <div className="playground">
       <aside className="pg-editor">
         {mode === 'pro' ? <>
-        <label className="pg-field">Name
-          <input maxLength={60} value={draft.name} onChange={(e) => setField('name', e.target.value)} />
-          <span className="pg-hint">id: {id}</span>
-        </label>
-        <label className="pg-field">Tone
-          <input value={draft.tone} onChange={(e) => setField('tone', e.target.value)} />
-        </label>
-        <label className="pg-field">Description
-          <textarea rows={2} value={draft.description} onChange={(e) => setField('description', e.target.value)} />
-        </label>
-        <label className="pg-field">Code font
-          <select value={draft.fonts.code} onChange={(e) => setFont('code', e.target.value)}>
-            {CODE_FONTS.map((f) => <option key={f} value={f}>{f}</option>)}
-          </select>
-        </label>
-        <label className="pg-field">Prose font
-          <select value={draft.fonts.prose} onChange={(e) => setFont('prose', e.target.value)}>
-            {PROSE_FONTS.map((f) => <option key={f} value={f}>{f}</option>)}
-          </select>
-        </label>
-
         {TOKEN_GROUPS.map((group) => (
           <fieldset key={group.label} className="pg-group">
             <legend>{group.label}</legend>
@@ -619,6 +718,8 @@ export function Playground() {
                 token={token}
                 value={draft.colors[token] ?? ''}
                 gradient={passZones[token] ?? null}
+                open={openToken === token}
+                onToggle={() => setOpenToken(openToken === token ? null : token)}
                 setColor={setColor}
                 setHighlightedToken={setHighlightedToken}
               />
@@ -626,9 +727,6 @@ export function Playground() {
           </fieldset>
         ))}
         </> : <>
-          <label className="pg-field">Name
-            <input maxLength={60} value={choices.name} onChange={(event) => updateChoiceMetadata({ name: event.target.value })} />
-          </label>
           <fieldset className="pg-group gd-step">
             <legend>1 · Background</legend>
             <div className="gd-moods">{MOODS.map((mood) => (
@@ -636,43 +734,70 @@ export function Playground() {
                 <input type="radio" name="mood" checked={choices.mood === mood.value} onChange={() => updateChoices({ mood: mood.value })} />{mood.label}
               </label>
             ))}</div>
-            <label className="gd-slider"><span>Darkness</span><input type="range" min={0} max={100} value={choices.darkness} onChange={(event) => updateChoices({ darkness: Number(event.target.value) })} /></label>
+            <div className="gd-slider"><span>Darkness</span><GaugeSlider
+              label="" min={0} max={100} value={choices.darkness}
+              track={`linear-gradient(90deg, ${hslToHex({ ...MOOD_BG[choices.mood], l: 0.94 })}, ${hslToHex({ ...MOOD_BG[choices.mood], l: 0.88 })})`}
+              onChange={(v) => updateChoices({ darkness: v })} ariaLabel="Background darkness"
+            /></div>
           </fieldset>
           <fieldset className="pg-group gd-step">
             <legend>2 · Accents</legend>
-            <HueWheel hue={choices.accentHues[selectedAccent]} onChange={(hue) => updateChoices({ accentHues: { ...choices.accentHues, [selectedAccent]: hue } })} />
+            <HueDial
+              hues={choices.accentHues}
+              selected={selectedAccent}
+              colors={draft.colors}
+              onChange={(hue) => updateChoices({ accentHues: { ...choices.accentHues, [selectedAccent]: hue } })}
+            />
             <div className="gd-tokens">{SYNTAX_TOKENS.map((token) => <button key={token} type="button" className={selectedAccent === token ? 'gd-token gd-token-on' : 'gd-token'} onClick={() => setSelectedAccent(token)} onPointerEnter={() => setHighlightedToken(token)} onPointerLeave={() => setHighlightedToken(null)} onFocus={() => setHighlightedToken(token)} onBlur={() => setHighlightedToken(null)}><span className="gd-chip" style={{ background: draft.colors[token] }} />{token} · {TOKEN_LABELS[token]}</button>)}</div>
           </fieldset>
           <fieldset className="pg-group gd-step">
             <legend>3 · Diagnostics</legend>
-            {DIAG_TOKENS.map((diagnostic) => <label key={diagnostic.key} className="gd-slider gd-diag" onPointerEnter={() => setHighlightedToken(diagnostic.key)} onPointerLeave={() => setHighlightedToken(null)} onFocus={() => setHighlightedToken(diagnostic.key)} onBlur={() => setHighlightedToken(null)}><span className="gd-chip" style={{ background: draft.colors[diagnostic.key] }} /><span className="gd-diag-label">{diagnostic.label}</span><span className="gd-axis">Hue</span><input type="range" min={0} max={360} value={choices.diagnosticHues[diagnostic.key]} style={{ backgroundImage: HUE_TRACK }} aria-label={`${diagnostic.key} hue`} onChange={(event) => updateChoices({ diagnosticHues: { ...choices.diagnosticHues, [diagnostic.key]: Number(event.target.value) } })} /></label>)}
+            {DIAG_TOKENS.map((diagnostic) => <div key={diagnostic.key} className="gd-slider gd-diag" onPointerEnter={() => setHighlightedToken(diagnostic.key)} onPointerLeave={() => setHighlightedToken(null)} onFocus={() => setHighlightedToken(diagnostic.key)} onBlur={() => setHighlightedToken(null)}>
+              <span className="gd-chip" style={{ background: draft.colors[diagnostic.key] }} />
+              <span className="gd-diag-label">{diagnostic.label}</span>
+              <GaugeSlider
+                label="" min={0} max={360} unit="°" value={choices.diagnosticHues[diagnostic.key]}
+                track={hueTrack(DIAG[diagnostic.key].s, DIAG[diagnostic.key].l)}
+                onChange={(v) => updateChoices({ diagnosticHues: { ...choices.diagnosticHues, [diagnostic.key]: v } })}
+                ariaLabel={`${diagnostic.key} hue`}
+              />
+            </div>)}
           </fieldset>
         </>}
 
         <fieldset className="pg-group studio-helpers">
           <legend>Palette helpers</legend>
-          {(['contrast', 'saturation', 'warmth', 'darkness'] as PaletteHelper[]).map((helper) => <label key={helper} className="gd-slider"><span>{helper[0].toUpperCase() + helper.slice(1)}</span><input type="range" min={-50} max={50} value={helperValues[helper]} onChange={(event) => setHelperValue(helper, Number(event.target.value))} /></label>)}
+          {(['contrast', 'saturation', 'warmth', 'darkness'] as PaletteHelper[]).map((helper) => <div key={helper} className="gd-slider">
+            <span>{helper[0].toUpperCase() + helper.slice(1)}</span>
+            <GaugeSlider label="" min={-50} max={50} value={helperValues[helper]} onChange={(v) => setHelperValue(helper, v)} ariaLabel={`${helper} adjustment`} />
+          </div>)}
         </fieldset>
+
+        <details className="pg-group pg-meta">
+          <summary>Details · tone, description, fonts</summary>
+          <div className="pg-meta-body">
+            <label className="pg-field">Tone
+              <input value={mode === 'pro' ? draft.tone : choices.tone} onChange={(e) => mode === 'pro' ? setField('tone', e.target.value) : updateChoiceMetadata({ tone: e.target.value })} />
+            </label>
+            <label className="pg-field">Description
+              <textarea rows={2} value={mode === 'pro' ? draft.description : choices.description} onChange={(e) => mode === 'pro' ? setField('description', e.target.value) : updateChoiceMetadata({ description: e.target.value })} />
+            </label>
+            <label className="pg-field">Code font
+              <select value={mode === 'pro' ? draft.fonts.code : choices.fonts.code} onChange={(e) => mode === 'pro' ? setFont('code', e.target.value) : updateChoiceMetadata({ fonts: { ...choices.fonts, code: e.target.value } })}>
+                {CODE_FONTS.map((f) => <option key={f} value={f}>{f}</option>)}
+              </select>
+            </label>
+            <label className="pg-field">Prose font
+              <select value={mode === 'pro' ? draft.fonts.prose : choices.fonts.prose} onChange={(e) => mode === 'pro' ? setFont('prose', e.target.value) : updateChoiceMetadata({ fonts: { ...choices.fonts, prose: e.target.value } })}>
+                {PROSE_FONTS.map((f) => <option key={f} value={f}>{f}</option>)}
+              </select>
+            </label>
+          </div>
+        </details>
 
       </aside>
 
       <div className="pg-preview">
-        <div className="pg-feedback">
-          <div className="pg-export">
-            <button onClick={copy} disabled={!canExport}>
-              {copied ? 'Copied!' : 'Copy theme JSON'}
-            </button>
-            <ExportControls theme={draft} canExport={canExport} onCopyShareLink={copyShareLink} shareLinkCopied={shareLinkCopied} />
-            {canExport ? <span className="pg-export-status pg-ok">Ready to export</span> : (
-              <button className="pg-export-status pg-blocked" type="button" aria-controls="editor-validation" aria-expanded={validationOpenOverride ?? failures.length > 0} onClick={() => {
-                setValidationOpenOverride(true);
-                requestAnimationFrame(() => validationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
-              }}>
-                Export blocked · {failures.length} hard {failures.length === 1 ? 'failure' : 'failures'}
-              </button>
-            )}
-          </div>
-        </div>
         <div className="pg-preview-controls">
           <PanePicker panes={panes} onChange={setPanes} />
           <div className="vision-control" role="group" aria-label="Vision simulation">
@@ -682,12 +807,12 @@ export function Playground() {
         </div>
         <VisionFilterDefinitions />
         <ThemeCard theme={draft} panes={panes} previewFilter={visionMode === 'normal' ? undefined : `url(#vision-${visionMode})`} highlightToken={highlightedToken ?? (mode === 'simple' ? selectedAccent : undefined)} />
-        <details id="editor-validation" ref={validationRef} className="pg-validation" open={validationOpenOverride ?? failures.length > 0}>
+        <details id="editor-validation" ref={validationRef} className={justPassed ? 'pg-validation is-celebrating' : 'pg-validation'} open={validationOpenOverride ?? failures.length > 0}>
           <summary onClick={(event) => {
             event.preventDefault();
             setValidationOpenOverride(!(validationOpenOverride ?? failures.length > 0));
-          }}>
-            Validation · {failures.length} hard {failures.length === 1 ? 'failure' : 'failures'} · {warnings.length} {warnings.length === 1 ? 'warning' : 'warnings'}
+          }} className={failures.length === 0 ? 'pg-summary-pass' : 'pg-summary-fail'}>
+            {failures.length === 0 ? '✓' : '✕'} Validation · {failures.length} hard {failures.length === 1 ? 'failure' : 'failures'} · {warnings.length} {warnings.length === 1 ? 'warning' : 'warnings'}
           </summary>
           <div className="pg-validation-body">
             {failures.length === 0 ? (
@@ -734,6 +859,22 @@ export function Playground() {
             )}
           </div>
         </details>
+        <section className="pg-ship" aria-label="Export">
+          <div className="pg-ship-verdict">
+            {canExport
+              ? <span className={justPassed ? 'pg-ok is-celebrating' : 'pg-ok'}>✓ All checks pass — ready to export.</span>
+              : <button className="pg-blocked-jump" type="button" aria-controls="editor-validation" onClick={jumpToValidation}>
+                  ✕ Export blocked · {failures.length} hard {failures.length === 1 ? 'failure' : 'failures'} — see why
+                </button>}
+          </div>
+          <ExportControls
+            theme={draft}
+            canExport={canExport}
+            onCopyShareLink={copyShareLink}
+            shareLinkCopied={shareLinkCopied}
+            copyJsonButton={<button type="button" onClick={copy} disabled={!canExport}>{copied ? 'Copied!' : 'Copy theme JSON'}</button>}
+          />
+        </section>
         <details className="pg-json">
           <summary>Theme JSON (paste into candela-themes.json → themes[])</summary>
           <pre>{json}</pre>

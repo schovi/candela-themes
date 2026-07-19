@@ -29,7 +29,7 @@ export interface GuidedChoices {
 // Low-chroma, mood-tinted gray the whole UI scale is stepped from. Neutral is
 // nearly achromatic; warm/cool carry a faint paper/sky tint. Kept desaturated —
 // the load-bearing anti-fringing rule (see docs/vision-research.md).
-const MOOD_BG: Record<Mood, { h: number; s: number }> = {
+export const MOOD_BG: Record<Mood, { h: number; s: number }> = {
   warm: { h: 35, s: 0.16 },
   cool: { h: 220, s: 0.1 },
   neutral: { h: 40, s: 0.03 },
@@ -37,13 +37,13 @@ const MOOD_BG: Record<Mood, { h: number; s: number }> = {
 
 // Accents sit in the desaturated band; punct is the muted operator gray. Fixed
 // here (not user-controlled) so guided output can't drift into neon.
-const ACCENT_SAT = 0.5;
+export const ACCENT_SAT = 0.5;
 const PUNCT_SAT = 0.12;
-const ACCENT_L = 0.42;
+export const ACCENT_L = 0.42;
 
 // Diagnostics: saturation/lightness fixed, hue chosen. error leans vermillion,
 // ok leans blue-green/teal, luminance-separated so the pair reads in grayscale.
-const DIAG: Record<'error' | 'warning' | 'ok', { s: number; l: number }> = {
+export const DIAG: Record<'error' | 'warning' | 'ok', { s: number; l: number }> = {
   error: { s: 0.62, l: 0.47 },
   warning: { s: 0.72, l: 0.42 },
   ok: { s: 0.52, l: 0.33 }, // darker than error, to read apart in grayscale

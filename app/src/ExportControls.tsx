@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { strToU8, zipSync } from 'fflate';
 import { FORMAT_EMITTERS, installReadme } from '../../lib/emitters.js';
 import { ansiMapping, type Theme } from './themes';
@@ -8,6 +8,7 @@ interface ExportControlsProps {
   canExport: boolean;
   onCopyShareLink: () => void;
   shareLinkCopied: boolean;
+  copyJsonButton: ReactNode;
 }
 
 const FORMAT_DESCRIPTIONS: Record<string, string> = {
@@ -45,7 +46,7 @@ function exportTheme(theme: Theme): Theme {
   return { ...theme, id: slugify(theme.name) };
 }
 
-export function ExportControls({ theme, canExport, onCopyShareLink, shareLinkCopied }: ExportControlsProps) {
+export function ExportControls({ theme, canExport, onCopyShareLink, shareLinkCopied, copyJsonButton }: ExportControlsProps) {
   const [selectedTool, setSelectedTool] = useState(FORMAT_EMITTERS[0].tool);
   const normalizedTheme = exportTheme(theme);
   const selectedFormat = FORMAT_EMITTERS.find((format) => format.tool === selectedTool) ?? FORMAT_EMITTERS[0];
@@ -82,25 +83,31 @@ export function ExportControls({ theme, canExport, onCopyShareLink, shareLinkCop
 
   return (
     <div className="format-export">
-      <button type="button" onClick={onCopyShareLink}>
-        {shareLinkCopied ? 'Copied!' : 'Copy link'}
-      </button>
-      <label>
-        Target tool
-        <select value={selectedTool} onChange={(event) => setSelectedTool(event.target.value)} id="format-export-tool">
-          {FORMAT_EMITTERS.map((format) => <option key={format.tool} value={format.tool}>{format.label}</option>)}
-        </select>
-        <span className="format-export-description">{FORMAT_DESCRIPTIONS[selectedFormat.tool]}</span>
-      </label>
-      <button
-        type="button"
-        disabled={!canExport}
-        onClick={() => downloadFormat(selectedTool)}
-      >
-        Download for {selectedFormat.label}
-      </button>
-      <button type="button" disabled={!canExport} onClick={downloadFull}>Download all formats</button>
-      <a href="https://github.com/schovi/candela-themes#install">Install instructions →</a>
+      <div className="fx-primary">
+        <label>
+          Target tool
+          <select value={selectedTool} onChange={(event) => setSelectedTool(event.target.value)} id="format-export-tool">
+            {FORMAT_EMITTERS.map((format) => <option key={format.tool} value={format.tool}>{format.label}</option>)}
+          </select>
+        </label>
+        <button
+          type="button"
+          className="fx-download"
+          disabled={!canExport}
+          onClick={() => downloadFormat(selectedTool)}
+        >
+          Download for {selectedFormat.label}
+        </button>
+        <p className="fx-caption">{FORMAT_DESCRIPTIONS[selectedFormat.tool]} <a href="https://github.com/schovi/candela-themes#install">Install instructions →</a></p>
+      </div>
+      <div className="fx-secondary">
+        <button type="button" disabled={!canExport} onClick={downloadFull}>Download all formats</button>
+        <span className="fx-caption">Every tool, every manual, one zip.</span>
+        {copyJsonButton}
+        <span className="fx-caption">Paste into candela-themes.json → themes[].</span>
+        <button type="button" onClick={onCopyShareLink}>{shareLinkCopied ? 'Copied!' : 'Copy link'}</button>
+        <span className="fx-caption">Share this exact draft — works even while blocked.</span>
+      </div>
     </div>
   );
 }
