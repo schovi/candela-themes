@@ -101,6 +101,7 @@ protan/deutan separation. It reads the JSON read-only — it reports, humans dec
 6. Commit the JSON only — `build/` is generated and gitignored, not committed. To package
    an extension, `npm run package:vscode` writes a `.vsix` and `npm run package:intellij`
    writes a plugin `.zip`; `npm run package:zed` writes a clean extension directory.
+   `npm run package:sublime` writes an installable `.sublime-package` archive.
    All artifacts go into `dist/` (also gitignored).
 
 ### Adding a 15th theme or new format

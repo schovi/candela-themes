@@ -182,10 +182,17 @@ The generated extension (all 16 themes) lives at `build/zed/`. In Zed, open
 `npm run package:zed` copies the complete extension to `dist/zed/` for sharing or
 installation the same way. Registry publishing is a follow-up.
 
-### Other editors (Sublime, Neovim, Helix)
+### Sublime Text
 
-Drop-in files, all 16 themes, under `build/{sublime,nvim,helix}/`. They are not
-published to any registry; install per that editor's docs.
+Run `npm run package:sublime`, then copy
+`dist/candela-themes.sublime-package` into Sublime Text's `Installed Packages/`
+folder. For a loose-file install, copy the `.sublime-color-scheme` files from
+`build/sublime/` into `Packages/User/`. Package Control publishing is a follow-up.
+
+### Other editors (Neovim, Helix)
+
+Drop-in files, all 16 themes, live under `build/{nvim,helix}/`. They are not
+published to a registry; install them per that editor's docs.
 
 ## How themes are generated
 
@@ -261,8 +268,14 @@ bar, tabs, status bar, panels, integrated terminal), not just the editor pane.
 `package.json` carries full Marketplace metadata (placeholder `CHANGEME` URLs
 until a real repo exists), and the emitter also drops a bundled `README.md`, a
 `.vscodeignore`, and a copy of the root MIT `LICENSE` so packaging is
-warning-free (no `icon` yet, needs a 128px PNG). Sublime reuses the same scope
-table, emitting `build/sublime/candela-<id>.sublime-color-scheme`.
+warning-free (no `icon` yet, needs a 128px PNG).
+
+Sublime reuses the same scope table. Its emitter writes a complete package
+directory at `build/sublime/`: one `candela-<id>.sublime-color-scheme` per theme,
+a bundled README, and a Package Control install message. `npm run
+package:sublime` regenerates that directory and uses the system `zip` command to
+create `dist/candela-themes.sublime-package`; packaging tooling stays separate
+from the generator's zero-runtime-dependency path.
 
 ### JetBrains / IntelliJ
 

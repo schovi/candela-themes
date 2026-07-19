@@ -745,8 +745,23 @@ function emitSublimeScheme(theme) {
   return JSON.stringify(doc, null, 2) + '\n';
 }
 
+function sublimeReadme() {
+  return [
+    '# Candela Themes for Sublime Text',
+    '',
+    'Candela includes 14 light color schemes for tired eyes and two dark companions.',
+    'Every scheme uses low-glare backgrounds, desaturated accents, and accessible contrast.',
+    '',
+    'After installing, choose a Candela scheme from **Preferences > Select Color Scheme**.',
+    '',
+    'Generated from the Candela source of truth. Do not edit these files by hand.',
+    '',
+  ].join('\n');
+}
+
 function emitSublime(themes) {
   const dir = path.join(BUILD, 'sublime');
+  const messagesDir = path.join(dir, 'messages');
   fs.mkdirSync(dir, { recursive: true });
   for (const theme of themes) {
     fs.writeFileSync(
@@ -754,6 +769,16 @@ function emitSublime(themes) {
       emitSublimeScheme(theme),
     );
   }
+  fs.mkdirSync(messagesDir, { recursive: true });
+  fs.writeFileSync(path.join(dir, 'README.md'), sublimeReadme());
+  fs.writeFileSync(
+    path.join(dir, 'messages.json'),
+    JSON.stringify({ install: 'messages/install.txt' }, null, 2) + '\n',
+  );
+  fs.writeFileSync(
+    path.join(messagesDir, 'install.txt'),
+    'Candela is installed. Choose a scheme from Preferences > Select Color Scheme.\n',
+  );
   return themes.length;
 }
 
@@ -947,7 +972,7 @@ function main() {
   console.log(`Generated build/vscode/ extension: package.json + ${vscodeCount} theme files.`);
   console.log(`Generated build/intellij/ plugin: plugin.xml + ${intellijCount} .icls + ${intellijCount} .theme.json.`);
   console.log(`Generated build/zed/ extension with ${zedCount} themes.`);
-  console.log(`Generated build/sublime/ ${sublimeCount} .sublime-color-scheme files.`);
+  console.log(`Generated build/sublime/ package with ${sublimeCount} .sublime-color-scheme files.`);
   console.log(`Generated build/nvim/ ${nvimCount} Lua colorschemes.`);
   console.log(`Generated build/helix/ ${helixCount} .toml themes.`);
 }

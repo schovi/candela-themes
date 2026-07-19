@@ -1,6 +1,6 @@
 # 017 — Sublime Text package packaging
 
-priority: 30
+done: 2026-07-19
 
 ## What & why
 
