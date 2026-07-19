@@ -422,9 +422,8 @@ function emitVSCode(themes, ansiMapping) {
 
 // --- JetBrains / IntelliJ plugin emitter -----------------------------------
 // A JetBrains theme plugin: one .icls editor color scheme + one .theme.json UI
-// theme per theme, plus a META-INF/plugin.xml registering all 14 as
-// themeProvider extensions. Layout under src/main/resources/ is what a Gradle
-// `buildPlugin` consumes (Gradle wiring itself is out of scope).
+// theme per theme, plus a META-INF/plugin.xml registering every theme as a
+// themeProvider extension. The emitted Gradle project packages this layout.
 //
 // Two hex conventions live here: .icls stores colors as 6-digit hex WITHOUT the
 // leading '#'; .theme.json uses ordinary '#rrggbb'. Attribute keys below are the
@@ -553,11 +552,12 @@ function emitIntellijPluginXml(themes) {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<idea-plugin>',
     '  <id>com.candela.themes</id>',
-    '  <name>Candela Light Themes</name>',
+    '  <name>Candela Themes</name>',
     '  <version>0.1.0</version>',
-    '  <vendor>Candela</vendor>',
-    '  <description><![CDATA[14 light color themes for tired eyes — low-glare, low-saturation, AAA body contrast.]]></description>',
-    '  <idea-version since-build="223" />',
+    '  <vendor url="https://github.com/CHANGEME/candela-themes" email="CHANGEME@example.com">Candela</vendor>',
+    '  <description><![CDATA[<p>Sixteen low-glare, low-saturation color themes for tired eyes, with AAA body-text contrast.</p>]]></description>',
+    '  <change-notes><![CDATA[<p>Initial release with all sixteen Candela themes.</p>]]></change-notes>',
+    '  <idea-version since-build="242" />',
     '  <depends>com.intellij.modules.platform</depends>',
     '  <extensions defaultExtensionNs="com.intellij">',
     providers,
@@ -568,7 +568,8 @@ function emitIntellijPluginXml(themes) {
 }
 
 function emitIntellij(themes) {
-  const resources = path.join(BUILD, 'intellij', 'src/main/resources');
+  const intellijDir = path.join(BUILD, 'intellij');
+  const resources = path.join(intellijDir, 'src/main/resources');
   const themesDir = path.join(resources, 'themes');
   const metaInf = path.join(resources, 'META-INF');
   fs.mkdirSync(themesDir, { recursive: true });
@@ -579,6 +580,32 @@ function emitIntellij(themes) {
     fs.writeFileSync(path.join(themesDir, `candela-${theme.id}.theme.json`), emitIntellijTheme(theme));
   }
   fs.writeFileSync(path.join(metaInf, 'plugin.xml'), emitIntellijPluginXml(themes));
+  fs.writeFileSync(path.join(intellijDir, 'settings.gradle.kts'), [
+    'rootProject.name = "candela-themes-intellij"',
+    '',
+  ].join('\n'));
+  fs.writeFileSync(path.join(intellijDir, 'build.gradle.kts'), [
+    'plugins {',
+    '    id("org.jetbrains.intellij.platform") version "2.18.1"',
+    '}',
+    '',
+    'group = "com.candela"',
+    'version = "0.1.0"',
+    '',
+    'repositories {',
+    '    mavenCentral()',
+    '    intellijPlatform {',
+    '        defaultRepositories()',
+    '    }',
+    '}',
+    '',
+    'dependencies {',
+    '    intellijPlatform {',
+    '        intellijIdeaCommunity("2024.2.6")',
+    '    }',
+    '}',
+    '',
+  ].join('\n'));
 
   return themes.length;
 }

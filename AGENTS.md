@@ -98,8 +98,9 @@ protan/deutan separation. It reads the JSON read-only — it reports, humans dec
    theme-building tools at `/editor` and `/builder`); every theme, with a **Previews** picker
    choosing which sample panes each card shows (default: terminal, TypeScript, Markdown, git;
    more languages opt-in). The **Editor** page runs the same `lib/rules.js` invariants live.
-6. Commit the JSON only — `build/` is generated and gitignored, not committed. To ship the
-   VS Code extension, `npm run package:vscode` writes a `.vsix` into `dist/` (also gitignored).
+6. Commit the JSON only — `build/` is generated and gitignored, not committed. To package
+   an extension, `npm run package:vscode` writes a `.vsix` and `npm run package:intellij`
+   writes a plugin `.zip` into `dist/` (also gitignored).
 
 ### Adding a 15th theme or new format
 

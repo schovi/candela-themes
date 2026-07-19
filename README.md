@@ -144,16 +144,22 @@ Then **Preferences: Color Theme** and pick any *Candela NN · …* entry.
 
 ### IntelliJ / JetBrains IDEs
 
-The theme plugin (all 16 themes) is generated at `build/intellij/`, laid out under
-`src/main/resources/` for a Gradle `buildPlugin` (the Gradle wiring itself is out
-of scope). Each theme ships an editor color scheme (`.icls`) and a UI theme
+The theme plugin (all 16 themes) is generated at `build/intellij/`. Each theme
+ships an editor color scheme (`.icls`) and a UI theme
 (`.theme.json`).
 
+- **As a plugin zip (recommended):** install JDK 17+ and Gradle 9+, then run
+  `npm run package:intellij`. This regenerates the plugin, runs `buildPlugin`, and
+  writes `dist/candela-themes-intellij-<version>.zip`. In the IDE, choose
+  **Settings → Plugins → ⚙ → Install Plugin from Disk…** and select the zip.
 - **Editor scheme only:** **Settings → Editor → Color Scheme → ⚙ → Import
   Scheme…** and pick an `.icls` from `build/intellij/src/main/resources/themes/`.
-- **Full UI theme:** build the plugin from `build/intellij/`, install it, then
-  **Settings → Appearance & Behavior → Appearance → Theme** and pick an Candela
+- **From source:** run Gradle's `buildPlugin` task in `build/intellij/`, install
+  the resulting zip, then
+  **Settings → Appearance & Behavior → Appearance → Theme** and pick a Candela
   theme.
+
+The generated plugin does not yet include a Marketplace icon.
 
 ### Other terminals
 
@@ -254,8 +260,9 @@ table, emitting `build/sublime/candela-<id>.sublime-color-scheme`.
 
 ### JetBrains / IntelliJ
 
-`build/intellij/` is laid out under `src/main/resources/` for a Gradle
-`buildPlugin`. Per theme: an editor color scheme `.icls` (XML) and a UI theme
+`build/intellij/` is a complete IntelliJ Platform Gradle project. Its emitted
+`build.gradle.kts` and `settings.gradle.kts` use `buildPlugin` to package the
+resources. Per theme: an editor color scheme `.icls` (XML) and a UI theme
 `.theme.json`, plus one `META-INF/plugin.xml` registering all 16 as
 `themeProvider` extensions. Two hex conventions: **`.icls` drops the leading `#`**
 (`value="9a5b2c"`); **`.theme.json` keeps it** (`"#9a5b2c"`).
