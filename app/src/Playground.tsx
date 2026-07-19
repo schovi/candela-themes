@@ -5,6 +5,7 @@ import { autoFix } from './autofix';
 import { DEFAULT_PANES, type PaneKey } from './samples/Panes';
 import { PanePicker } from './PanePicker';
 import { ExportControls } from './ExportControls';
+import { SiteBrandNav } from './SiteShell';
 import { Dialog } from './Dialog';
 import { applyPaletteHelperValues, type PaletteHelper, type PaletteHelperValues } from './paletteHelpers';
 import { ACCENT_L, ACCENT_SAT, DEFAULT_CHOICES, DIAG, MOOD_BG, deriveChoices, deriveTheme, SYNTAX_TOKENS, type GuidedChoices, type SyntaxToken } from './derive';
@@ -631,21 +632,43 @@ export function Playground() {
 
   return (
     <section className="lab-tool" id="theme-editor">
-      <header className="lab-tool-head">
-        <h2>Theme Editor</h2>
-        <p>
-          Edit any theme's tokens by hex or H/S/L slider. Every change is checked live
-          against the same contrast rules the official themes must pass — green means it
-          would ship as-is; a red list names each failing rule, and export stays blocked
-          until all pass.
-        </p>
+      <header className="app-bar">
+        <SiteBrandNav page="editor" />
+        {editing && <div className="app-bar-studio">
+          <div className="studio-bar-name">
+            <input
+              maxLength={60}
+              value={mode === 'pro' ? draft.name : choices.name}
+              onChange={(event) => mode === 'pro' ? setField('name', event.target.value) : updateChoiceMetadata({ name: event.target.value })}
+              aria-label="Theme name"
+            />
+            <span className="studio-bar-meta">id: {id} · <span className="studio-save-dot" aria-hidden="true" />saved</span>
+          </div>
+          <button
+            type="button"
+            className={`studio-status-chip ${canExport ? 'is-pass' : 'is-fail'}${justPassed ? ' is-celebrating' : ''}`}
+            onClick={jumpToValidation}
+          >
+            {canExport
+              ? `✓ All checks pass${warnings.length ? ` · ${warnings.length} warning${warnings.length === 1 ? '' : 's'}` : ''}`
+              : `✕ ${failures.length} check${failures.length === 1 ? '' : 's'} failing`}
+          </button>
+          <div className="studio-modes" role="group" aria-label="Editing mode">
+            <button type="button" className={mode === 'simple' ? 'is-on' : ''} onClick={() => switchMode('simple')}>Simple</button>
+            <button type="button" className={mode === 'pro' ? 'is-on' : ''} onClick={() => switchMode('pro')}>Pro</button>
+          </div>
+          <div className="studio-bar-actions">
+            <button type="button" onClick={downloadRaw}>Download draft JSON</button>
+            <button className="studio-start-over" type="button" onClick={startOver}>Start over</button>
+          </div>
+        </div>}
       </header>
       {notice && <div className="studio-notice" role="status">
         <span>{notice}{notice.startsWith('Resuming') && ' — '}</span>
         {notice.startsWith('Resuming') && <button type="button" onClick={startOver}>Start fresh?</button>}
         <button className="studio-notice-dismiss" type="button" aria-label="Dismiss notice" onClick={() => setNotice(null)}>×</button>
       </div>}
-      {!editing ? <div className="studio-welcome">
+      {!editing ? <div className="editor-workspace editor-workspace--welcome"><div className="studio-welcome">
         <div className="studio-welcome-head">
           <h3>How would you like to begin?</h3>
           <p>Choose a starting point. You can switch between Simple and Pro editing later.</p>
@@ -679,37 +702,9 @@ export function Playground() {
           </label>
         </div>
         {importError && <p className="studio-import-error" role="alert">{importError}</p>}
-      </div> : <>
-      <div className="studio-bar">
-        <div className="studio-bar-name">
-          <input
-            maxLength={60}
-            value={mode === 'pro' ? draft.name : choices.name}
-            onChange={(event) => mode === 'pro' ? setField('name', event.target.value) : updateChoiceMetadata({ name: event.target.value })}
-            aria-label="Theme name"
-          />
-          <span className="studio-bar-meta">id: {id} · <span className="studio-save-dot" aria-hidden="true" />saved</span>
-        </div>
-        <button
-          type="button"
-          className={`studio-status-chip ${canExport ? 'is-pass' : 'is-fail'}${justPassed ? ' is-celebrating' : ''}`}
-          onClick={jumpToValidation}
-        >
-          {canExport
-            ? `✓ All checks pass${warnings.length ? ` · ${warnings.length} warning${warnings.length === 1 ? '' : 's'}` : ''}`
-            : `✕ ${failures.length} check${failures.length === 1 ? '' : 's'} failing`}
-        </button>
-        <div className="studio-modes" role="group" aria-label="Editing mode">
-          <button type="button" className={mode === 'simple' ? 'is-on' : ''} onClick={() => switchMode('simple')}>Simple</button>
-          <button type="button" className={mode === 'pro' ? 'is-on' : ''} onClick={() => switchMode('pro')}>Pro</button>
-        </div>
-        <div className="studio-bar-actions">
-          <button type="button" onClick={downloadRaw}>Download draft JSON</button>
-          <button className="studio-start-over" type="button" onClick={startOver}>Start over</button>
-        </div>
-      </div>
-      <div className="playground">
-      <aside className="pg-editor">
+      </div></div> : <>
+      <div className="editor-workspace">
+      <aside className="zone pg-editor">
         {mode === 'pro' ? <>
         {TOKEN_GROUPS.map((group) => (
           <fieldset key={group.label} className="pg-group">
@@ -799,7 +794,7 @@ export function Playground() {
 
       </aside>
 
-      <div className="pg-preview">
+      <div className="zone pg-canvas">
         <div className="pg-preview-controls">
           <PanePicker panes={panes} onChange={setPanes} />
           <div className="vision-control" role="group" aria-label="Vision simulation">
@@ -809,6 +804,8 @@ export function Playground() {
         </div>
         <VisionFilterDefinitions />
         <ThemeCard theme={draft} panes={panes} previewFilter={visionMode === 'normal' ? undefined : `url(#vision-${visionMode})`} highlightToken={highlightedToken ?? (mode === 'simple' ? selectedAccent : undefined)} />
+      </div>
+      <aside className="zone pg-inspector">
         <details id="editor-validation" ref={validationRef} className={justPassed ? 'pg-validation is-celebrating' : 'pg-validation'} open={validationOpenOverride ?? failures.length > 0}>
           <summary onClick={(event) => {
             event.preventDefault();
@@ -881,7 +878,7 @@ export function Playground() {
           <summary>Theme JSON (paste into candela-themes.json → themes[])</summary>
           <pre>{json}</pre>
         </details>
-      </div>
+      </aside>
       </div>
       </>}
       {replacement && <Dialog

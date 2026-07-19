@@ -1,6 +1,6 @@
 # 041 — Editor app shell: full-width workspace
 
-priority: 85
+done: 2026-07-20
 
 ## What & why
 
@@ -70,3 +70,25 @@ shell is quiet paper around the instruments, not a re-skin.
 - 040's status-chip jump scrolls to the validation section; on desktop the inspector
   makes that jump mostly moot — verify it still behaves sanely in the collapsed
   mobile layout, retargeting is 042's job if more than a selector change.
+
+## Work log
+
+- Footer choice: slim single line kept inside the fixed viewport column (not folded
+  away) — `.site--editor` is a `100vh` flex column (app bar · workspace · footer), so
+  the body never scrolls on desktop and the footer sits below the workspace, not below
+  a fold.
+- App-bar merge: `SiteShell` grew an `editor` variant (full-width main, slim footer, no
+  stacked header) and exports `SiteBrandNav`; `Playground` renders the single app-bar
+  row (brand + nav | draft name, status chip, Simple/Pro, quiet actions). The
+  content-page `.lab-tool-head` heading was dropped so the workspace fills the viewport.
+- Incidental fix (user-flagged during review): the Simple-mode diagnostic hue gauges
+  were squeezed to a sliver at the 340px rail width; each `.gd-diag` row now stacks —
+  chip + title on line 1, full-width gauge on line 2.
+- Work-log screenshots in the session scratchpad (`shots/`): desktop three-zone with
+  5 hard failures (`editor-desktop-1512x982-5failures.jpg` scaled + native
+  `editor-desktop-native-2250.jpg` — sandbox browser floored at a ~700px CSS viewport,
+  so 1512×982 was verified by scaled render + computed geometry: cols `340px / 1fr /
+  400px`, page body no-scroll, inspector shows all 5 failing rules + export gate without
+  scrolling), collapsed single column `editor-collapsed-980.jpg` and
+  `editor-collapsed-600.jpg` (story order controls → previews → inspector), and
+  `editor-simple-mode-dial.jpg` confirming the 040 hue dial + gauges carry over intact.
