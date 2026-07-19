@@ -1,6 +1,6 @@
 # 028 — Pre-render Home + Themes to static HTML (build-time SSG)
 
-priority: 8
+done: 2026-07-19
 
 ## What & why
 

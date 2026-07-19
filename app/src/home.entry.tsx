@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
 import { Home } from './Home';
+import { mountOrHydrate } from './mount';
 import { ShotView } from './ShotView';
 import './styles.css';
 
@@ -8,7 +8,8 @@ import './styles.css';
 // /?theme=<id>&shot=1, so the home entry renders a single chrome-free card there.
 const params = new URLSearchParams(window.location.search);
 
-createRoot(document.getElementById('root')!).render(
+mountOrHydrate(
+  document.getElementById('root')!,
   <StrictMode>
     {params.get('shot') === '1' ? <ShotView id={params.get('theme') ?? ''} /> : <Home />}
   </StrictMode>,

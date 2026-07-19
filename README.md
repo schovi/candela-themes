@@ -336,8 +336,10 @@ Then from the repo root, `npm run app` serves the explorer and
 `npm run app:screenshots` regenerates the gallery PNGs. See
 [`docs/screenshots/README.md`](docs/screenshots/README.md).
 
-The explorer is a static multi-page site (built by Vite, no SPA/router): the
-home page at `/` pitches Candela and indexes every theme, the gallery at
+The explorer is a static multi-page site (built by Vite, no SPA/router). Its
+home page and gallery are pre-rendered into the built HTML, then React hydrates
+them for interactivity; the Editor and Builder remain client-rendered. The home
+page at `/` pitches Candela and indexes every theme, the gallery at
 `/themes` shows each theme across sample panes (with a filter bar — fulltext
 search over name/tone/tags/fonts, a mode select, and multi-select tag chips — and a per-theme anchor
 so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
