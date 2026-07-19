@@ -48,6 +48,12 @@ const TOKEN_LABELS: Record<ColorToken, string> = {
   builtin: 'built-ins', punct: 'punctuation', error: 'errors', warning: 'warnings', ok: 'success',
 };
 const HUE_TRACK = 'linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)';
+const VISION_MODES = [
+  { value: 'normal', label: 'Normal' },
+  { value: 'grayscale', label: 'Grayscale' },
+  { value: 'protan', label: 'Protan' },
+  { value: 'deutan', label: 'Deutan' },
+] as const;
 const TOKEN_GROUPS: { label: string; tokens: ColorToken[] }[] = [
   { label: 'UI', tokens: Object.keys(tokenReference.ui) as ColorToken[] },
   { label: 'Syntax', tokens: Object.keys(tokenReference.syntax) as ColorToken[] },
@@ -92,10 +98,33 @@ function explainRuleMessage(message: string): string | null {
   return null;
 }
 
-function RuleMessage({ message }: { message: string }) {
+type VisionMode = typeof VISION_MODES[number]['value'];
+
+function warningVisionMode(message: string): VisionMode | null {
+  if (message.startsWith('error/ok grayscale separation')) return 'grayscale';
+  if (message.startsWith('error/ok protan/deutan distance')) return 'protan';
+  if (message.includes('purple') && message.includes('blue')) return 'deutan';
+  return null;
+}
+
+function RuleMessage({ message, onVisionMode }: { message: string; onVisionMode?: (mode: VisionMode) => void }) {
   const explanation = explainRuleMessage(message);
-  if (!explanation) return <>{message}</>;
-  return <><span className="pg-rule-explanation">{explanation}</span><span className="pg-rule-technical">{message}</span></>;
+  const visionMode = warningVisionMode(message);
+  return <>
+    {explanation && <span className="pg-rule-explanation">{explanation}</span>}
+    <span className={explanation ? 'pg-rule-technical' : undefined}>{message}</span>
+    {visionMode && onVisionMode && <button className="pg-see-warning" type="button" onClick={() => onVisionMode(visionMode)}>See in {VISION_MODES.find((mode) => mode.value === visionMode)?.label}</button>}
+  </>;
+}
+
+function VisionFilterDefinitions() {
+  return <svg className="vision-filter-definitions" aria-hidden="true">
+    <defs>
+      <filter id="vision-grayscale" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0" /></filter>
+      <filter id="vision-protan" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="0.11238 0.88762 0 0 0  0.11238 0.88762 0 0 0  0.00401 -0.00401 1 0 0  0 0 0 1 0" /></filter>
+      <filter id="vision-deutan" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="0.29275 0.70725 0 0 0  0.29275 0.70725 0 0 0  -0.02234 0.02234 1 0 0  0 0 0 1 0" /></filter>
+    </defs>
+  </svg>;
 }
 
 function slugify(name: string): string {
@@ -288,6 +317,7 @@ export function Playground() {
   const [importError, setImportError] = useState('');
   const [copied, setCopied] = useState(false);
   const [validationOpenOverride, setValidationOpenOverride] = useState<boolean | null>(null);
+  const [visionMode, setVisionMode] = useState<VisionMode>('normal');
   const validationRef = useRef<HTMLDetailsElement | null>(null);
   const [helperValues, setHelperValues] = useState<PaletteHelperValues>({ contrast: 0, saturation: 0, warmth: 0, darkness: 0 });
   const helperBaseline = useRef<Theme>(cloneTheme(initial.draft));
@@ -606,8 +636,15 @@ export function Playground() {
             )}
           </div>
         </div>
-        <PanePicker panes={panes} onChange={setPanes} />
-        <ThemeCard theme={draft} panes={panes} highlightToken={highlightedToken ?? (mode === 'simple' ? selectedAccent : undefined)} />
+        <div className="pg-preview-controls">
+          <PanePicker panes={panes} onChange={setPanes} />
+          <div className="vision-control" role="group" aria-label="Vision simulation">
+            <span>Vision:</span>
+            {VISION_MODES.map((simulation) => <button key={simulation.value} type="button" className={visionMode === simulation.value ? 'is-on' : ''} aria-pressed={visionMode === simulation.value} onClick={() => setVisionMode(simulation.value)}>{simulation.label}</button>)}
+          </div>
+        </div>
+        <VisionFilterDefinitions />
+        <ThemeCard theme={draft} panes={panes} previewFilter={visionMode === 'normal' ? undefined : `url(#vision-${visionMode})`} highlightToken={highlightedToken ?? (mode === 'simple' ? selectedAccent : undefined)} />
         <details id="editor-validation" ref={validationRef} className="pg-validation" open={validationOpenOverride ?? failures.length > 0}>
           <summary onClick={(event) => {
             event.preventDefault();
@@ -636,7 +673,7 @@ export function Playground() {
             {warnings.length > 0 && (
               <div className="pg-warns">
                 <strong>Warnings (allowed at export):</strong>
-                <ul>{warnings.map((warning, index) => <li key={index}><RuleMessage message={warning} /></li>)}</ul>
+                <ul>{warnings.map((warning, index) => <li key={index}><RuleMessage message={warning} onVisionMode={setVisionMode} /></li>)}</ul>
               </div>
             )}
             {contrast.length > 0 && (

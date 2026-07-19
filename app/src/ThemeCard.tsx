@@ -2,7 +2,7 @@ import type { ColorToken, Theme } from './themes';
 import { themeVars } from './themes';
 import { SamplePanes, type PaneKey } from './samples/Panes';
 
-export function ThemeCard({ theme, panes, customizeHref, highlightToken }: { theme: Theme; panes: Set<PaneKey>; customizeHref?: string; highlightToken?: ColorToken }) {
+export function ThemeCard({ theme, panes, customizeHref, highlightToken, previewFilter }: { theme: Theme; panes: Set<PaneKey>; customizeHref?: string; highlightToken?: ColorToken; previewFilter?: string }) {
   return (
     <section id={theme.id} className="theme-card" data-theme-id={theme.id} data-highlight={highlightToken} style={{ ...themeVars(theme), background: 'var(--bg)' }}>
       <div className="card-inner">
@@ -14,15 +14,17 @@ export function ThemeCard({ theme, panes, customizeHref, highlightToken }: { the
           )}
         </div>
         <p className="card-desc">{theme.description}</p>
-        <div className="swatches">
-          {Object.entries(theme.colors).map(([token, hex]) => (
-            <span className="swatch" key={token}>
-              <span className="chip" style={{ background: hex, border: '1px solid var(--border)' }} />
-              {token} {hex}
-            </span>
-          ))}
+        <div className="theme-judgement" style={previewFilter ? { filter: previewFilter } : undefined}>
+          <div className="swatches">
+            {Object.entries(theme.colors).map(([token, hex]) => (
+              <span className="swatch" key={token}>
+                <span className="chip" style={{ background: hex, border: '1px solid var(--border)' }} />
+                {token} {hex}
+              </span>
+            ))}
+          </div>
+          <SamplePanes panes={panes} />
         </div>
-        <SamplePanes panes={panes} />
       </div>
     </section>
   );

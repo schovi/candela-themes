@@ -478,6 +478,16 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .pg-l-slider::-webkit-slider-thumb { margin-top: -4px; }
 
 .pg-preview { display: flex; flex-direction: column; gap: 16px; }
+.pg-preview-controls { display: flex; align-items: end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.vision-filter-definitions { position: absolute; width: 0; height: 0; overflow: hidden; }
+.vision-control { display: inline-flex; align-items: center; gap: 2px; color: var(--site-ink2); font-size: 12px; }
+.vision-control > span { margin-right: 4px; font-weight: 600; }
+.vision-control button { padding: 5px 7px; border: 1px solid var(--site-border); background: var(--site-surface); color: var(--site-ink2); cursor: pointer; font: inherit; }
+.vision-control button:first-of-type { border-radius: 6px 0 0 6px; }
+.vision-control button:last-child { border-radius: 0 6px 6px 0; }
+.vision-control button + button { margin-left: -3px; }
+.vision-control button.is-on { position: relative; border-color: var(--site-accent); background: var(--site-accent); color: #fbf7ee; }
+.theme-judgement { display: flex; flex-direction: column; gap: 0; }
 .pg-feedback { font-size: 13px; }
 .pg-ok { margin: 0; color: #2e7d32; font-weight: 600; }
 .pg-fails { color: #b5341f; }
@@ -488,6 +498,7 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .pg-fails ul, .pg-warns ul { margin: 4px 0 0; padding-left: 20px; }
 .pg-rule-explanation, .pg-rule-technical { display: block; }
 .pg-rule-technical { margin-top: 2px; color: var(--site-faint); font: 11px/1.4 var(--font-mono); }
+.pg-see-warning { margin-top: 5px; padding: 0; border: 0; background: none; color: var(--site-accent); cursor: pointer; font: 600 12px/1.4 inherit; text-decoration: underline; text-underline-offset: 2px; }
 .pg-validation { border: 1px solid var(--site-border); border-radius: 8px; background: var(--site-surface); font-size: 13px; }
 .pg-validation > summary { cursor: pointer; padding: 11px 13px; color: var(--site-ink2); font-weight: 600; }
 .pg-validation-body { display: flex; flex-direction: column; gap: 12px; padding: 2px 13px 13px; }

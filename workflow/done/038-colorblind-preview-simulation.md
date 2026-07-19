@@ -1,6 +1,6 @@
 # 038 — Colorblind and grayscale preview simulation
 
-priority: 60
+done: 2026-07-19
 
 ## What & why
 

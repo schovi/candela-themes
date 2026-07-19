@@ -410,7 +410,11 @@ so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
   below it, so recalculation never moves the preview. Hard failures block export;
   warnings do not. Each result pairs plain adjustment guidance with the exact rule output,
   and the blocked status jumps to the failing list. The contrast table shows only enforced
-  checks, including their required floor and pass/fail status. A tool-specific zip contains
+  checks, including their required floor and pass/fail status. Colorblind or grayscale
+  warnings can switch the preview directly to the relevant vision simulation. The Normal,
+  Grayscale, Protan, and Deutan views affect only palette swatches and preview panes, and
+  reset to Normal on each load.
+  A tool-specific zip contains
   that tool's emitted theme and install manual; the selected tool explains its contents and
   links to installation instructions. The full zip contains every supported format, every
   manual, and the raw theme.
