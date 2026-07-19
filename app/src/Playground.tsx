@@ -8,6 +8,7 @@ import { ExportControls } from './ExportControls';
 import { Dialog } from './Dialog';
 import { applyPaletteHelperValues, type PaletteHelper, type PaletteHelperValues } from './paletteHelpers';
 import { DEFAULT_CHOICES, deriveChoices, deriveTheme, SYNTAX_TOKENS, type GuidedChoices, type SyntaxToken } from './derive';
+import { decodeSharedDraft, encodeSharedDraft, type SharedDraft, type SharedDraftMode } from './shareDraft';
 // Shared rule module — the exact same invariants scripts/validate.js enforces
 // (both import the same lib/ ESM; change a rule once and both reflect it).
 import { AA_CONTRAST, AAA_CONTRAST, expectedTokens, checkTheme } from '../../lib/rules.js';
@@ -135,8 +136,9 @@ function cloneTheme(t: Theme): Theme {
   return { ...t, fonts: { ...t.fonts }, colors: { ...t.colors } };
 }
 
-type EditorMode = 'simple' | 'pro';
+type EditorMode = SharedDraftMode;
 interface StoredState { draft: Theme; choices: GuidedChoices; mode: EditorMode; panes: PaneKey[] }
+interface DraftReplacement { draft: Theme; mode: EditorMode }
 
 function HueWheel({ hue, onChange }: { hue: number; onChange: (hue: number) => void }) {
   const element = useRef<HTMLDivElement | null>(null);
@@ -166,6 +168,25 @@ function loadStoredState(): StoredState | null {
     return parsed && validImportedTheme(parsed.draft) && (parsed.mode === 'simple' || parsed.mode === 'pro') ? parsed : null;
   } catch { return null; }
 }
+
+function loadSharedDraft(): { requested: boolean; sharedDraft: SharedDraft | null } {
+  const encoded = new URLSearchParams(window.location.hash.slice(1)).get('d');
+  if (!encoded) return { requested: false, sharedDraft: null };
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+  try {
+    const parsed = decodeSharedDraft(encoded) as Partial<SharedDraft>;
+    return {
+      requested: true,
+      sharedDraft: validImportedTheme(parsed?.draft) && (parsed.mode === 'simple' || parsed.mode === 'pro')
+        ? { draft: parsed.draft, mode: parsed.mode }
+        : null,
+    };
+  } catch {
+    return { requested: true, sharedDraft: null };
+  }
+}
+
+const INITIAL_SHARED_DRAFT = loadSharedDraft();
 
 const ZONE_STEPS = 100;
 const ZONE_SHADE = 'rgba(46,125,50,0.28)';
@@ -298,7 +319,14 @@ export function Playground() {
   const initial = useMemo(() => {
     const fork = initialFork();
     const stored = loadStoredState();
-    if (fork.validDeepLink && stored) return { ...stored, editing: true, replacement: fork.theme, notice: null };
+    const share = INITIAL_SHARED_DRAFT;
+    if (share.sharedDraft && stored) return { ...stored, editing: true, replacement: share.sharedDraft, notice: null };
+    if (share.sharedDraft) return { draft: share.sharedDraft.draft, choices: deriveChoices(share.sharedDraft.draft), mode: share.sharedDraft.mode, panes: [...DEFAULT_PANES], editing: true, replacement: null, notice: null };
+    if (share.requested) {
+      if (stored) return { ...stored, editing: true, replacement: null, notice: 'This share link is damaged or not a Candela theme.' };
+      return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: false, replacement: null, notice: 'This share link is damaged or not a Candela theme.' };
+    }
+    if (fork.validDeepLink && stored) return { ...stored, editing: true, replacement: { draft: fork.theme, mode: 'pro' as const }, notice: null };
     if (fork.validDeepLink) return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: true, replacement: null, notice: null };
     if (stored) return { ...stored, editing: true, replacement: null, notice: fork.requestedId ? `Theme '${fork.requestedId}' not found.` : `Resuming your draft '${stored.draft.name}'` };
     return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: false, replacement: null, notice: fork.requestedId ? `Theme '${fork.requestedId}' not found.` : null };
@@ -309,13 +337,14 @@ export function Playground() {
   const [mode, setMode] = useState<EditorMode>(initial.mode);
   const [panes, setPanes] = useState<Set<PaneKey>>(() => new Set(initial.panes));
   const [editing, setEditing] = useState(initial.editing);
-  const [replacement, setReplacement] = useState<Theme | null>(initial.replacement);
+  const [replacement, setReplacement] = useState<DraftReplacement | null>(initial.replacement);
   const [notice, setNotice] = useState<string | null>(initial.notice);
   const [startOverDialogOpen, setStartOverDialogOpen] = useState(false);
   const [selectedAccent, setSelectedAccent] = useState<SyntaxToken>('kw');
   const [highlightedToken, setHighlightedToken] = useState<ColorToken | null>(null);
   const [importError, setImportError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [shareLinkCopied, setShareLinkCopied] = useState(false);
   const [validationOpenOverride, setValidationOpenOverride] = useState<boolean | null>(null);
   const [visionMode, setVisionMode] = useState<VisionMode>('normal');
   const validationRef = useRef<HTMLDetailsElement | null>(null);
@@ -326,6 +355,8 @@ export function Playground() {
     if (!editing) return;
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ draft, choices, mode, panes: [...panes] }));
   }, [draft, choices, mode, panes, editing]);
+
+  useEffect(() => setShareLinkCopied(false), [draft, mode]);
 
   const replaceDraftAndResetHelpers = (next: Theme) => {
     helperBaseline.current = cloneTheme(next);
@@ -393,10 +424,10 @@ export function Playground() {
 
   const openReplacement = () => {
     if (!replacement) return;
-    setSeed(replacement.id);
-    replaceDraftAndResetHelpers(cloneTheme(replacement));
-    setChoices(structuredClone(DEFAULT_CHOICES));
-    setMode('pro'); setPanes(new Set(DEFAULT_PANES)); setImportError('');
+    setSeed(replacement.draft.id);
+    replaceDraftAndResetHelpers(cloneTheme(replacement.draft));
+    setChoices(deriveChoices(replacement.draft));
+    setMode(replacement.mode); setPanes(new Set(DEFAULT_PANES)); setImportError('');
     setCopied(false); setEditing(true); setReplacement(null);
   };
 
@@ -485,6 +516,12 @@ export function Playground() {
   const copy = () => {
     if (!canExport) return;
     navigator.clipboard?.writeText(json).then(() => setCopied(true), () => setCopied(false));
+  };
+
+  const copyShareLink = () => {
+    const url = new URL(window.location.href);
+    url.hash = `d=${encodeSharedDraft({ draft, mode })}`;
+    navigator.clipboard?.writeText(url.toString()).then(() => setShareLinkCopied(true), () => setShareLinkCopied(false));
   };
 
   return (
@@ -625,7 +662,7 @@ export function Playground() {
             <button onClick={copy} disabled={!canExport}>
               {copied ? 'Copied!' : 'Copy theme JSON'}
             </button>
-            <ExportControls theme={draft} canExport={canExport} />
+            <ExportControls theme={draft} canExport={canExport} onCopyShareLink={copyShareLink} shareLinkCopied={shareLinkCopied} />
             {canExport ? <span className="pg-export-status pg-ok">Ready to export</span> : (
               <button className="pg-export-status pg-blocked" type="button" aria-controls="editor-validation" aria-expanded={validationOpenOverride ?? failures.length > 0} onClick={() => {
                 setValidationOpenOverride(true);
@@ -706,7 +743,7 @@ export function Playground() {
       </>}
       {replacement && <Dialog
         title="Open theme?"
-        message={`Open ${replacement.name}? This replaces your draft '${draft.name}'.`}
+        message={`Open ${replacement.draft.name}? This replaces your draft '${draft.name}'.`}
         confirmLabel="Open"
         cancelLabel="Keep my draft"
         onConfirm={openReplacement}

@@ -1,6 +1,6 @@
 # 039 — Shareable draft links
 
-priority: 70
+done: 2026-07-19
 depends: 037
 
 ## What & why

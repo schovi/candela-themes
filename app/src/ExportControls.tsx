@@ -6,6 +6,8 @@ import { ansiMapping, type Theme } from './themes';
 interface ExportControlsProps {
   theme: Theme;
   canExport: boolean;
+  onCopyShareLink: () => void;
+  shareLinkCopied: boolean;
 }
 
 const FORMAT_DESCRIPTIONS: Record<string, string> = {
@@ -43,7 +45,7 @@ function exportTheme(theme: Theme): Theme {
   return { ...theme, id: slugify(theme.name) };
 }
 
-export function ExportControls({ theme, canExport }: ExportControlsProps) {
+export function ExportControls({ theme, canExport, onCopyShareLink, shareLinkCopied }: ExportControlsProps) {
   const [selectedTool, setSelectedTool] = useState(FORMAT_EMITTERS[0].tool);
   const normalizedTheme = exportTheme(theme);
   const selectedFormat = FORMAT_EMITTERS.find((format) => format.tool === selectedTool) ?? FORMAT_EMITTERS[0];
@@ -80,6 +82,9 @@ export function ExportControls({ theme, canExport }: ExportControlsProps) {
 
   return (
     <div className="format-export">
+      <button type="button" onClick={onCopyShareLink}>
+        {shareLinkCopied ? 'Copied!' : 'Copy link'}
+      </button>
       <label>
         Target tool
         <select value={selectedTool} onChange={(event) => setSelectedTool(event.target.value)} id="format-export-tool">

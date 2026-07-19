@@ -402,6 +402,10 @@ so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
   Token controls pair their abbreviations with plain-language labels; hover, keyboard
   focus, and the selected Simple accent highlight matching preview text.
   **Download draft JSON** downloads that working theme for backup or later reopening.
+  **Copy link** creates a shareable URL containing the exact draft and editor mode, even
+  when hard validation failures block export. Opening one restores the shared draft, or
+  asks whether to replace an existing browser draft without hiding or discarding it.
+  Damaged links show a notice and fall back normally.
   Global palette helpers are fixed `-50` to `50` controls: each thumb keeps its
   exact value, and the combined palette is recalculated from one stable baseline
   instead of accumulating incremental nudges.
