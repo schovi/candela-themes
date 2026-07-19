@@ -1,6 +1,6 @@
 # 020 — Host & auto-publish the theme explorer on Cloudflare Pages
 
-priority: 5
+done: 2026-07-19
 
 ## What & why
 
@@ -102,3 +102,17 @@ documented dashboard fallback. CI (GitHub Actions) and the CF build command run 
 gate so a broken theme or build can't publish. This task doesn't depend on the 021 redesign —
 the build settings are architecture-agnostic — but publishing after 021 lands means the
 public site is the redesigned multi-page one.
+
+Implementation surprises:
+
+- The host decision landed as **D3**, not D1 — D1/D2 were taken by the multi-page-app
+  decisions after this task was groomed.
+- Pages project creation over the API fails with error 8000011 until the Cloudflare
+  Workers & Pages GitHub App is installed *via the dashboard's Connect to Git flow* — a
+  browser OAuth step no API covers, and installing the app from GitHub's side alone does
+  not link the Cloudflare account. After the user ran that flow, the API create succeeded
+  and everything else (build config, domain, env vars) was applied over the MCP.
+- The first production build used Node 22 (the builder default; the deploy built pushed
+  `main`, which predates `app/.node-version`), so the pin was made deterministic with a
+  `NODE_VERSION=20` env var on the project (production + preview) — the spec's fallback.
+  `app/.node-version` stays for local tooling.
