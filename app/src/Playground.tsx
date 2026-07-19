@@ -372,10 +372,10 @@ export function Playground() {
       <header className="lab-tool-head">
         <h2>Theme Editor</h2>
         <p>
-          Edit any theme's tokens by hex or H/S/L slider and watch every contrast and
-          invariant check pass or fail live — the same <code>lib/rules.js</code> rules{' '}
-          <code>scripts/validate.js</code> gates on. Green means it would ship as-is; a red
-          list names each failing rule, and export stays blocked until all pass.
+          Edit any theme's tokens by hex or H/S/L slider. Every change is checked live
+          against the same contrast rules the official themes must pass — green means it
+          would ship as-is; a red list names each failing rule, and export stays blocked
+          until all pass.
         </p>
       </header>
       {!editing ? <div className="studio-welcome">
@@ -517,7 +517,7 @@ export function Playground() {
           </summary>
           <div className="pg-validation-body">
             {failures.length === 0 ? (
-              <p className="pg-ok">All hard invariants pass.</p>
+              <p className="pg-ok">All contrast rules pass — ready to export.</p>
             ) : (
               <div className="pg-fails">
                 <div className="pg-fails-head">

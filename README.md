@@ -11,8 +11,8 @@
 <p align="center">
   14 light color themes for terminals and editors, plus two dark companions.
   For people who like dark mode but can't use it comfortably: prescription lenses,
-  astigmatism, glare sensitivity, plain eye strain. Candela keeps the calm,
-  low-contrast feel of a good pastel dark theme — on paper instead of pitch black.
+  astigmatism, glare sensitivity, plain eye strain. Candela keeps the calm
+  feel of a good pastel dark theme — on paper instead of pitch black.
 </p>
 
 <p align="center">
@@ -114,8 +114,12 @@ diagnostics, from the theme explorer (`app/`). Regenerate with
 
 ## Install
 
-Run `npm run build` to generate every theme under `build/` (`node scripts/generate.js`
-works too, no dependencies). Then grab the file your tool needs from
+```sh
+git clone https://github.com/schovi/candela-themes && cd candela-themes
+npm run build   # or: node scripts/generate.js — no dependencies needed
+```
+
+This generates every theme under `build/`. Grab the file your tool needs from
 `build/<tool>/`, or install the VS Code `.vsix` (below). `build/` and `dist/` are
 generated, not committed.
 

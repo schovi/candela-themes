@@ -62,6 +62,13 @@ export function Gallery() {
 
   return (
     <>
+      <header className="gallery-head">
+        <h1>All {themes.length} themes</h1>
+        <p>
+          Previewed across a terminal and real code. Filter by mode, tone, or tag; every
+          card's <strong>Customize</strong> opens it in the Editor.
+        </p>
+      </header>
       <div className="gallery-filters">
         <input
           type="search"
@@ -104,7 +111,13 @@ export function Gallery() {
       </div>
 
       {visible.length === 0 ? (
-        <p className="gallery-empty">No themes match these filters.</p>
+        <p className="gallery-empty">
+          No themes match these filters.{' '}
+          <button type="button" className="gallery-empty-clear" onClick={() => { setQuery(''); setMode('all'); setTags(new Set()); }}>
+            Clear them
+          </button>{' '}
+          to see all {themes.length}.
+        </p>
       ) : (
         visible.map((t) => (
           <ThemeCard key={t.id} theme={t} panes={panes} customizeHref={`/editor?theme=${t.id}`} />

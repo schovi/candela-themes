@@ -78,9 +78,10 @@ export function Home() {
       <section className="hero">
         <div>
           <p className="hero-eyebrow">{themes.length} themes · terminals &amp; editors</p>
-          <h1 className="hero-title">
-            <a href={brand.href} style={{ color: 'inherit', textDecoration: 'none' }}>{brand.tagline}</a>
-          </h1>
+          <h1 className="hero-title">{brand.tagline}</h1>
+          <p className="hero-gloss">
+            <a href={brand.href}>candela</a> — the SI unit of luminous intensity
+          </p>
           <p className="hero-what">
             {brand.name} is a set of {themes.length} color themes for terminals and editors,
             tuned for eye-strain comfort.
@@ -89,7 +90,7 @@ export function Home() {
             For people who like dark mode but can't use it comfortably — prescription
             lenses, astigmatism, glare sensitivity, plain eye strain. Off-white paper (never
             pure white), dark-gray ink (never pure black), and desaturated pastel syntax keep
-            the calm, low-contrast feel without the glare. {lightThemes.length} light
+            the calm feel of a good pastel dark theme — without the glare. {lightThemes.length} light
             themes and {darkThemes.length} dark companions tuned to the same contrast rules.
           </p>
           <div className="hero-ctas">
@@ -102,6 +103,22 @@ export function Home() {
           </p>
         </div>
         <HeroDemo />
+      </section>
+
+      <section className="why">
+        <h2>Why most light themes hurt</h2>
+        <p>They're too bright and too saturated. Candela fixes both with a few hard rules:</p>
+        <ul>
+          <li><strong>Soft paper, never pure white.</strong> Off-white backgrounds kill the glare.</li>
+          <li><strong>Dark gray ink, never pure black.</strong> Strong contrast (AAA), without the harshness.</li>
+          <li><strong>Desaturated accents.</strong> Saturated text causes the colored fringing astigmatic eyes see.</li>
+          <li><strong>Blue and orange carry the meaning.</strong> They stay distinct for almost all types of color blindness.</li>
+          <li><strong>Same colors, same meaning, every theme.</strong> Switching never makes you relearn what you're looking at.</li>
+        </ul>
+        <p>
+          Every rule is explained, with sources, in{' '}
+          <a href={`${REPO}/blob/main/docs/vision-research.md`}>the vision research</a>.
+        </p>
       </section>
 
       <section className="how">

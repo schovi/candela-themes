@@ -74,7 +74,7 @@ a:focus-visible, button:focus-visible {
 .site-footer a { color: var(--site-ink2); }
 
 /* Homepage */
-.hero, .how, .theme-index { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+.hero, .why, .how, .theme-index { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
 .hero {
   padding-top: 64px;
   padding-bottom: 12px;
@@ -92,11 +92,17 @@ a:focus-visible, button:focus-visible {
   color: var(--site-amber);
 }
 .hero-title {
-  margin: 0 0 18px;
+  margin: 0 0 10px;
   font: 400 clamp(36px, 4.2vw, 54px)/1.08 var(--font-display);
   letter-spacing: -0.015em;
   color: var(--site-ink);
 }
+.hero-gloss {
+  margin: 0 0 18px;
+  font: 400 12.5px/1.5 var(--font-mono);
+  color: var(--site-faint);
+}
+.hero-gloss a { color: inherit; text-underline-offset: 3px; }
 .hero-what {
   margin: 0 0 14px;
   font-size: 18px;
@@ -167,16 +173,19 @@ a:focus-visible, button:focus-visible {
 }
 .hero-demo-caption a { color: var(--site-accent); }
 
-.how { padding-top: 52px; }
-.how h2, .theme-index h2 {
+.why, .how { padding-top: 52px; }
+.why h2, .how h2, .theme-index h2 {
   margin: 0 0 14px;
   font: 500 12px/1 var(--font-mono);
   text-transform: uppercase;
   letter-spacing: 0.14em;
   color: var(--site-faint);
 }
-.how p { margin: 0 0 10px; font-size: 15px; line-height: 1.6; color: var(--site-ink2); max-width: 720px; }
-.how a { color: var(--site-accent); }
+.why p, .how p { margin: 0 0 10px; font-size: 15px; line-height: 1.6; color: var(--site-ink2); max-width: 720px; }
+.why a, .how a { color: var(--site-accent); }
+.why ul { margin: 0 0 10px; padding-left: 20px; max-width: 720px; }
+.why li { margin: 0 0 6px; font-size: 15px; line-height: 1.6; color: var(--site-ink2); }
+.why li strong { color: var(--site-ink); }
 
 .theme-index { padding-top: 52px; padding-bottom: 72px; }
 .home-grid {
@@ -221,7 +230,7 @@ a:focus-visible, button:focus-visible {
 }
 
 @media (max-width: 600px) {
-  .site-header, .site-footer, .hero, .how, .theme-index { padding-left: 20px; padding-right: 20px; }
+  .site-header, .site-footer, .hero, .why, .how, .theme-index, .gallery-head { padding-left: 20px; padding-right: 20px; }
 }
 
 /* Lab */
@@ -497,6 +506,29 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .gd-diag { gap: 8px; }
 .gd-diag-label { min-width: 96px; font: 12px/1 var(--font-mono); font-weight: 500; }
 .gd-diag input[type="range"] { background-repeat: no-repeat; background-size: 100% 8px; background-position: center; }
+
+.gallery-head {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 44px 40px 0;
+}
+.gallery-head h1 {
+  margin: 0 0 8px;
+  font: 400 clamp(24px, 2.6vw, 32px)/1.15 var(--font-display);
+  letter-spacing: -0.01em;
+  color: var(--site-ink);
+}
+.gallery-head p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--site-ink2); max-width: 720px; }
+.gallery-empty-clear {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--site-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
 
 /* Gallery filter bar (task 022). Matches the 1180px card content width. */
 .gallery-filters {
