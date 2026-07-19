@@ -40,7 +40,27 @@ ramp at current H/L, lightness ramp at current H/S.
 JetBrains Mono (with `font-variant-numeric: tabular-nums`) becomes the instrument
 voice — every numeral, readout, degree label, scale endpoint, and hex.
 
-**Layout.** Two-column layout stays. Control column reads as an instrument rail:
+**Layout & story.** The page reads in workflow order — *name it → shape it → watch it
+→ verify it → ship it* — fixing the current top region (screenshot evaluated at groom:
+export cluster first in the right column, "Export blocked" shouting before any
+preview, meta form ahead of the creative controls, three disconnected status voices).
+
+- **Instrument header bar** (one row, replaces the scattered toolbar + resume banner
+  + floating status): draft name inline-editable with the id beneath it, autosave
+  state as a quiet dot+word, Simple/Pro toggle, and one live status chip — red
+  "5 checks failing" / green "all pass" — that scrolls to the validation section.
+  Download draft JSON and Start over become quiet text actions here. Resume context
+  collapses into one dismissible line under the bar.
+- **Left rail = creative controls only.** Colors first. Meta (tone, description,
+  fonts) moves into a collapsed "Details" disclosure at the rail's end.
+- **Right column order**: previews (pane picker + vision toggle as one compact chip
+  row above the panes, replacing the checkbox wall) → validation (meter + details)
+  → **export as the finale** — target tool + primary download, with "Download all
+  formats", "Copy theme JSON", "Copy link" as captioned secondary actions and the
+  install link inline. The gate reads top-down: verdict first, then the actions it
+  gates.
+
+Control column reads as an instrument rail:
 - Every slider becomes a calibrated scale: gradient-filled track where the axis is a
   color channel, small tick marks, caliper-line thumb, right-aligned mono numeric
   readout. The L slider keeps its pass-zone bracket, restyled as engraved zone marks.
@@ -70,8 +90,9 @@ signature encodes real data.
 
 ## Spec
 
-- Ownership surfaces: `app/src/styles.css` (dominant), `app/src/Playground.tsx` +
-  small components for structure/markup, `app/src/branding.ts` if tokens move there.
+- Ownership surfaces: `app/src/styles.css` (dominant), `app/src/Playground.tsx` and
+  `app/src/ExportControls.tsx` + small components for structure/markup,
+  `app/src/branding.ts` if tokens move there.
 - Excluded: any behavior/state-model change (033–039 own those); home/gallery restyle
   (log a follow-up draft if divergence demands it); no new npm dependencies; no new
   fonts.
@@ -82,6 +103,10 @@ signature encodes real data.
 ## Acceptance criteria
 
 - The shipped page follows the design plan above; deviations are noted with a reason.
+- The page reads in workflow order: header bar (name, mode, status chip), controls
+  left, then previews → validation → export in the right column; no export action
+  appears before the previews, and the status chip, validation header, and export
+  gate all report the same state.
 - Hue dial: ring (not disc) rendered at the shipped accent band with no pixel more
   saturated than it; degree ticks; all token hues plotted as markers; selected token
   + hue readout in the center; set-hue interaction still works.
