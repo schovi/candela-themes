@@ -3,6 +3,9 @@ import { autoFix } from './autofix';
 import type { ColorToken, Theme } from './themes';
 
 export type PaletteHelper = 'contrast' | 'saturation' | 'warmth' | 'darkness';
+export type PaletteHelperValues = Record<PaletteHelper, number>;
+
+const PALETTE_HELPER_ORDER: PaletteHelper[] = ['contrast', 'saturation', 'warmth', 'darkness'];
 
 const clamp = (value: number, minimum: number, maximum: number) => Math.max(minimum, Math.min(maximum, value));
 
@@ -23,4 +26,11 @@ export function applyPaletteHelper(theme: Theme, helper: PaletteHelper, amount: 
     colors[token] = hslToHex(hsl);
   }
   return autoFix({ ...theme, colors });
+}
+
+export function applyPaletteHelperValues(theme: Theme, values: PaletteHelperValues): Theme {
+  return PALETTE_HELPER_ORDER.reduce(
+    (result, helper) => values[helper] === 0 ? result : applyPaletteHelper(result, helper, values[helper] / 50),
+    theme,
+  );
 }

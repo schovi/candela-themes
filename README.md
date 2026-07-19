@@ -394,12 +394,22 @@ so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
 
 - **Simple** mode derives a palette from background mood, darkness, accent hues,
   and diagnostic hues. **Pro** mode exposes hex plus H/S/L sliders per token.
-  Both edit one autosaved draft, share validation and configurable preview panes,
-  and support global palette helpers plus raw JSON import and download. Once every
-  hard rule passes, the editor also downloads ready-to-install zip archives for any
-  supported tool, or one full archive containing all formats and their install manuals.
-- Start by forking any theme, choosing a blank template, or walking through the
-  three-step wizard. The old `/builder` URL redirects to `/editor`.
+  Both edit one browser-local autosaved draft and share configurable preview panes.
+  **Save draft** downloads that working theme as JSON for backup or later upload.
+  Global palette helpers are fixed `-50` to `50` controls: each thumb keeps its
+  exact value, and the combined palette is recalculated from one stable baseline
+  instead of accumulating incremental nudges.
+- Export readiness stays above the preview while detailed hard failures, allowed
+  warnings, and per-token contrast values live in a collapsible **Validation** panel
+  below it, so recalculation never moves the preview. Hard failures block export;
+  warnings do not. A tool-specific zip contains that tool's emitted theme and install
+  manual. The full zip contains every supported format, every manual, and the raw theme.
+- The editor first offers four starting points: a balanced blank theme, a fork of
+  any Candela theme, a three-step guided wizard, or a JSON theme upload. JSON upload
+  is available only as a starting point, and the chooser hides after a selection.
+  A saved browser draft or valid `/editor?theme=<id>` link opens the editor directly.
+  Confirmed **Start over** clears that browser draft and returns to the chooser. The
+  old `/builder` URL redirects to `/editor`.
 
 The editor runs the same invariants as `scripts/validate.js` (shared code in `lib/`), so
 **Copy theme JSON** stays disabled until every hard rule passes. Paste the result

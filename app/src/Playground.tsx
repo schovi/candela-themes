@@ -5,7 +5,7 @@ import { autoFix } from './autofix';
 import { DEFAULT_PANES, type PaneKey } from './samples/Panes';
 import { PanePicker } from './PanePicker';
 import { ExportControls } from './ExportControls';
-import { applyPaletteHelper, type PaletteHelper } from './paletteHelpers';
+import { applyPaletteHelperValues, type PaletteHelper, type PaletteHelperValues } from './paletteHelpers';
 import { DEFAULT_CHOICES, deriveTheme, SYNTAX_TOKENS, type GuidedChoices, type SyntaxToken } from './derive';
 // Shared rule module — the exact same invariants scripts/validate.js enforces
 // (both import the same lib/ ESM; change a rule once and both reflect it).
@@ -190,71 +190,101 @@ function TokenEditor({ token, value, gradient, setColor }: {
   );
 }
 
-// A ?theme=<id> deep-link (from a gallery card's Customize action) preloads the
-// Editor with that theme; a missing or unknown id falls back to the blank template.
-function initialFork(): { seed: string; theme: Theme } {
+// A valid ?theme=<id> deep-link (from a gallery card's Customize action) preloads
+// the Editor. Missing and unknown ids leave the starting-point choice to the user.
+function initialFork(): { seed: string; theme: Theme; validDeepLink: boolean } {
   const id = new URLSearchParams(window.location.search).get('theme');
   const match = id ? themes.find((t) => t.id === id) : undefined;
   return match
-    ? { seed: match.id, theme: cloneTheme(match) }
-    : { seed: 'blank', theme: cloneTheme(BLANK_TEMPLATE) };
+    ? { seed: match.id, theme: cloneTheme(match), validDeepLink: true }
+    : { seed: themes[0].id, theme: cloneTheme(BLANK_TEMPLATE), validDeepLink: false };
 }
 
 export function Playground() {
   const initial = useMemo(() => {
     const fork = initialFork();
     const stored = loadStoredState();
-    const hasDeepLink = new URLSearchParams(window.location.search).has('theme');
-    if (hasDeepLink && stored && !window.confirm('Replace your saved working draft with this theme?')) return stored;
-    if (hasDeepLink) return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES] };
-    return stored ?? { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES] };
+    if (fork.validDeepLink && stored && !window.confirm('Replace your saved working draft with this theme?')) return { ...stored, editing: true };
+    if (fork.validDeepLink) return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: true };
+    return stored ? { ...stored, editing: true } : { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: false };
   }, []);
   const [seed, setSeed] = useState(() => initialFork().seed);
   const [draft, setDraft] = useState<Theme>(initial.draft);
   const [choices, setChoices] = useState<GuidedChoices>(initial.choices);
   const [mode, setMode] = useState<EditorMode>(initial.mode);
   const [panes, setPanes] = useState<Set<PaneKey>>(() => new Set(initial.panes));
+  const [editing, setEditing] = useState(initial.editing);
   const [selectedAccent, setSelectedAccent] = useState<SyntaxToken>('kw');
   const [wizardStep, setWizardStep] = useState(0);
   const [importError, setImportError] = useState('');
   const [copied, setCopied] = useState(false);
-  const helperBaseline = useRef<Theme | null>(null);
+  const [validationOpenOverride, setValidationOpenOverride] = useState<boolean | null>(null);
+  const [helperValues, setHelperValues] = useState<PaletteHelperValues>({ contrast: 0, saturation: 0, warmth: 0, darkness: 0 });
+  const helperBaseline = useRef<Theme>(cloneTheme(initial.draft));
 
   useEffect(() => {
+    if (!editing) return;
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ draft, choices, mode, panes: [...panes] }));
-  }, [draft, choices, mode, panes]);
+  }, [draft, choices, mode, panes, editing]);
+
+  const replaceDraftAndResetHelpers = (next: Theme) => {
+    helperBaseline.current = cloneTheme(next);
+    setHelperValues({ contrast: 0, saturation: 0, warmth: 0, darkness: 0 });
+    setDraft(next);
+  };
+
+  const updateDraftAndResetHelpers = (update: (current: Theme) => Theme) => {
+    setHelperValues({ contrast: 0, saturation: 0, warmth: 0, darkness: 0 });
+    setDraft((current) => {
+      const next = update(current);
+      helperBaseline.current = cloneTheme(next);
+      return next;
+    });
+  };
 
   const reseed = (value: string) => {
     setSeed(value);
     setCopied(false);
     const source = value === 'blank' ? BLANK_TEMPLATE : themes.find((t) => t.id === value)!;
-    setDraft(cloneTheme(source));
+    replaceDraftAndResetHelpers(cloneTheme(source));
     setMode('pro');
+    setEditing(true);
   };
 
   const updateChoices = (patch: Partial<GuidedChoices>) => {
     const next = { ...choices, ...patch };
     setChoices(next);
-    setDraft(deriveTheme(next));
+    replaceDraftAndResetHelpers(deriveTheme(next));
     setCopied(false);
   };
 
   const switchMode = (next: EditorMode) => {
     if (next === mode) return;
     if (next === 'simple' && !window.confirm('Switching to Simple will discard manual token edits and re-derive the palette. Continue?')) return;
-    if (next === 'simple') setDraft(deriveTheme(choices));
+    if (next === 'simple') replaceDraftAndResetHelpers(deriveTheme(choices));
     setMode(next);
   };
 
-  const reset = () => {
-    localStorage.removeItem(STORAGE_KEY);
-    setSeed('blank'); setDraft(cloneTheme(BLANK_TEMPLATE)); setChoices(structuredClone(DEFAULT_CHOICES));
-    setMode('pro'); setPanes(new Set(DEFAULT_PANES)); setWizardStep(0); setImportError('');
+  const startWizard = () => {
+    setChoices(structuredClone(DEFAULT_CHOICES));
+    replaceDraftAndResetHelpers(deriveTheme(DEFAULT_CHOICES));
+    setMode('simple');
+    setWizardStep(1);
+    setEditing(true);
   };
 
-  const runHelper = (helper: PaletteHelper, value: number) => {
-    const baseline = helperBaseline.current ?? draft;
-    setDraft(applyPaletteHelper(baseline, helper, value / 50));
+  const startOver = () => {
+    if (!window.confirm('Start over? This clears your saved draft and all current edits.')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    setSeed(themes[0].id); replaceDraftAndResetHelpers(cloneTheme(BLANK_TEMPLATE)); setChoices(structuredClone(DEFAULT_CHOICES));
+    setMode('pro'); setPanes(new Set(DEFAULT_PANES)); setWizardStep(0); setImportError('');
+    setCopied(false); setEditing(false);
+  };
+
+  const setHelperValue = (helper: PaletteHelper, value: number) => {
+    const next = { ...helperValues, [helper]: value };
+    setHelperValues(next);
+    setDraft(applyPaletteHelperValues(helperBaseline.current, next));
     setCopied(false);
   };
 
@@ -269,22 +299,23 @@ export function Playground() {
     try {
       const parsed = JSON.parse(await file.text());
       if (!validImportedTheme(parsed)) throw new Error('Theme must include every token as a #rrggbb color.');
-      setDraft({ ...parsed, id: parsed.id || slugify(parsed.name), tags: parsed.tags ?? ['custom'], mode: parsed.mode ?? 'light' });
-      setMode('pro'); setImportError('');
+      replaceDraftAndResetHelpers({ ...parsed, id: parsed.id || slugify(parsed.name), tags: parsed.tags ?? ['custom'], mode: parsed.mode ?? 'light' });
+      setChoices(structuredClone(DEFAULT_CHOICES)); setMode('pro'); setWizardStep(0);
+      setCopied(false); setValidationOpenOverride(null); setImportError(''); setEditing(true);
     } catch (error) { setImportError(error instanceof Error ? error.message : 'Could not import this file.'); }
   };
 
   const setColor = (token: ColorToken, hex: string) => {
     setCopied(false);
-    setDraft((d) => ({ ...d, colors: { ...d.colors, [token]: hex } }));
+    updateDraftAndResetHelpers((current) => ({ ...current, colors: { ...current.colors, [token]: hex } }));
   };
   const setField = <K extends 'name' | 'tone' | 'description'>(field: K, value: string) => {
     setCopied(false);
-    setDraft((d) => ({ ...d, [field]: value }));
+    updateDraftAndResetHelpers((current) => ({ ...current, [field]: value }));
   };
   const setFont = (which: 'code' | 'prose', value: string) => {
     setCopied(false);
-    setDraft((d) => ({ ...d, fonts: { ...d.fonts, [which]: value } }));
+    updateDraftAndResetHelpers((current) => ({ ...current, fonts: { ...current.fonts, [which]: value } }));
   };
 
   const { failures, warnings, contrast } = useMemo(() => {
@@ -347,17 +378,46 @@ export function Playground() {
           list names each failing rule, and export stays blocked until all pass.
         </p>
       </header>
-      <div className="studio-toolbar">
-        <div className="studio-starts" role="group" aria-label="Start a theme">
-          <label>Fork existing
-            <select value={seed} onChange={(event) => reseed(event.target.value)}>
-              <option value="blank">Blank template</option>
+      {!editing ? <div className="studio-welcome">
+        <div className="studio-welcome-head">
+          <h3>How would you like to begin?</h3>
+          <p>Choose a starting point. You can switch between Simple and Pro editing later.</p>
+        </div>
+        <div className="studio-start-options">
+          <button className="studio-start-card" type="button" onClick={() => reseed('blank')}>
+            <strong>Blank theme</strong>
+            <span>Start with a balanced neutral palette and edit every detail.</span>
+          </button>
+          <div className="studio-start-card studio-fork-card">
+            <strong>Fork existing</strong>
+            <span>Use a Candela theme as your starting point.</span>
+            <select value={seed} onChange={(event) => setSeed(event.target.value)} aria-label="Theme to fork">
               {themes.map((theme) => <option key={theme.id} value={theme.id}>{theme.name}</option>)}
             </select>
+            <button type="button" onClick={() => reseed(seed)}>Fork theme</button>
+          </div>
+          <button className="studio-start-card" type="button" onClick={startWizard}>
+            <strong>Guided wizard</strong>
+            <span>Build a palette step by step from mood, accents, and diagnostics.</span>
+          </button>
+          <label className="studio-start-card studio-upload-card">
+            <strong>Upload JSON</strong>
+            <span>Continue editing a Candela theme saved as JSON.</span>
+            <input
+              className="studio-upload-input"
+              type="file"
+              accept="application/json,.json"
+              onChange={(event) => { void importRaw(event.target.files?.[0]); event.currentTarget.value = ''; }}
+            />
           </label>
-          <button type="button" onClick={() => reseed('blank')}>Blank template</button>
-          <button type="button" onClick={() => { reset(); setMode('simple'); setWizardStep(1); }}>Start wizard</button>
-          <button type="button" onClick={reset}>Reset / start over</button>
+        </div>
+        {importError && <p className="studio-import-error" role="alert">{importError}</p>}
+      </div> : <>
+      <div className="studio-toolbar">
+        <div className="studio-draft-actions">
+          <span className="studio-save-status">Saved automatically</span>
+          <button type="button" onClick={downloadRaw}>Save draft</button>
+          <button className="studio-start-over" type="button" onClick={startOver}>Start over</button>
         </div>
         <div className="studio-modes" role="group" aria-label="Editing mode">
           <button type="button" className={mode === 'simple' ? 'is-on' : ''} onClick={() => switchMode('simple')}>Simple</button>
@@ -429,75 +489,82 @@ export function Playground() {
 
         <fieldset className="pg-group studio-helpers">
           <legend>Palette helpers</legend>
-          {(['contrast', 'saturation', 'warmth', 'darkness'] as PaletteHelper[]).map((helper) => <label key={helper} className="gd-slider"><span>{helper[0].toUpperCase() + helper.slice(1)}</span><input type="range" min={-50} max={50} defaultValue={0} onPointerDown={() => { helperBaseline.current = cloneTheme(draft); }} onFocus={() => { helperBaseline.current ??= cloneTheme(draft); }} onChange={(event) => runHelper(helper, Number(event.target.value))} onPointerUp={(event) => { helperBaseline.current = null; event.currentTarget.value = '0'; }} onBlur={(event) => { helperBaseline.current = null; event.currentTarget.value = '0'; }} /></label>)}
+          {(['contrast', 'saturation', 'warmth', 'darkness'] as PaletteHelper[]).map((helper) => <label key={helper} className="gd-slider"><span>{helper[0].toUpperCase() + helper.slice(1)}</span><input type="range" min={-50} max={50} value={helperValues[helper]} onChange={(event) => setHelperValue(helper, Number(event.target.value))} /></label>)}
         </fieldset>
 
-        <fieldset className="pg-group studio-raw">
-          <legend>Working JSON</legend>
-          <button type="button" onClick={downloadRaw}>Download raw JSON</button>
-          <label className="raw-import">Import raw JSON<input type="file" accept="application/json,.json" onChange={(event) => { void importRaw(event.target.files?.[0]); event.currentTarget.value = ''; }} /></label>
-          {importError && <p className="pg-fails" role="alert">{importError}</p>}
-        </fieldset>
       </aside>
 
       <div className="pg-preview">
         <div className="pg-feedback">
-          {failures.length === 0 ? (
-            <p className="pg-ok">All hard invariants pass — ready to export.</p>
-          ) : (
-            <div className="pg-fails">
-              <div className="pg-fails-head">
-                <strong>{failures.length} hard rule(s) failing (export blocked):</strong>
-                <button
-                  className="pg-fix"
-                  onClick={() => { setDraft((d) => autoFix(d)); setCopied(false); }}
-                  title="Adjusts each failing color's lightness (keeping hue) to the nearest passing value"
-                >
-                  Auto-fix colors
-                </button>
-              </div>
-              <ul>{failures.map((f, i) => <li key={i}>{f}</li>)}</ul>
-            </div>
-          )}
-          {warnings.length > 0 && (
-            <div className="pg-warns">
-              <strong>Warnings (allowed at export):</strong>
-              <ul>{warnings.map((w, i) => <li key={i}>{w}</li>)}</ul>
-            </div>
-          )}
-          {contrast.length > 0 && (
-            <details className="pg-contrast">
-              <summary>Per-token contrast (vs bg / surface)</summary>
-              <table>
-                <thead><tr><th>token</th><th>on bg</th><th>on surface</th></tr></thead>
-                <tbody>
-                  {contrast.map((c) => (
-                    <tr key={c.token}>
-                      <td>{c.token}</td>
-                      <td>{c.onBg.toFixed(2)}:1</td>
-                      <td>{c.onSurface.toFixed(2)}:1</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </details>
-          )}
           <div className="pg-export">
             <button onClick={copy} disabled={!canExport}>
               {copied ? 'Copied!' : 'Copy theme JSON'}
             </button>
             <ExportControls theme={draft} canExport={canExport} />
-            {!canExport && <span className="pg-blocked">Fix the failing rules to enable export.</span>}
+            <span className={canExport ? 'pg-export-status pg-ok' : 'pg-export-status pg-blocked'}>
+              {canExport ? 'Ready to export' : `Export blocked · ${failures.length} hard ${failures.length === 1 ? 'failure' : 'failures'}`}
+            </span>
           </div>
-          <details className="pg-json">
-            <summary>Theme JSON (paste into candela-themes.json → themes[])</summary>
-            <pre>{json}</pre>
-          </details>
         </div>
         <PanePicker panes={panes} onChange={setPanes} />
         <ThemeCard theme={draft} panes={panes} />
+        <details className="pg-validation" open={validationOpenOverride ?? failures.length > 0}>
+          <summary onClick={(event) => {
+            event.preventDefault();
+            setValidationOpenOverride(!(validationOpenOverride ?? failures.length > 0));
+          }}>
+            Validation · {failures.length} hard {failures.length === 1 ? 'failure' : 'failures'} · {warnings.length} {warnings.length === 1 ? 'warning' : 'warnings'}
+          </summary>
+          <div className="pg-validation-body">
+            {failures.length === 0 ? (
+              <p className="pg-ok">All hard invariants pass.</p>
+            ) : (
+              <div className="pg-fails">
+                <div className="pg-fails-head">
+                  <strong>{failures.length} hard rule(s) failing:</strong>
+                  <button
+                    className="pg-fix"
+                    onClick={() => { updateDraftAndResetHelpers((current) => autoFix(current)); setCopied(false); }}
+                    title="Adjusts each failing color's lightness (keeping hue) to the nearest passing value"
+                  >
+                    Auto-fix colors
+                  </button>
+                </div>
+                <ul>{failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul>
+              </div>
+            )}
+            {warnings.length > 0 && (
+              <div className="pg-warns">
+                <strong>Warnings (allowed at export):</strong>
+                <ul>{warnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul>
+              </div>
+            )}
+            {contrast.length > 0 && (
+              <details className="pg-contrast">
+                <summary>Per-token contrast (vs bg / surface)</summary>
+                <table>
+                  <thead><tr><th>token</th><th>on bg</th><th>on surface</th></tr></thead>
+                  <tbody>
+                    {contrast.map((tokenContrast) => (
+                      <tr key={tokenContrast.token}>
+                        <td>{tokenContrast.token}</td>
+                        <td>{tokenContrast.onBg.toFixed(2)}:1</td>
+                        <td>{tokenContrast.onSurface.toFixed(2)}:1</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </details>
+            )}
+          </div>
+        </details>
+        <details className="pg-json">
+          <summary>Theme JSON (paste into candela-themes.json → themes[])</summary>
+          <pre>{json}</pre>
+        </details>
       </div>
       </div>
+      </>}
     </section>
   );
 }
