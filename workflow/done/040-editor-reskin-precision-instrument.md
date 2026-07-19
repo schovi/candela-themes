@@ -1,6 +1,6 @@
 # 040 — Editor re-skin: precision instrument
 
-priority: 80
+done: 2026-07-19
 
 ## What & why
 
