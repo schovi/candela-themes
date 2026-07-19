@@ -51,3 +51,18 @@ simplest publish path with PR preview URLs included. The Pages build command run
 `node ../scripts/validate.js && npm run build` so a failed invariant aborts the deploy;
 GitHub Actions CI runs the identical gate pre-merge. Deploys stay owned by Cloudflare —
 no Actions-owned deploy step to maintain or authenticate.
+
+## D4 — Canonical domain is candela.ink; candela.schovi.cz redirects (2026-07-19)
+
+**Problem.** D3 shipped the explorer on candela.schovi.cz, a personal subdomain. The
+project deserves its own name, and two live URLs would split links and search results.
+
+**Options.** (A) Keep candela.schovi.cz as canonical. (B) Buy a project domain, make it
+canonical, 301-redirect the old subdomain. (C) Serve both with no redirect.
+
+**Choice.** B: **candela.ink** (bought on Cloudflare Registrar — `ink` is literally the
+set's primary text token). Attached to the same Pages project (proxied apex CNAME);
+candela.schovi.cz stays attached and 301-redirects with path preserved via
+`app/public/_redirects` (a zone redirect rule was blocked by API token permissions; the
+`_redirects` file is repo-versioned, which is better anyway). All docs and the GitHub
+homepage point at candela.ink only.
