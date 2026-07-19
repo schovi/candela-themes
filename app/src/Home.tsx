@@ -76,28 +76,18 @@ export function Home() {
   return (
     <SiteShell page="home">
       <section className="hero">
-        <div>
-          <p className="hero-eyebrow">{themes.length} themes · terminals &amp; editors</p>
-          <h1 className="hero-title">{brand.tagline}</h1>
-          <p className="hero-gloss">
-            <a href={brand.href}>candela</a> — the SI unit of luminous intensity
-          </p>
-          <p className="hero-what">
-            {brand.name} is a set of {themes.length} color themes for terminals and editors,
-            tuned for eye-strain comfort.
-          </p>
-          <p className="hero-why">
-            For people who like dark mode but can't use it comfortably — prescription
-            lenses, astigmatism, glare sensitivity, plain eye strain. Off-white paper (never
-            pure white), dark-gray ink (never pure black), and desaturated pastel syntax keep
-            the calm feel of a good pastel dark theme — without the glare. {lightThemes.length} light
-            themes and {darkThemes.length} dark companions tuned to the same contrast rules.
+        <div className="hero-copy">
+          <h1 className="home-h1">{brand.tagline}</h1>
+          <p className="home-body">
+            {lightThemes.length} light and {darkThemes.length} dark themes for terminals and
+            editors, tuned so you can read code all day — without the glare of pure white or
+            the harshness of pure black.
           </p>
           <div className="hero-ctas">
             <a className="hero-cta" href="/themes">Browse the gallery</a>
             <a className="hero-cta-alt" href={`${REPO}#install`}>Install from GitHub</a>
           </div>
-          <p className="hero-invariants">
+          <p className="home-data hero-invariants">
             ink : paper ≥ 7:1 (AAA) · every token ≥ 4.5:1 (AA)<br />
             never #ffffff · never #000000
           </p>
@@ -106,46 +96,41 @@ export function Home() {
       </section>
 
       <section className="why">
-        <h2>Why most light themes hurt</h2>
-        <p>They're too bright and too saturated. Candela fixes both with a few hard rules:</p>
-        <ul>
+        <div className="why-lead">
+          <h2 className="home-h2">Why most light themes hurt</h2>
+          <p className="home-body">
+            They're too bright and too saturated. Candela is for people who like dark mode but
+            can't use it comfortably — prescription lenses, astigmatism, glare sensitivity,
+            plain eye strain. A few hard rules fix both:
+          </p>
+          <p className="home-body">
+            Every rule is explained, with sources, in{' '}
+            <a href={`${REPO}/blob/main/docs/vision-research.md`}>the vision research</a>.
+          </p>
+        </div>
+        <ul className="home-list">
           <li><strong>Soft paper, never pure white.</strong> Off-white backgrounds kill the glare.</li>
-          <li><strong>Dark gray ink, never pure black.</strong> Strong contrast (AAA), without the harshness.</li>
-          <li><strong>Desaturated accents.</strong> Saturated text causes the colored fringing astigmatic eyes see.</li>
-          <li><strong>Blue and orange carry the meaning.</strong> They stay distinct for almost all types of color blindness.</li>
-          <li><strong>Same colors, same meaning, every theme.</strong> Switching never makes you relearn what you're looking at.</li>
+          <li><strong>Dark-gray ink, never pure black.</strong> AAA contrast without the harshness.</li>
+          <li><strong>Desaturated accents.</strong> Saturated text is what makes astigmatic eyes see colored fringes.</li>
+          <li><strong>Blue and orange carry the meaning.</strong> They stay distinct for almost every kind of color blindness.</li>
+          <li><strong>Same colors, same meaning, every theme.</strong> Switching never makes you relearn the screen.</li>
         </ul>
-        <p>
-          Every rule is explained, with sources, in{' '}
-          <a href={`${REPO}/blob/main/docs/vision-research.md`}>the vision research</a>.
-        </p>
-      </section>
-
-      <section className="how">
-        <h2>How it works</h2>
-        <p>
-          Every palette is authored in one JSON source of truth, then generated into
-          terminal and editor formats — iTerm2, Alacritty, Kitty, WezTerm, Ghostty,
-          VS Code, JetBrains, Zed, Sublime, Neovim, and Helix.
-        </p>
-        <p>
-          Browse all {themes.length} in the <a href="/themes">gallery</a>, then fork one or
-          build your own in the <a href="/editor">Theme Editor</a>.
-        </p>
-        <p>
-          Install instructions and the full format list live in the{' '}
-          <a href={`${REPO}#install`}>README</a> — source on{' '}
-          <a href={REPO}>GitHub</a>.
-        </p>
       </section>
 
       <section className="theme-index">
-        <h2>All {themes.length} themes</h2>
+        <h2 className="home-h2">All {themes.length} themes</h2>
         <div className="home-grid">
           {themes.map((t) => (
             <ThemeIndexCard key={t.id} theme={t} />
           ))}
         </div>
+        <p className="home-body home-outro">
+          Every palette is authored in one JSON source and generated for iTerm2, Alacritty,
+          Kitty, WezTerm, Ghostty, VS Code, JetBrains, Zed, Sublime, Neovim, and Helix. Fork
+          one or build your own in the <a href="/editor">Theme Editor</a>, or grab install
+          instructions from the <a href={`${REPO}#install`}>README</a> on{' '}
+          <a href={REPO}>GitHub</a>.
+        </p>
       </section>
     </SiteShell>
   );

@@ -73,8 +73,37 @@ a:focus-visible, button:focus-visible {
 }
 .site-footer a { color: var(--site-ink2); }
 
-/* Homepage */
-.hero, .why, .how, .theme-index { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+/* Homepage. Strict type roles: display face on the H1 only, one body style for
+   all prose (.home-body), mono only for code/data (.home-data). */
+.hero, .why, .theme-index { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+.home-h1 {
+  margin: 0 0 16px;
+  font: 400 clamp(36px, 4.2vw, 54px)/1.08 var(--font-display);
+  letter-spacing: -0.015em;
+  color: var(--site-ink);
+}
+.home-h2 {
+  margin: 0 0 16px;
+  font: 700 13px/1 var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--site-faint);
+}
+.home-body {
+  margin: 0 0 14px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--site-ink2);
+  max-width: 560px;
+}
+.home-body a { color: var(--site-accent); }
+.home-data {
+  font: 400 11.5px/1.8 var(--font-mono);
+  color: var(--site-faint);
+}
+.home-list { margin: 0 0 14px; padding-left: 20px; max-width: 640px; }
+.home-list li { margin: 0 0 6px; font-size: 16px; line-height: 1.6; color: var(--site-ink2); }
+.home-list strong { color: var(--site-ink); }
 .hero {
   padding-top: 64px;
   padding-bottom: 12px;
@@ -84,39 +113,6 @@ a:focus-visible, button:focus-visible {
   align-items: center;
 }
 @media (max-width: 960px) { .hero { grid-template-columns: 1fr; gap: 36px; padding-top: 44px; } }
-.hero-eyebrow {
-  margin: 0 0 18px;
-  font: 500 12px/1 var(--font-mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--site-amber);
-}
-.hero-title {
-  margin: 0 0 10px;
-  font: 400 clamp(36px, 4.2vw, 54px)/1.08 var(--font-display);
-  letter-spacing: -0.015em;
-  color: var(--site-ink);
-}
-.hero-gloss {
-  margin: 0 0 18px;
-  font: 400 12.5px/1.5 var(--font-mono);
-  color: var(--site-faint);
-}
-.hero-gloss a { color: inherit; text-underline-offset: 3px; }
-.hero-what {
-  margin: 0 0 14px;
-  font-size: 18px;
-  line-height: 1.55;
-  color: var(--site-ink);
-  max-width: 560px;
-}
-.hero-why {
-  margin: 0;
-  font-size: 15.5px;
-  line-height: 1.6;
-  color: var(--site-ink2);
-  max-width: 560px;
-}
 .hero-ctas {
   margin: 26px 0 0;
   display: flex;
@@ -136,11 +132,7 @@ a:focus-visible, button:focus-visible {
 }
 .hero-cta:hover { background: #274664; }
 .hero-cta-alt { font-size: 15px; color: var(--site-accent); text-underline-offset: 3px; }
-.hero-invariants {
-  margin: 22px 0 0;
-  font: 400 11.5px/1.8 var(--font-mono);
-  color: var(--site-faint);
-}
+.hero-invariants { margin: 22px 0 0; }
 
 /* The hero demo: a real sample pane, repainted live by the theme switcher.
    SamplePanes renders a 2-col .samples grid; a single pane should fill it. */
@@ -173,21 +165,23 @@ a:focus-visible, button:focus-visible {
 }
 .hero-demo-caption a { color: var(--site-accent); }
 
-.why, .how { padding-top: 52px; }
-.why h2, .how h2, .theme-index h2 {
-  margin: 0 0 14px;
-  font: 500 12px/1 var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--site-faint);
+/* Rationale mirrors the hero's two-column grid: a heading + intro rail on the
+   left, the hard-rules list on the right. Fills the width under the demo and
+   collapses to one column with the hero. */
+.why {
+  padding-top: 52px;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 48px;
+  align-items: start;
 }
-.why p, .how p { margin: 0 0 10px; font-size: 15px; line-height: 1.6; color: var(--site-ink2); max-width: 720px; }
-.why a, .how a { color: var(--site-accent); }
-.why ul { margin: 0 0 10px; padding-left: 20px; max-width: 720px; }
-.why li { margin: 0 0 6px; font-size: 15px; line-height: 1.6; color: var(--site-ink2); }
-.why li strong { color: var(--site-ink); }
+@media (max-width: 960px) { .why { grid-template-columns: 1fr; gap: 20px; } }
+.why-lead .home-body { max-width: 420px; }
+.why .home-list { max-width: 620px; }
+.why .home-list li { margin-bottom: 12px; }
 
 .theme-index { padding-top: 52px; padding-bottom: 72px; }
+.home-outro { margin-top: 26px; max-width: 720px; }
 .home-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -230,7 +224,7 @@ a:focus-visible, button:focus-visible {
 }
 
 @media (max-width: 600px) {
-  .site-header, .site-footer, .hero, .why, .how, .theme-index, .gallery-head { padding-left: 20px; padding-right: 20px; }
+  .site-header, .site-footer, .hero, .why, .theme-index, .gallery-head { padding-left: 20px; padding-right: 20px; }
 }
 
 /* Lab */
