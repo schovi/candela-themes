@@ -42,11 +42,15 @@ a:focus-visible, button:focus-visible {
   border-bottom: 1px solid var(--site-border);
 }
 .wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   font: 700 22px/1 var(--font-mono);
   letter-spacing: -0.01em;
   color: var(--site-ink);
   text-decoration: none;
 }
+.wordmark img { display: block; }
 .site-nav { display: flex; gap: 22px; font-size: 15px; }
 .site-nav a { color: var(--site-ink2); text-decoration: none; }
 .site-nav a:hover { color: var(--site-ink); }

@@ -16,7 +16,10 @@ export function SiteShell({ page, children }: { page: Page; children: ReactNode 
   return (
     <div className="site">
       <header className="site-header">
-        <a className="wordmark" href="/">{brand.name}</a>
+        <a className="wordmark" href="/">
+          <img src="/candela-icon.png" alt="" width={24} height={24} />
+          {brand.name}
+        </a>
         <nav className="site-nav">
           {NAV.map((n) => (
             <a key={n.page} href={n.href} aria-current={page === n.page ? 'page' : undefined}>
