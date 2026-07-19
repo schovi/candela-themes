@@ -7,7 +7,8 @@ low-contrast feel of a good pastel dark theme, but on a light background — and
 for the times you do want the lights off, two dark themes tuned to the same
 contrast rules.
 
-The token model and the rules to keep if you extend the set are in
+**Browse every theme live at [candela.schovi.cz](https://candela.schovi.cz)** — no
+clone needed. The token model and the rules to keep if you extend the set are in
 [`AGENTS.md`](AGENTS.md). The vision-science behind those rules is in
 [`docs/vision-research.md`](docs/vision-research.md).
 
@@ -334,3 +335,37 @@ so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
 Both run the same invariants as `scripts/validate.js` (shared code in `lib/`), so
 **Copy theme JSON** stays disabled until every hard rule passes. Paste the result
 into a new `themes[]` entry and it clears `node scripts/validate.js` as-is.
+
+## Publishing the explorer
+
+The explorer is published at **<https://candela.schovi.cz>** by **Cloudflare Pages
+git integration**: every push to `main` triggers a Cloudflare build of the repo, and
+every PR gets a free preview URL (commented on the PR). There is no deploy step in
+this repo — Cloudflare owns the build and deploy.
+
+Every publish is **gated on validation**: the Pages build command runs
+`node ../scripts/validate.js` before the app build, so malformed source JSON or a
+broken design invariant fails the build and nothing ships. GitHub Actions
+([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs the *same* gate
+(JSON validity → `scripts/validate.js` → `cd app && npm ci && npm run build`) on
+every PR and push to `main`, so bad changes are caught before merge. Keep the two
+in sync — one gate expressed twice. Screenshot regeneration (Playwright) is
+deliberately **not** in the pipeline: it is heavy and rewrites committed PNGs; run
+it locally when the gallery changes.
+
+The exact Pages settings (project `candela-themes`):
+
+| Setting | Value |
+| --- | --- |
+| Production branch | `main` |
+| Root directory | `app` |
+| Build command | `node ../scripts/validate.js && npm run build` |
+| Build output directory | `dist` |
+| Custom domain | `candela.schovi.cz` |
+| Node version | pinned by `app/.node-version` (20); fallback: set a `NODE_VERSION=20` env var |
+
+One-time setup that the Cloudflare API cannot do: installing the **Cloudflare
+Workers & Pages GitHub App** (the git integration) requires a browser OAuth flow.
+In the Cloudflare dashboard: **Workers & Pages → Create → Pages → Connect to
+Git**, authorize the GitHub App for `schovi/candela-themes`, then enter the
+settings above. Everything after that (domain, config changes) works over the API.

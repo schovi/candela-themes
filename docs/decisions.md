@@ -35,3 +35,19 @@ clean-URL rewrite), with two distinct nav items.
 URL for nav and deep-linking; `/lab` is removed (the site was not yet deployed, so no live URL
 needed preserving). Stays within D1 — still a static multi-page Vite build, no router. If the
 two tools ever need to be seen side by side, this is the choice to revisit.
+
+## D3 — Host the explorer on Cloudflare Pages, git-integration, validation-gated (2026-07-19)
+
+**Problem.** The explorer should be browsable at a public URL without cloning, and a
+broken source-of-truth JSON or a broken app build must never publish.
+
+**Options.** (A) Cloudflare Pages with git integration: push to `main` builds and
+deploys, PR previews for free. (B) GitHub Actions building and deploying via
+`wrangler pages deploy` (or GitHub Pages). (C) Any new static host (Netlify, Vercel).
+
+**Choice.** A, at **candela.schovi.cz** (task 020). The schovi.cz zone already lives on
+Cloudflare (zero new vendors), the site is fully static, and git integration is the
+simplest publish path with PR preview URLs included. The Pages build command runs
+`node ../scripts/validate.js && npm run build` so a failed invariant aborts the deploy;
+GitHub Actions CI runs the identical gate pre-merge. Deploys stay owned by Cloudflare —
+no Actions-owned deploy step to maintain or authenticate.

@@ -1,0 +1,25 @@
+# Same gate the Cloudflare Pages build runs (validate + app build) — keep them in sync.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Source JSON is valid
+        run: python3 -m json.tool themes/candela-themes.json > /dev/null
+      - name: Design invariants hold
+        run: node scripts/validate.js
+      - name: Explorer builds
+        run: |
+          cd app
+          npm ci
+          npm run build
