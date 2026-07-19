@@ -132,6 +132,9 @@ Theme ids: `sepia-paper`, `slate-mist`, `sage`, `solarized-lite`, `blossom`,
 
 ### VS Code
 
+Run `npm run package` to rebuild every theme and create all supported packages.
+The format-specific commands below remain available when only one package is needed.
+
 The generated extension (all 16 themes) lives at `build/vscode/`.
 
 - **As a `.vsix` (recommended):** `npm run package:vscode` builds and packages it
