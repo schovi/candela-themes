@@ -677,6 +677,19 @@ export function Playground() {
     element.focus();
   };
 
+  // Preview → rail: clicking a tokenized sample element reveals its controls
+  // (reuses jumpToToken), hovering glows it (reuses setHighlightedToken via the
+  // card's data-highlight). Delegated off the preview wrapper so the ~100s of
+  // token spans stay non-tabbable — the rail is the keyboard path (043).
+  const tokenAtPreviewEvent = (event: React.SyntheticEvent): ColorToken | null => {
+    const token = (event.target as HTMLElement).closest('[data-token]')?.getAttribute('data-token');
+    return token && token in draft.colors ? (token as ColorToken) : null;
+  };
+  const inspectFromPreview = (event: React.MouseEvent) => {
+    const token = tokenAtPreviewEvent(event);
+    if (token) jumpToToken(token);
+  };
+
   const copy = () => {
     if (!canExport) return;
     navigator.clipboard?.writeText(json).then(() => setCopied(true), () => setCopied(false));
@@ -863,7 +876,14 @@ export function Playground() {
           </div>
         </div>
         <VisionFilterDefinitions />
-        <ThemeCard theme={draft} panes={panes} previewFilter={visionMode === 'normal' ? undefined : `url(#vision-${visionMode})`} highlightToken={highlightedToken ?? (mode === 'simple' ? selectedAccent : undefined)} />
+        <div
+          className="pg-preview-surface"
+          onClick={inspectFromPreview}
+          onPointerOver={(event) => setHighlightedToken(tokenAtPreviewEvent(event))}
+          onPointerLeave={() => setHighlightedToken(null)}
+        >
+          <ThemeCard theme={draft} panes={panes} previewFilter={visionMode === 'normal' ? undefined : `url(#vision-${visionMode})`} highlightToken={highlightedToken ?? (mode === 'simple' ? selectedAccent : undefined)} />
+        </div>
       </div>
       <aside className="zone pg-inspector">
         <details id="editor-validation" ref={validationRef} className={justPassed ? 'pg-validation is-celebrating' : 'pg-validation'} open={validationOpenOverride ?? failures.length > 0}>

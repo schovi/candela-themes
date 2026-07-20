@@ -334,6 +334,11 @@ a:focus-visible, button:focus-visible {
   color: var(--ink2);
   margin-left: 8px;
 }
+/* Editor only: sample tokens are click-to-inspect (043). Gallery cards render
+   ThemeCard without this wrapper, so they stay non-interactive. */
+.pg-preview-surface [data-token] {
+  cursor: pointer;
+}
 .theme-card[data-highlight] [data-token] {
   opacity: 0.38;
   transition: opacity 120ms ease, filter 120ms ease;
