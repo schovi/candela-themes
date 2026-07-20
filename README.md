@@ -348,7 +348,8 @@ frame (backgrounds from `bg`/`surface`, borders from `border`, text from
 
 - **Zed** → `build/zed/`, a theme extension with an `extension.toml` manifest
   and one theme *family* at `themes/candela.json` (`$schema` v0.2.0,
-  `themes[]`), each entry `appearance: "light"`. UI keys map
+  `themes[]`), each entry's `appearance` set from the theme's `mode`
+  (`"light"` or `"dark"`). UI keys map
   `editor.background = surface`, `editor.foreground = ink`,
   `editor.active_line.background = lineHighlight`,
   `text/text.muted/text.placeholder = ink/ink2/faint`, `border = border`,
