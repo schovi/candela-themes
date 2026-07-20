@@ -334,10 +334,13 @@ a:focus-visible, button:focus-visible {
   color: var(--ink2);
   margin-left: 8px;
 }
-/* Editor only: sample tokens are click-to-inspect (043). Gallery cards render
-   ThemeCard without this wrapper, so they stay non-interactive. */
-.pg-preview-surface [data-token] {
-  cursor: pointer;
+/* Transient echo of the preview's highlighted token onto its rail control, so
+   hovering/clicking a sample element lights up the same token in the rail — a
+   distinct signal from the persistent accent selection (.gd-token-on). */
+.rail-hi {
+  outline: 2px solid var(--site-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 .theme-card[data-highlight] [data-token] {
   opacity: 0.38;

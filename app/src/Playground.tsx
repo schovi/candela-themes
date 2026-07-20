@@ -371,11 +371,12 @@ function lightnessZone(work: Theme, token: ColorToken, expected: ColorToken[]): 
   return allPass ? null : passZoneGradient(pass);
 }
 
-function TokenEditor({ token, value, gradient, open, onToggle, setColor, setHighlightedToken }: {
+function TokenEditor({ token, value, gradient, open, highlighted, onToggle, setColor, setHighlightedToken }: {
   token: ColorToken;
   value: string;
   gradient: string | null;
   open: boolean;
+  highlighted: boolean;
   onToggle: () => void;
   setColor: (token: ColorToken, hex: string) => void;
   setHighlightedToken: (token: ColorToken | null) => void;
@@ -387,7 +388,7 @@ function TokenEditor({ token, value, gradient, open, onToggle, setColor, setHigh
   const setHsl = (part: 'h' | 's' | 'l', v: number) => setColor(token, hslToHex({ h, s, l, [part]: v }));
   return (
     <div
-      className={open ? 'pg-token-editor is-open' : 'pg-token-editor'}
+      className={`pg-token-editor${open ? ' is-open' : ''}${highlighted ? ' rail-hi' : ''}`}
       onPointerEnter={() => setHighlightedToken(token)}
       onPointerLeave={() => setHighlightedToken(null)}
       onFocus={() => setHighlightedToken(token)}
@@ -698,9 +699,17 @@ export function Playground() {
     const token = tokenAtPreviewEvent(event);
     if (token && previewReachable(token)) jumpToToken(token);
   };
-  const highlightFromPreview = (event: React.SyntheticEvent) => {
+  // Glow and the pointer cursor both track reachability, so a token only looks
+  // clickable (hand + highlight) when a click would actually reveal a control.
+  const highlightFromPreview = (event: React.PointerEvent<HTMLDivElement>) => {
     const token = tokenAtPreviewEvent(event);
-    setHighlightedToken(token && previewReachable(token) ? token : null);
+    const reachable = !!token && previewReachable(token);
+    setHighlightedToken(reachable ? token : null);
+    event.currentTarget.style.cursor = reachable ? 'pointer' : '';
+  };
+  const clearPreviewHighlight = (event: React.PointerEvent<HTMLDivElement>) => {
+    setHighlightedToken(null);
+    event.currentTarget.style.cursor = '';
   };
 
   const copy = () => {
@@ -800,6 +809,7 @@ export function Playground() {
                 value={draft.colors[token] ?? ''}
                 gradient={passZones[token] ?? null}
                 open={openToken === token}
+                highlighted={highlightedToken === token}
                 onToggle={() => setOpenToken(openToken === token ? null : token)}
                 setColor={setColor}
                 setHighlightedToken={setHighlightedToken}
@@ -830,11 +840,11 @@ export function Playground() {
               colors={draft.colors}
               onChange={(hue) => updateChoices({ accentHues: { ...choices.accentHues, [selectedAccent]: hue } })}
             />
-            <div className="gd-tokens">{SYNTAX_TOKENS.map((token) => <button key={token} type="button" id={`rail-token-${token}`} className={selectedAccent === token ? 'gd-token gd-token-on' : 'gd-token'} onClick={() => setSelectedAccent(token)} onPointerEnter={() => setHighlightedToken(token)} onPointerLeave={() => setHighlightedToken(null)} onFocus={() => setHighlightedToken(token)} onBlur={() => setHighlightedToken(null)}><span className="gd-chip" style={{ background: draft.colors[token] }} />{token} · {TOKEN_LABELS[token]}</button>)}</div>
+            <div className="gd-tokens">{SYNTAX_TOKENS.map((token) => <button key={token} type="button" id={`rail-token-${token}`} className={`gd-token${selectedAccent === token ? ' gd-token-on' : ''}${highlightedToken === token ? ' rail-hi' : ''}`} onClick={() => setSelectedAccent(token)} onPointerEnter={() => setHighlightedToken(token)} onPointerLeave={() => setHighlightedToken(null)} onFocus={() => setHighlightedToken(token)} onBlur={() => setHighlightedToken(null)}><span className="gd-chip" style={{ background: draft.colors[token] }} />{token} · {TOKEN_LABELS[token]}</button>)}</div>
           </fieldset>
           <fieldset className="pg-group gd-step">
             <legend>3 · Diagnostics</legend>
-            {DIAG_TOKENS.map((diagnostic) => <div key={diagnostic.key} className="gd-slider gd-diag" onPointerEnter={() => setHighlightedToken(diagnostic.key)} onPointerLeave={() => setHighlightedToken(null)} onFocus={() => setHighlightedToken(diagnostic.key)} onBlur={() => setHighlightedToken(null)}>
+            {DIAG_TOKENS.map((diagnostic) => <div key={diagnostic.key} className={`gd-slider gd-diag${highlightedToken === diagnostic.key ? ' rail-hi' : ''}`} onPointerEnter={() => setHighlightedToken(diagnostic.key)} onPointerLeave={() => setHighlightedToken(null)} onFocus={() => setHighlightedToken(diagnostic.key)} onBlur={() => setHighlightedToken(null)}>
               <span className="gd-chip" style={{ background: draft.colors[diagnostic.key] }} />
               <span className="gd-diag-label">{diagnostic.label}</span>
               <GaugeSlider
@@ -893,7 +903,7 @@ export function Playground() {
           className="pg-preview-surface"
           onClick={inspectFromPreview}
           onPointerOver={highlightFromPreview}
-          onPointerLeave={() => setHighlightedToken(null)}
+          onPointerLeave={clearPreviewHighlight}
         >
           <ThemeCard theme={draft} panes={panes} previewFilter={visionMode === 'normal' ? undefined : `url(#vision-${visionMode})`} highlightToken={highlightedToken ?? undefined} />
         </div>
