@@ -79,3 +79,18 @@ Builder URL.
 **Choice.** B, superseding D2. One persisted working draft now moves between guided Simple
 controls and per-token Pro controls. `/builder` redirects permanently to `/editor`. This
 keeps D1's static multi-page architecture and does not add a client-side router.
+
+## D6 — Download links use GitHub `releases/latest`, no candela.ink aliases (2026-07-20)
+
+**Problem.** The download surface on candela.ink and the README needs stable,
+version-independent links to release artifacts. Option: mint our own aliases on
+candela.ink that always point at the newest files.
+
+**Options.** (A) Host version-independent alias URLs on candela.ink that redirect to or
+mirror the newest artifacts. (B) Link straight to GitHub's built-in
+`…/releases/latest` and `…/releases/latest/download/<asset>` URLs.
+
+**Choice.** B. GitHub already serves stable, version-independent latest-release URLs, so
+an alias would either duplicate artifacts (drift risk) or add redirect plumbing for no
+gain, and mirroring would weaken version traceability. The README and app link to
+`releases/latest`; no artifacts are mirrored under candela.ink.

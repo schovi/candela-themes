@@ -1,6 +1,6 @@
 # 032 — End-to-end release distribution
 
-priority: 90
+done: 2026-07-20
 
 ## What & why
 

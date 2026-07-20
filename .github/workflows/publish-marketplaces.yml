@@ -1,0 +1,98 @@
+# Push an already-tagged release to the editor marketplaces that support a
+# non-interactive publisher. Manual-dispatch only, and every job runs in the
+# protected `marketplace` environment — so credentials are never reachable from
+# ordinary PR/branch/tag CI, and a maintainer must approve each run.
+#
+# Zed and Sublime Package Control have no non-interactive publisher; their
+# submissions/updates stay manual (see docs/release-runbook.md).
+name: Publish to marketplaces
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Release tag to publish (e.g. v0.1.0)
+        required: true
+      vscode:
+        description: Publish to VS Code Marketplace
+        type: boolean
+        default: false
+      openvsx:
+        description: Publish to Open VSX
+        type: boolean
+        default: false
+      jetbrains:
+        description: Publish to JetBrains Marketplace (plugin must already be approved)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  vscode:
+    if: ${{ inputs.vscode }}
+    runs-on: ubuntu-latest
+    environment: marketplace
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run package:vscode
+      - name: vsce publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: node_modules/.bin/vsce publish --packagePath "$(ls dist/candela-themes-*.vsix)"
+
+  openvsx:
+    if: ${{ inputs.openvsx }}
+    runs-on: ubuntu-latest
+    environment: marketplace
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run package:vscode
+      - name: ovsx publish
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: npx --yes ovsx publish "$(ls dist/candela-themes-*.vsix)" -p "$OVSX_PAT"
+
+  jetbrains:
+    if: ${{ inputs.jetbrains }}
+    runs-on: ubuntu-latest
+    environment: marketplace
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.0'
+      - run: npm ci
+      - run: npm run package:intellij
+      - name: Upload update to JetBrains Marketplace
+        env:
+          JETBRAINS_TOKEN: ${{ secrets.JETBRAINS_TOKEN }}
+          JETBRAINS_PLUGIN_ID: ${{ secrets.JETBRAINS_PLUGIN_ID }}
+        run: |
+          curl -i --fail \
+            -H "Authorization: Bearer $JETBRAINS_TOKEN" \
+            -F pluginId="$JETBRAINS_PLUGIN_ID" \
+            -F file=@"$(ls dist/candela-themes-intellij-*.zip)" \
+            https://plugins.jetbrains.com/api/updates/upload

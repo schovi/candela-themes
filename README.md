@@ -114,6 +114,16 @@ diagnostics, from the theme explorer (`app/`). Regenerate with
 
 ## Install
 
+**Download a release.** The [latest GitHub release](https://github.com/schovi/candela-themes/releases/latest)
+ships a ready-made archive for every tool (terminals, editors, Neovim, Helix), one
+all-formats ZIP, and a `SHA256SUMS.txt` manifest. This is the canonical download
+channel for Neovim, Helix, and the terminal formats. Editor-marketplace listings
+(VS Code, Open VSX, JetBrains, Zed, Sublime) come online per the
+[release runbook](docs/release-runbook.md); marketplace links are added here once
+those listings exist.
+
+**Or build from source:**
+
 ```sh
 git clone https://github.com/schovi/candela-themes && cd candela-themes
 npm run build   # or: node scripts/generate.js — no dependencies needed
@@ -191,15 +201,17 @@ short installation instructions; loose files remain available under `build/`.
 
 The generated extension (all 16 themes) lives at `build/zed/`. In Zed, open
 **Extensions**, choose **Install Dev Extension**, and select that directory.
-`npm run package:zed` copies the complete extension to `dist/zed/` for sharing or
-installation the same way. Registry publishing is a follow-up.
+`npm run package:zed` copies the complete extension to `dist/zed/` for dev install
+and writes `dist/candela-themes-zed-<version>.tar.gz` for download. Zed extension
+registry submission is a manual PR — see the [release runbook](docs/release-runbook.md).
 
 ### Sublime Text
 
 Run `npm run package:sublime`, then copy
 `dist/candela-themes.sublime-package` into Sublime Text's `Installed Packages/`
 folder. For a loose-file install, copy the `.sublime-color-scheme` files from
-`build/sublime/` into `Packages/User/`. Package Control publishing is a follow-up.
+`build/sublime/` into `Packages/User/`. Package Control submission is a manual PR —
+see the [release runbook](docs/release-runbook.md).
 
 ### Neovim
 
@@ -288,10 +300,10 @@ one `package.json` contributing all 16 themes and one
 `themes/candela-<id>-color-theme.json` per theme (`"type": "light"`, workbench
 `colors{}` + `tokenColors[]`). The whole workbench is themed (activity bar, side
 bar, tabs, status bar, panels, integrated terminal), not just the editor pane.
-`package.json` carries full Marketplace metadata (placeholder `CHANGEME` URLs
-until a real repo exists), and the emitter also drops a bundled `README.md`, a
-`.vscodeignore`, and a copy of the root MIT `LICENSE` so packaging is
-warning-free (no `icon` yet, needs a 128px PNG).
+`package.json` carries full Marketplace metadata (repository/homepage/bugs point
+at the real repo; version tracks the root `package.json`), and the emitter also
+drops a bundled `README.md`, a `.vscodeignore`, a 128px `icon.png`, and a copy of
+the root MIT `LICENSE` so packaging is warning-free.
 
 Sublime reuses the same scope table. Its emitter writes a complete package
 directory at `build/sublime/`: one `candela-<id>.sublime-color-scheme` per theme,

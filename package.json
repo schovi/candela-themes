@@ -8,6 +8,8 @@
     "build": "node scripts/generate.js",
     "validate": "node scripts/validate.js",
     "package": "npm run build && npm run package:bundles && npm run package:intellij && npm run package:nvim && npm run package:sublime && npm run package:zed && npm run package:vscode",
+    "package:release": "node scripts/package-release.js",
+    "release:dry-run": "node scripts/validate.js && npm run package && npm run package:release",
     "package:bundles": "node scripts/package-bundles.js",
     "package:intellij": "node scripts/package-intellij.js",
     "package:nvim": "node scripts/package-nvim.js",

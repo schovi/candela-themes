@@ -40,6 +40,7 @@ Read the doc leaf before editing mapped paths — behavior and invariants live i
 |---|---|
 | `themes/candela-themes.json` | root `AGENTS.md` (token roles, design invariants, theme-change loop) |
 | `app/` (explorer / playground) | root `AGENTS.md` + root `README.md` (explorer/playground sections) |
+| release/CI (`.github/workflows/*.yml`, `scripts/package-*.js`, `package.json` version) | `docs/release-runbook.md` (version flow, GitHub Release, marketplace publishing) |
 
 - Doc style rules: `docs/style.md`
 - Decision log: `docs/decisions.md` with D<N> handles (used by `/workflow:decision`)

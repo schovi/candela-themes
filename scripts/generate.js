@@ -12,7 +12,8 @@ function main() {
   const { themes, ansiMapping } = JSON.parse(fs.readFileSync(SOURCE, 'utf8'));
   const licenseContent = fs.readFileSync(path.join(ROOT, 'LICENSE'), 'utf8');
   const iconContent = fs.readFileSync(path.join(ROOT, 'assets/icon/candela-icon-128.png'));
-  const { files } = emitFullFamily(themes, ansiMapping, licenseContent, iconContent);
+  const { version } = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+  const { files } = emitFullFamily(themes, ansiMapping, licenseContent, iconContent, version);
 
   fs.rmSync(BUILD, { recursive: true, force: true });
   for (const output of files) {

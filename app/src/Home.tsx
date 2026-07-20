@@ -85,7 +85,7 @@ export function Home() {
           </p>
           <div className="hero-ctas">
             <a className="hero-cta" href="/themes">Browse the gallery</a>
-            <a className="hero-cta-alt" href={`${REPO}#install`}>Install from GitHub</a>
+            <a className="hero-cta-alt" href={`${REPO}/releases/latest`}>Download latest release</a>
           </div>
           <p className="home-data hero-invariants">
             ink : paper ≥ 7:1 (AAA) · every token ≥ 4.5:1 (AA)<br />
@@ -127,9 +127,9 @@ export function Home() {
         <p className="home-body home-outro">
           Every palette is authored in one JSON source and generated for iTerm2, Alacritty,
           Kitty, WezTerm, Ghostty, VS Code, JetBrains, Zed, Sublime, Neovim, and Helix. Fork
-          one or build your own in the <a href="/editor">Theme Editor</a>, or grab install
-          instructions from the <a href={`${REPO}#install`}>README</a> on{' '}
-          <a href={REPO}>GitHub</a>.
+          one or build your own in the <a href="/editor">Theme Editor</a>, download a ready-made
+          archive from the <a href={`${REPO}/releases/latest`}>latest release</a>, or read the{' '}
+          <a href={`${REPO}#install`}>install guide</a> on <a href={REPO}>GitHub</a>.
         </p>
       </section>
     </SiteShell>
