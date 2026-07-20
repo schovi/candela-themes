@@ -1,6 +1,6 @@
 # 042 — Editor flow wiring: cross-zone jumps
 
-priority: 87
+done: 2026-07-20
 depends: 041
 
 ## What & why
