@@ -152,7 +152,8 @@ Then **Preferences: Color Theme** and pick any *Candela NN · …* entry.
 ### IntelliJ / JetBrains IDEs
 
 The theme plugin (all 16 themes) is generated at `build/intellij/`. Each theme
-ships an editor color scheme (`.icls`) and a UI theme
+ships an editor color scheme (as `.xml`, which the plugin's `editorScheme`
+loads, plus an identical `.icls` for manual import) and a UI theme
 (`.theme.json`).
 
 - **As a plugin zip (recommended):** install JDK 17+ and Gradle 9+, then run
@@ -303,10 +304,12 @@ from the generator's zero-runtime-dependency path.
 
 `build/intellij/` is a complete IntelliJ Platform Gradle project. Its emitted
 `build.gradle.kts` and `settings.gradle.kts` use `buildPlugin` to package the
-resources. Per theme: an editor color scheme `.icls` (XML) and a UI theme
-`.theme.json`, plus one `META-INF/plugin.xml` registering all 16 as
-`themeProvider` extensions. Two hex conventions: **`.icls` drops the leading `#`**
-(`value="9a5b2c"`); **`.theme.json` keeps it** (`"#9a5b2c"`).
+resources. Per theme: an editor color scheme (emitted twice with identical
+content — `.xml`, which the plugin's `editorScheme` loads, and `.icls` for the
+manual Import Scheme dialog) and a UI theme `.theme.json`, plus one
+`META-INF/plugin.xml` registering all 16 as `themeProvider` extensions. Two hex
+conventions: **the scheme XML drops the leading `#`** (`value="9a5b2c"`);
+**`.theme.json` keeps it** (`"#9a5b2c"`).
 
 `.icls` general editor colors and the editor background/foreground:
 
@@ -335,9 +338,11 @@ resources. Per theme: an editor color scheme `.icls` (XML) and a UI theme
 | `error` | `ERRORS_ATTRIBUTES` (`EFFECT_COLOR` + `ERROR_STRIPE_COLOR`, wavy) |
 | `warning` | `WARNING_ATTRIBUTES` (`EFFECT_COLOR` + `ERROR_STRIPE_COLOR`, wavy) |
 
-Each `.theme.json` sets `dark: false`, points `editorScheme` at its `.icls`, and
-carries a modest `ui{}` frame (backgrounds from `bg`/`surface`, borders from
-`border`, text from `ink`/`ink2`/`faint`, accents from `fn`).
+Each `.theme.json` sets `dark` from the theme's `mode` (dark themes also inherit
+`parent_scheme="Darcula"` in the scheme XML so unstyled editor attributes fall
+back dark), points `editorScheme` at its `.xml`, and carries a modest `ui{}`
+frame (backgrounds from `bg`/`surface`, borders from `border`, text from
+`ink`/`ink2`/`faint`, accents from `fn`).
 
 ### Zed, Neovim, Helix
 

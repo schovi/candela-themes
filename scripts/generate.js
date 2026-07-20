@@ -24,7 +24,7 @@ function main() {
   const terminalCount = themes.length * 6;
   console.log(`Generated ${terminalCount} files for ${themes.length} themes across 6 formats.`);
   console.log(`Generated build/vscode/ extension: package.json + ${themes.length} theme files.`);
-  console.log(`Generated build/intellij/ plugin: plugin.xml + ${themes.length} .icls + ${themes.length} .theme.json.`);
+  console.log(`Generated build/intellij/ plugin: plugin.xml + ${themes.length} editor schemes (.xml + .icls) + ${themes.length} .theme.json.`);
   console.log(`Generated build/zed/candela.json family with ${themes.length} themes.`);
   console.log(`Generated build/sublime/ ${themes.length} .sublime-color-scheme files.`);
   console.log(`Generated build/nvim/ ${themes.length} Lua colorschemes.`);
