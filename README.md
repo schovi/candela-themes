@@ -131,8 +131,8 @@ Theme ids: `sepia-paper`, `slate-mist`, `sage`, `solarized-lite`, `blossom`,
 
 1. iTerm2 → **Settings → Profiles → Colors**.
 2. **Color Presets… → Import…** and pick a file from `build/iterm2/`, e.g.
-   `sepia-paper.itermcolors`.
-3. Open **Color Presets…** again and select it.
+   `candela-sepia-paper.itermcolors`.
+3. Open **Color Presets…** again and select it (it appears as *candela-…*).
 
 ### VS Code
 
@@ -180,12 +180,12 @@ short installation instructions; loose files remain available under `build/`.
 
 | Terminal | File |
 | --- | --- |
-| iTerm2 | `build/iterm2/<id>.itermcolors` |
-| Alacritty | `build/alacritty/<id>.toml` |
-| Kitty | `build/kitty/<id>.conf` |
-| WezTerm | `build/wezterm/<id>.toml` |
-| Windows Terminal | `build/windows-terminal/<id>.json` (fragment) |
-| Ghostty | `build/ghostty/<id>.conf` |
+| iTerm2 | `build/iterm2/candela-<id>.itermcolors` |
+| Alacritty | `build/alacritty/candela-<id>.toml` |
+| Kitty | `build/kitty/candela-<id>.conf` |
+| WezTerm | `build/wezterm/candela-<id>.toml` |
+| Windows Terminal | `build/windows-terminal/candela-<id>.json` (fragment) |
+| Ghostty | `build/ghostty/candela-<id>.conf` |
 
 ### Zed
 
