@@ -129,7 +129,7 @@ No non-interactive publisher. Publishing and each update is a PR to
 1. Add the theme repo as an **HTTPS** git submodule under `extensions/candela-themes`.
 2. Add a top-level `extensions.toml` entry with the `id` and `version`, run
    `pnpm sort-extensions`, and open the PR. On merge, Zed's CI packages and publishes.
-3. The extension `id` (`candela-themes-theme`) is permanent. The repo must include a
+3. The extension `id` (`candela-themes`) is permanent. The repo must include a
    license (required since 2025-10-01). For each release, bump `version` in
    `extensions.toml` in a new PR.
 

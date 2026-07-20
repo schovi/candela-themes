@@ -94,3 +94,21 @@ mirror the newest artifacts. (B) Link straight to GitHub's built-in
 an alias would either duplicate artifacts (drift risk) or add redirect plumbing for no
 gain, and mirroring would weaken version traceability. The README and app link to
 `releases/latest`; no artifacts are mirrored under candela.ink.
+
+## D7 — Naming: `candela` is the brand, `candela-themes` is the product (2026-07-20)
+
+**Problem.** Identifiers mixed bare `candela` and `candela-themes` (and one stray singular
+`candela-themes-theme` / `candela-theme-explorer`), with no rule for which to use where.
+Question raised: rename the whole project to just `candela`.
+
+**Options.** (A) Collapse everything to bare `candela`. (B) Keep the split and write it
+down: `candela` for the owner/brand, `candela-themes` for the product.
+
+**Choice.** B. `candela` is the **brand/owner** — VS Code publisher, Open VSX namespace,
+JetBrains group `com.candela`, vendor/authors, and the candela.ink domain. `candela-themes`
+(always plural) is the **product** — repo, all store listings and package/plugin/extension
+ids. Bare `candela` for the product was rejected: the VS Code listing would stutter to
+`candela.candela`, a card just named "Candela" hurts search discoverability, and generic
+single-word ids collide more easily, for no real gain. Display name is **"Candela Themes"**
+everywhere (dropped "Candela Light Themes" — inaccurate now that 2 dark themes ship).
+Settled before first publish, while every marketplace id is still mutable.
