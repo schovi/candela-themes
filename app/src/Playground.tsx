@@ -685,9 +685,22 @@ export function Playground() {
     const token = (event.target as HTMLElement).closest('[data-token]')?.getAttribute('data-token');
     return token && token in draft.colors ? (token as ColorToken) : null;
   };
+  // Which tokens a preview click can actually land on. Pro has an editor per
+  // token; Simple only exposes the accents, the diagnostics, and the background
+  // (darkness) — its other UI tokens are derived, with no knob to reveal. Gating
+  // here keeps jumpToToken's inspector-only `bg` fallback from firing on a
+  // preview click and teleporting to the darkness slider.
+  const previewReachable = (token: ColorToken): boolean =>
+    mode === 'pro'
+    || (SYNTAX_TOKENS as string[]).includes(token)
+    || ['error', 'warning', 'ok', 'bg'].includes(token);
   const inspectFromPreview = (event: React.MouseEvent) => {
     const token = tokenAtPreviewEvent(event);
-    if (token) jumpToToken(token);
+    if (token && previewReachable(token)) jumpToToken(token);
+  };
+  const highlightFromPreview = (event: React.SyntheticEvent) => {
+    const token = tokenAtPreviewEvent(event);
+    setHighlightedToken(token && previewReachable(token) ? token : null);
   };
 
   const copy = () => {
@@ -879,10 +892,10 @@ export function Playground() {
         <div
           className="pg-preview-surface"
           onClick={inspectFromPreview}
-          onPointerOver={(event) => setHighlightedToken(tokenAtPreviewEvent(event))}
+          onPointerOver={highlightFromPreview}
           onPointerLeave={() => setHighlightedToken(null)}
         >
-          <ThemeCard theme={draft} panes={panes} previewFilter={visionMode === 'normal' ? undefined : `url(#vision-${visionMode})`} highlightToken={highlightedToken ?? (mode === 'simple' ? selectedAccent : undefined)} />
+          <ThemeCard theme={draft} panes={panes} previewFilter={visionMode === 'normal' ? undefined : `url(#vision-${visionMode})`} highlightToken={highlightedToken ?? undefined} />
         </div>
       </div>
       <aside className="zone pg-inspector">
