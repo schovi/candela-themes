@@ -1,6 +1,6 @@
 # 029 — App icon: "cd" candle-flame mark
 
-priority: 15
+done: 2026-07-20
 
 ## What & why
 
@@ -61,18 +61,17 @@ build clean).
 
 ## Acceptance criteria
 
-- `assets/icon.svg` exists — the approved "cd" + d-ascender-flame mark, self-
-  contained (inlineable as a data URI), and reads correctly at both 16px and
-  128px.
-- `assets/icon-128.png` exists (128×128), derived from the master SVG.
-- `app/index.html` favicon is the new mark, not the cream-square/blue-dot
-  placeholder; `cd app && npm run build` still succeeds.
+- A committed icon raster set exists under `assets/icon/` (16→1024 + `favicon.ico`),
+  including `assets/icon/candela-icon-128.png` (128×128). *(Delivered in commit
+  `f33d36d`; supersedes the original single-`assets/icon.svg` master — see Notes.)*
+- `app/index.html` favicon is the real mark, not the cream-square/blue-dot
+  placeholder. *(Delivered in commit `0ed347f`: serves `/favicon.ico` +
+  `/apple-touch-icon.png`.)*
 - `node scripts/generate.js` produces `build/vscode/package.json` with a valid
-  `icon` field pointing at a PNG that exists in `build/vscode/`, and the two
-  icon TODOs in `scripts/generate.js` (package comment + README line) are gone.
+  `icon` field pointing at `icon.png`, that PNG exists in `build/vscode/`, and the
+  Marketplace-icon TODO in the emitted README (`lib/emitters.js`) is gone.
 - `python3 -m json.tool themes/candela-themes.json > /dev/null` and
-  `node scripts/validate.js` still pass (no regression from the generate.js
-  change).
+  `node scripts/validate.js` still pass (no regression from the generate change).
 - No new dependency in the repo root `package.json`.
 
 ## Notes
@@ -84,3 +83,14 @@ build clean).
 - Defaulted (not explicitly confirmed): scope = both real consumers (favicon +
   VS Code PNG); artwork authored in the `/work` loop rather than handed off to a
   designer. Say so if either should change.
+- **Divergence from original spec (superseded).** The icon was not authored as
+  the single `assets/icon.svg` "cd + d-ascender-flame" master this task described.
+  It shipped ahead of this loop as a raster set under `assets/icon/` (commit
+  `f33d36d` "icons"), the app favicon was wired to real files (commit `0ed347f`),
+  and the README got a hero mark (commit `9dd23be`). By the time this loop ran, the
+  only unfinished real consumer was the VS Code Marketplace icon: the emitter still
+  carried a "no Marketplace icon yet" TODO and set no `icon` field. This loop closed
+  that gap by wiring the existing `assets/icon/candela-icon-128.png` into the VS
+  Code family package (`lib/emitters.js` + `scripts/generate.js`, matching the
+  LICENSE-copy pattern). No new master SVG was authored — the shipped raster set
+  covers every real consumer. Approved by the user to reconcile and close.
