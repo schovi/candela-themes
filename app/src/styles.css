@@ -817,7 +817,10 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .gd-tokens { display: flex; flex-wrap: wrap; gap: 6px; }
 .gd-token { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border: 1px solid #cbc2ac; border-radius: 6px; background: var(--site-surface); cursor: pointer; font: 12px/1 var(--font-mono); color: var(--site-ink2); }
 .gd-token:hover:not(.gd-token-on) { border-color: var(--site-faint); color: var(--site-ink); }
-.gd-token-on { border-color: var(--site-accent); background: rgba(48, 87, 125, 0.08); color: var(--site-accent); }
+/* Selection is a subtle tint (the dial's centre label already names the accent),
+   so it never reads as a box outline — that treatment is reserved for .rail-hi,
+   the one token being inspected. */
+.gd-token-on { background: rgba(48, 87, 125, 0.08); color: var(--site-accent); font-weight: 600; }
 .gd-chip { width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(0, 0, 0, 0.2); display: inline-block; flex-shrink: 0; }
 /* Diagnostics rows stack in the narrow rail: chip + title on the first line, the
    full-width hue gauge on the second — the single-line flex squeezed the gauge track
