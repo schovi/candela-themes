@@ -1,6 +1,6 @@
 # 015 — JetBrains plugin build + packaging
 
-priority: 10
+done: 2026-07-20
 
 ## What & why
 
