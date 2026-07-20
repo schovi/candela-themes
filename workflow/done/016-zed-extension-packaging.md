@@ -1,6 +1,6 @@
 # 016 — Zed extension packaging
 
-priority: 20
+done: 2026-07-20
 
 ## What & why
 
