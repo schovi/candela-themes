@@ -125,6 +125,10 @@ each update) can run. Do these once, then hand control to the workflow above.
 
 ### JetBrains Marketplace
 
+> Registered. Plugin page: <https://plugins.jetbrains.com/plugin/33069-candela-themes>
+> — edit/manage at <https://plugins.jetbrains.com/plugin/33069-candela-themes/edit>.
+> Numeric plugin id **33069** → `JETBRAINS_PLUGIN_ID`.
+
 1. The **first version must be uploaded through the web UI** at
    <https://plugins.jetbrains.com/plugin/add> and is **manually moderated/reviewed**
    before it goes live. Upload `dist/candela-themes-intellij-<version>.zip` from a
