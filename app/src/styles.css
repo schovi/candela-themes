@@ -366,6 +366,7 @@ a:focus-visible, button:focus-visible {
   min-height: 0;
   display: grid;
   grid-template-columns: 340px minmax(0, 1fr) 400px;
+  zoom: 0.9;
 }
 .zone {
   min-height: 0;
@@ -443,8 +444,8 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
   cursor: pointer;
 }
 .studio-bar-actions button:hover { border-color: var(--site-border); background: var(--site-surface); color: var(--site-ink); }
-.studio-bar-actions .studio-export-trigger { border-color: var(--site-border); background: var(--site-surface); color: var(--site-ink); font-weight: 600; }
-.studio-export-trigger span { margin-left: 3px; font-family: var(--font-mono); }
+.studio-bar-actions .studio-export-trigger { display: inline-flex; align-items: center; gap: 7px; border-color: var(--site-border); background: var(--site-surface); color: var(--site-ink); font-weight: 600; }
+.studio-export-chevron { width: 10px; height: 7px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .studio-bar-actions .studio-start-over { color: #a12d1b; }
 .studio-bar-actions .studio-start-over:hover { border-color: #b5341f; background: #fdf0ee; }
 .studio-modes { display: flex; align-items: center; }
@@ -452,14 +453,32 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
   position: sticky;
   top: -20px;
   z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: -20px -28px 0;
-  padding: 8px 28px;
+  padding: 0;
   border-bottom: 1px solid var(--site-border);
   background: var(--site-surface);
 }
-.studio-modes button, .studio-start-card select, .studio-fork-card button { padding: 7px 10px; border: 1px solid var(--site-border); border-radius: 6px; background: var(--site-surface); color: var(--site-ink); font: inherit; cursor: pointer; }
-.studio-modes button:hover:not(.is-on) { border-color: var(--site-faint); }
-.studio-modes .is-on { background: var(--site-accent); border-color: var(--site-accent); color: #fbf7ee; }
+.studio-start-card select, .studio-fork-card button { padding: 7px 10px; border: 1px solid var(--site-border); border-radius: 6px; background: var(--site-surface); color: var(--site-ink); font: inherit; cursor: pointer; }
+.studio-rail-modes button {
+  width: 100%;
+  margin: 0 0 -1px;
+  padding: 12px;
+  border: 0;
+  border-right: 1px solid var(--site-border);
+  border-bottom: 1px solid var(--site-border);
+  border-radius: 0;
+  background: var(--site-surface);
+  color: var(--site-ink2);
+  font: 12px/1.4 var(--font-mono);
+  text-align: center;
+  cursor: pointer;
+}
+.studio-rail-modes button:last-child { border-right: 0; }
+.studio-rail-modes button:hover:not(.is-on) { color: var(--site-ink); }
+.studio-rail-modes .is-on { position: relative; z-index: 1; border-bottom-color: var(--site-paper); background: var(--site-paper); color: var(--site-ink); }
+.studio-rail-modes button:focus-visible { position: relative; z-index: 2; outline: 2px solid var(--site-accent); outline-offset: -2px; }
 .studio-helpers { display: flex; flex-direction: column; gap: 9px; }
 .studio-helpers .gd-slider > span { min-width: 78px; }
 /* Below the desktop breakpoint the workspace collapses to a single scrolling
@@ -481,7 +500,7 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
   .studio-welcome { padding-left: 20px; padding-right: 20px; }
   .app-bar { padding-left: 20px; padding-right: 20px; row-gap: 10px; }
   .zone { padding-left: 20px; padding-right: 20px; }
-  .studio-rail-modes { margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px; }
+  .studio-rail-modes { margin-left: -20px; margin-right: -20px; }
   .studio-notice { margin-left: 20px; margin-right: 20px; }
   .app-bar-studio { margin-left: 0; flex-basis: 100%; }
 }
@@ -626,10 +645,11 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .pg-rule-jump:hover { background: rgba(120, 90, 30, 0.08); }
 .pg-contrast-jump { display: inline; width: auto; padding: 0; font: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .pg-validation { border: 0; border-radius: 0; background: none; font-size: 13px; }
-.pg-validation > summary { cursor: pointer; color: var(--site-ink2); }
+.pg-validation > summary { cursor: pointer; color: var(--site-ink); }
 .pg-validation > summary:hover { color: var(--site-ink); }
-.pg-validation > summary.pg-summary-pass { color: #2e7d32; }
-.pg-validation > summary.pg-summary-fail { color: #a12d1b; }
+.pg-validation-status { margin-left: 0.7em; text-transform: none; letter-spacing: 0; }
+.pg-validation-status.is-pass { color: #2e7d32; }
+.pg-validation-status.is-fail { color: #a12d1b; }
 
 /* The orchestrated moment: one green sweep when validation flips to all-pass. */
 @keyframes pass-sweep {
@@ -646,7 +666,8 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
   .is-celebrating { animation: none; background-image: none; }
 }
 .pg-validation-body { display: flex; flex-direction: column; gap: 12px; padding: 10px 0 0; }
-.pg-contrast summary, .pg-json summary { cursor: pointer; color: var(--site-ink2); font-weight: 500; }
+.pg-contrast h3 { margin: 0; color: var(--site-ink2); font: 500 13px/1.4 var(--font-body); }
+.pg-json summary { cursor: pointer; color: var(--site-ink2); font-weight: 500; }
 .pg-contrast table { border-collapse: collapse; margin-top: 8px; font: 12px/1.4 var(--font-mono); }
 .pg-contrast th, .pg-contrast td { text-align: left; padding: 2px 14px 2px 0; }
 .format-export { display: flex; flex-direction: column; gap: 14px; }

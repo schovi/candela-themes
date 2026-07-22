@@ -741,7 +741,10 @@ export function Playground() {
           <div className="studio-bar-actions">
             {draftActivity && <span className="studio-draft-status">{relativeDraftStatus(draftActivity, relativeTimeNow)}</span>}
             <button className="studio-export-trigger" type="button" aria-haspopup="dialog" aria-expanded={exportDialogOpen} onClick={() => setExportDialogOpen(true)}>
-              Save &amp; Export <span aria-hidden="true">⌄</span>
+              Save &amp; Export
+              <svg className="studio-export-chevron" aria-hidden="true" viewBox="0 0 12 8">
+                <path d="m1 1 5 5 5-5" />
+              </svg>
             </button>
             <button className="studio-start-over" type="button" onClick={startOver}>Start over</button>
           </div>
@@ -789,9 +792,9 @@ export function Playground() {
       </div></div> : <>
       <div className="editor-workspace">
       <aside className="zone pg-editor">
-        <div className="studio-modes studio-rail-modes pg-segmented" role="group" aria-label="Editing mode">
-          <button type="button" className={mode === 'simple' ? 'is-on' : ''} onClick={() => switchMode('simple')}>Simple</button>
-          <button type="button" className={mode === 'pro' ? 'is-on' : ''} onClick={() => switchMode('pro')}>Pro</button>
+        <div className="studio-modes studio-rail-modes" role="group" aria-label="Editing mode">
+          <button type="button" className={mode === 'simple' ? 'is-on' : ''} aria-pressed={mode === 'simple'} onClick={() => switchMode('simple')}>Simple</button>
+          <button type="button" className={mode === 'pro' ? 'is-on' : ''} aria-pressed={mode === 'pro'} onClick={() => switchMode('pro')}>Pro</button>
         </div>
         {mode === 'pro' ? <>
         {TOKEN_GROUPS.map((group) => (
@@ -888,8 +891,11 @@ export function Playground() {
           <summary onClick={(event) => {
             event.preventDefault();
             setValidationOpenOverride(!(validationOpenOverride ?? failures.length > 0));
-          }} className={failures.length === 0 ? 'pg-summary-pass' : 'pg-summary-fail'}>
-            {failures.length === 0 ? '✓' : '✕'} Validation · {failures.length} hard {failures.length === 1 ? 'failure' : 'failures'} · {warnings.length} {warnings.length === 1 ? 'warning' : 'warnings'}
+          }}>
+            <span className="pg-validation-title">Validation</span>
+            {failures.length > 0
+              ? <span className="pg-validation-status is-fail">✕ {failures.length} {failures.length === 1 ? 'error' : 'errors'}{warnings.length > 0 ? ` · ${warnings.length} ${warnings.length === 1 ? 'warning' : 'warnings'}` : ''}</span>
+              : warnings.length > 0 && <span className="pg-validation-status is-pass">✓ {warnings.length} {warnings.length === 1 ? 'warning' : 'warnings'}</span>}
           </summary>
           <div className="pg-validation-body">
             {failures.length === 0 ? (
@@ -916,8 +922,8 @@ export function Playground() {
               </div>
             )}
             {contrast.length > 0 && (
-              <details className="pg-contrast">
-                <summary>Required contrast checks</summary>
+              <section className="pg-contrast">
+                <h3>Required contrast checks</h3>
                 <table>
                   <thead><tr><th>token</th><th>against</th><th>ratio</th><th>required</th><th>status</th></tr></thead>
                   <tbody>
@@ -932,7 +938,7 @@ export function Playground() {
                     ))}
                   </tbody>
                 </table>
-              </details>
+              </section>
             )}
           </div>
         </details>
