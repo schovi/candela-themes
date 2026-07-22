@@ -9,6 +9,7 @@ interface ExportControlsProps {
   canExport: boolean;
   onCopyShareLink: () => void;
   shareLinkCopied: boolean;
+  draftJsonButton: ReactNode;
   copyJsonButton: ReactNode;
 }
 
@@ -43,7 +44,7 @@ function exportTheme(theme: Theme): Theme {
   return { ...theme, id: slugify(theme.name, 'custom-theme') };
 }
 
-export function ExportControls({ theme, canExport, onCopyShareLink, shareLinkCopied, copyJsonButton }: ExportControlsProps) {
+export function ExportControls({ theme, canExport, onCopyShareLink, shareLinkCopied, draftJsonButton, copyJsonButton }: ExportControlsProps) {
   const [selectedTool, setSelectedTool] = useState(FORMAT_EMITTERS[0].tool);
   const normalizedTheme = exportTheme(theme);
   const selectedFormat = FORMAT_EMITTERS.find((format) => format.tool === selectedTool) ?? FORMAT_EMITTERS[0];
@@ -98,6 +99,8 @@ export function ExportControls({ theme, canExport, onCopyShareLink, shareLinkCop
         <p className="fx-caption">{FORMAT_DESCRIPTIONS[selectedFormat.tool]} <a href="https://github.com/schovi/candela-themes#install">Install instructions →</a></p>
       </div>
       <div className="fx-secondary">
+        {draftJsonButton}
+        <span className="fx-caption">Keep an editable copy, including work that does not pass validation yet.</span>
         <button type="button" disabled={!canExport} onClick={downloadFull}>Download all formats</button>
         <span className="fx-caption">Every tool, every manual, one zip.</span>
         {copyJsonButton}

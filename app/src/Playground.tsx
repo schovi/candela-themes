@@ -468,6 +468,7 @@ export function Playground() {
   const [notice, setNotice] = useState<string | null>(initial.notice);
   const [draftActivity, setDraftActivity] = useState<DraftActivity | null>(initial.activity);
   const [relativeTimeNow, setRelativeTimeNow] = useState(Date.now);
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [startOverDialogOpen, setStartOverDialogOpen] = useState(false);
   const [selectedAccent, setSelectedAccent] = useState<SyntaxToken>('kw');
   const [openToken, setOpenToken] = useState<ColorToken | null>(null);
@@ -477,7 +478,6 @@ export function Playground() {
   const [shareLinkCopied, setShareLinkCopied] = useState(false);
   const [validationOpenOverride, setValidationOpenOverride] = useState<boolean | null>(null);
   const [visionMode, setVisionMode] = useState<VisionMode>('normal');
-  const validationRef = useRef<HTMLDetailsElement | null>(null);
   const [helperValues, setHelperValues] = useState<PaletteHelperValues>({ contrast: 0, saturation: 0, warmth: 0, darkness: 0 });
   const helperBaseline = useRef<Theme>(cloneTheme(initial.draft));
   const persistedState = JSON.stringify({ draft, choices, mode, panes: [...panes] });
@@ -670,14 +670,6 @@ export function Playground() {
     }
   }, [failures.length]);
 
-  // Instant jump: smooth scrolling overshoots while the details element is
-  // expanding in the same frame, and it ignores prefers-reduced-motion.
-  const jumpToValidation = () => {
-    setValidationOpenOverride(true);
-    (validationRef.current?.querySelector('summary') as HTMLElement | null)?.focus();
-    requestAnimationFrame(() => validationRef.current?.scrollIntoView({ block: 'start' }));
-  };
-
   // Inspector → rail: reveal and focus the controls for the named token. Pro
   // opens its disclosure (one-at-a-time via setOpenToken); Simple selects the
   // accent for syntax tokens. UI tokens have no dedicated Simple control, so
@@ -746,31 +738,11 @@ export function Playground() {
       <header className="app-bar">
         <SiteBrandNav page="editor" />
         {editing && <div className="app-bar-studio">
-          <div className="studio-bar-name">
-            <input
-              maxLength={60}
-              value={mode === 'pro' ? draft.name : choices.name}
-              onChange={(event) => mode === 'pro' ? setField('name', event.target.value) : updateChoiceMetadata({ name: event.target.value })}
-              aria-label="Theme name"
-            />
-            <span className="studio-bar-meta">id: {id}</span>
-          </div>
-          <button
-            type="button"
-            className={`studio-status-chip ${canExport ? 'is-pass' : 'is-fail'}${justPassed ? ' is-celebrating' : ''}`}
-            onClick={jumpToValidation}
-          >
-            {canExport
-              ? `✓ All checks pass${warnings.length ? ` · ${warnings.length} warning${warnings.length === 1 ? '' : 's'}` : ''}`
-              : `✕ ${failures.length} check${failures.length === 1 ? '' : 's'} failing`}
-          </button>
-          <div className="studio-modes" role="group" aria-label="Editing mode">
-            <button type="button" className={mode === 'simple' ? 'is-on' : ''} onClick={() => switchMode('simple')}>Simple</button>
-            <button type="button" className={mode === 'pro' ? 'is-on' : ''} onClick={() => switchMode('pro')}>Pro</button>
-          </div>
           <div className="studio-bar-actions">
             {draftActivity && <span className="studio-draft-status">{relativeDraftStatus(draftActivity, relativeTimeNow)}</span>}
-            <button type="button" onClick={downloadRaw}>Download draft JSON</button>
+            <button className="studio-export-trigger" type="button" aria-haspopup="dialog" aria-expanded={exportDialogOpen} onClick={() => setExportDialogOpen(true)}>
+              Save &amp; Export <span aria-hidden="true">⌄</span>
+            </button>
             <button className="studio-start-over" type="button" onClick={startOver}>Start over</button>
           </div>
         </div>}
@@ -817,6 +789,10 @@ export function Playground() {
       </div></div> : <>
       <div className="editor-workspace">
       <aside className="zone pg-editor">
+        <div className="studio-modes studio-rail-modes pg-segmented" role="group" aria-label="Editing mode">
+          <button type="button" className={mode === 'simple' ? 'is-on' : ''} onClick={() => switchMode('simple')}>Simple</button>
+          <button type="button" className={mode === 'pro' ? 'is-on' : ''} onClick={() => switchMode('pro')}>Pro</button>
+        </div>
         {mode === 'pro' ? <>
         {TOKEN_GROUPS.map((group) => (
           <fieldset key={group.label} className="pg-group">
@@ -839,8 +815,8 @@ export function Playground() {
         </> : <>
           <fieldset className="pg-group gd-step">
             <legend>1 · Background</legend>
-            <div className="gd-moods">{MOODS.map((mood) => (
-              <label key={mood.value} className={choices.mood === mood.value ? 'gd-mood gd-mood-on' : 'gd-mood'}>
+            <div className="gd-moods pg-segmented">{MOODS.map((mood) => (
+              <label key={mood.value} className={choices.mood === mood.value ? 'gd-mood is-on' : 'gd-mood'}>
                 <input type="radio" name="mood" checked={choices.mood === mood.value} onChange={() => updateChoices({ mood: mood.value })} />{mood.label}
               </label>
             ))}</div>
@@ -885,28 +861,6 @@ export function Playground() {
           </div>)}
         </fieldset>
 
-        <details className="pg-group pg-meta">
-          <summary>Details · tone, description, fonts</summary>
-          <div className="pg-meta-body">
-            <label className="pg-field">Tone
-              <input value={mode === 'pro' ? draft.tone : choices.tone} onChange={(e) => mode === 'pro' ? setField('tone', e.target.value) : updateChoiceMetadata({ tone: e.target.value })} />
-            </label>
-            <label className="pg-field">Description
-              <textarea rows={2} value={mode === 'pro' ? draft.description : choices.description} onChange={(e) => mode === 'pro' ? setField('description', e.target.value) : updateChoiceMetadata({ description: e.target.value })} />
-            </label>
-            <label className="pg-field">Code font
-              <select value={mode === 'pro' ? draft.fonts.code : choices.fonts.code} onChange={(e) => mode === 'pro' ? setFont('code', e.target.value) : updateChoiceMetadata({ fonts: { ...choices.fonts, code: e.target.value } })}>
-                {CODE_FONTS.map((f) => <option key={f} value={f}>{f}</option>)}
-              </select>
-            </label>
-            <label className="pg-field">Prose font
-              <select value={mode === 'pro' ? draft.fonts.prose : choices.fonts.prose} onChange={(e) => mode === 'pro' ? setFont('prose', e.target.value) : updateChoiceMetadata({ fonts: { ...choices.fonts, prose: e.target.value } })}>
-                {PROSE_FONTS.map((f) => <option key={f} value={f}>{f}</option>)}
-              </select>
-            </label>
-          </div>
-        </details>
-
       </aside>
 
       <div className="zone pg-canvas" style={{ ...themeVars(draft), background: 'var(--bg)' }}>
@@ -925,12 +879,12 @@ export function Playground() {
           <PanePicker panes={panes} onChange={setPanes} />
           <fieldset className="vision-control">
             <legend>Vision</legend>
-            <div>
+            <div className="pg-segmented">
               {VISION_MODES.map((simulation) => <button key={simulation.value} type="button" className={visionMode === simulation.value ? 'is-on' : ''} aria-pressed={visionMode === simulation.value} onClick={() => setVisionMode(simulation.value)}>{simulation.label}</button>)}
             </div>
           </fieldset>
         </div>
-        <details id="editor-validation" ref={validationRef} className={justPassed ? 'pg-validation is-celebrating' : 'pg-validation'} open={validationOpenOverride ?? failures.length > 0}>
+        <details id="editor-validation" className={justPassed ? 'pg-validation is-celebrating' : 'pg-validation'} open={validationOpenOverride ?? failures.length > 0}>
           <summary onClick={(event) => {
             event.preventDefault();
             setValidationOpenOverride(!(validationOpenOverride ?? failures.length > 0));
@@ -982,29 +936,55 @@ export function Playground() {
             )}
           </div>
         </details>
-        <section className="pg-ship" aria-label="Export">
-          <div className="pg-ship-verdict">
-            {canExport
-              ? <span className={justPassed ? 'pg-ok is-celebrating' : 'pg-ok'}>✓ All checks pass — ready to export.</span>
-              : <button className="pg-blocked-jump" type="button" aria-controls="editor-validation" onClick={jumpToValidation}>
-                  ✕ Export blocked · {failures.length} hard {failures.length === 1 ? 'failure' : 'failures'} — see why
-                </button>}
+        <details className="pg-meta">
+          <summary>Details</summary>
+          <div className="pg-meta-body">
+            <label className="pg-field">Name
+              <input
+                maxLength={60}
+                value={mode === 'pro' ? draft.name : choices.name}
+                onChange={(event) => mode === 'pro' ? setField('name', event.target.value) : updateChoiceMetadata({ name: event.target.value })}
+              />
+            </label>
+            <div className="pg-field">
+              <span>ID</span>
+              <output className="pg-theme-id">{id}</output>
+            </div>
+            <label className="pg-field">Tone
+              <input value={mode === 'pro' ? draft.tone : choices.tone} onChange={(e) => mode === 'pro' ? setField('tone', e.target.value) : updateChoiceMetadata({ tone: e.target.value })} />
+            </label>
+            <label className="pg-field">Description
+              <textarea rows={2} value={mode === 'pro' ? draft.description : choices.description} onChange={(e) => mode === 'pro' ? setField('description', e.target.value) : updateChoiceMetadata({ description: e.target.value })} />
+            </label>
+            <label className="pg-field">Code font
+              <select value={mode === 'pro' ? draft.fonts.code : choices.fonts.code} onChange={(e) => mode === 'pro' ? setFont('code', e.target.value) : updateChoiceMetadata({ fonts: { ...choices.fonts, code: e.target.value } })}>
+                {CODE_FONTS.map((f) => <option key={f} value={f}>{f}</option>)}
+              </select>
+            </label>
+            <label className="pg-field">Prose font
+              <select value={mode === 'pro' ? draft.fonts.prose : choices.fonts.prose} onChange={(e) => mode === 'pro' ? setFont('prose', e.target.value) : updateChoiceMetadata({ fonts: { ...choices.fonts, prose: e.target.value } })}>
+                {PROSE_FONTS.map((f) => <option key={f} value={f}>{f}</option>)}
+              </select>
+            </label>
           </div>
-          <ExportControls
-            theme={draft}
-            canExport={canExport}
-            onCopyShareLink={copyShareLink}
-            shareLinkCopied={shareLinkCopied}
-            copyJsonButton={<button type="button" onClick={copy} disabled={!canExport}>{copied ? 'Copied!' : 'Copy theme JSON'}</button>}
-          />
-        </section>
-        <details className="pg-json">
-          <summary>Theme JSON (paste into candela-themes.json → themes[])</summary>
-          <pre>{json}</pre>
         </details>
       </aside>
       </div>
       </>}
+      {exportDialogOpen && <Dialog title="Save & Export" onCancel={() => setExportDialogOpen(false)}>
+        <ExportControls
+          theme={draft}
+          canExport={canExport}
+          onCopyShareLink={copyShareLink}
+          shareLinkCopied={shareLinkCopied}
+          draftJsonButton={<button type="button" onClick={downloadRaw}>Save draft JSON</button>}
+          copyJsonButton={<button type="button" onClick={copy} disabled={!canExport}>{copied ? 'Copied!' : 'Copy theme JSON'}</button>}
+        />
+        <details className="pg-json">
+          <summary>Theme JSON</summary>
+          <pre>{json}</pre>
+        </details>
+      </Dialog>}
       {replacement && <Dialog
         title="Open theme?"
         message={`Open ${replacement.draft.name}? This replaces your draft '${draft.name}'.`}

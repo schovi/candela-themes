@@ -407,6 +407,8 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .studio-dialog::backdrop { background: rgba(50, 47, 40, 0.42); }
 .studio-dialog h3 { margin: 0 0 8px; font-size: 20px; }
 .studio-dialog p { margin: 0; color: var(--site-ink2); line-height: 1.5; }
+.studio-dialog-body { margin-top: 18px; }
+.studio-dialog:has(.format-export) { width: min(720px, calc(100% - 40px)); max-height: calc(100vh - 40px); overflow: auto; }
 .studio-dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 22px; }
 .studio-dialog-actions button { padding: 8px 12px; border: 1px solid var(--site-border); border-radius: 6px; background: var(--site-surface); color: var(--site-ink); font: inherit; cursor: pointer; }
 .studio-dialog-actions .studio-dialog-confirm { border-color: var(--site-accent); background: var(--site-accent); color: #fbf7ee; }
@@ -415,8 +417,8 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .site--editor { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 .site-main--editor { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .site-footer--editor { max-width: none; margin: 0; padding: 9px 28px; font-size: 12px; }
-/* App bar — one full-width row: brand + nav on one side, and (while editing) the
-   draft name, live verdict, mode toggle, and quiet utility actions on the other. */
+/* App bar keeps global navigation and draft-level actions available while the
+   three workspace zones scroll independently. */
 .app-bar {
   flex-shrink: 0;
   display: flex;
@@ -428,31 +430,6 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
   background: var(--site-surface);
 }
 .app-bar-studio { margin-left: auto; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.studio-bar-name { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.studio-bar-name input {
-  font: 500 21px/1.2 var(--font-display);
-  letter-spacing: -0.01em;
-  color: var(--site-ink);
-  background: transparent;
-  border: 0;
-  border-bottom: 1px dashed transparent;
-  padding: 0 0 1px;
-  max-width: 300px;
-}
-.studio-bar-name input:hover { border-bottom-color: var(--site-border); }
-.studio-bar-name input:focus { outline: none; border-bottom: 1px solid var(--site-accent); }
-.studio-bar-meta { font: 11px/1 var(--font-mono); color: var(--site-faint); display: inline-flex; align-items: center; gap: 5px; }
-.studio-status-chip {
-  padding: 7px 13px;
-  border-radius: 999px;
-  font: 600 12.5px/1 var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  cursor: pointer;
-  border: 1px solid;
-}
-.studio-status-chip.is-pass { color: #2e7d32; border-color: rgba(46, 125, 50, 0.45); background: rgba(46, 125, 50, 0.09); }
-.studio-status-chip.is-fail { color: #a12d1b; border-color: rgba(181, 52, 31, 0.5); background: #fdf0ee; }
-.studio-status-chip:hover { border-color: currentColor; }
 .studio-bar-actions { margin-left: auto; min-width: 0; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .studio-draft-status { margin-right: 4px; color: var(--site-faint); font: 11px/1.3 var(--font-mono); white-space: nowrap; }
 .studio-bar-actions button {
@@ -466,9 +443,20 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
   cursor: pointer;
 }
 .studio-bar-actions button:hover { border-color: var(--site-border); background: var(--site-surface); color: var(--site-ink); }
+.studio-bar-actions .studio-export-trigger { border-color: var(--site-border); background: var(--site-surface); color: var(--site-ink); font-weight: 600; }
+.studio-export-trigger span { margin-left: 3px; font-family: var(--font-mono); }
 .studio-bar-actions .studio-start-over { color: #a12d1b; }
 .studio-bar-actions .studio-start-over:hover { border-color: #b5341f; background: #fdf0ee; }
-.studio-modes { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.studio-modes { display: flex; align-items: center; }
+.studio-rail-modes {
+  position: sticky;
+  top: -20px;
+  z-index: 2;
+  margin: -20px -28px 0;
+  padding: 8px 28px;
+  border-bottom: 1px solid var(--site-border);
+  background: var(--site-surface);
+}
 .studio-modes button, .studio-start-card select, .studio-fork-card button { padding: 7px 10px; border: 1px solid var(--site-border); border-radius: 6px; background: var(--site-surface); color: var(--site-ink); font: inherit; cursor: pointer; }
 .studio-modes button:hover:not(.is-on) { border-color: var(--site-faint); }
 .studio-modes .is-on { background: var(--site-accent); border-color: var(--site-accent); color: #fbf7ee; }
@@ -483,6 +471,7 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
   .zone { overflow: visible; padding-bottom: 28px; }
   .zone.pg-editor { border-right: 0; border-bottom: 1px solid var(--site-border); }
   .zone.pg-inspector { border-left: 0; border-top: 1px solid var(--site-border); }
+  .studio-rail-modes { position: static; }
   .studio-start-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .studio-start-card { min-height: 0; }
   .studio-fork-card select { margin-top: 18px; }
@@ -492,6 +481,7 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
   .studio-welcome { padding-left: 20px; padding-right: 20px; }
   .app-bar { padding-left: 20px; padding-right: 20px; row-gap: 10px; }
   .zone { padding-left: 20px; padding-right: 20px; }
+  .studio-rail-modes { margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px; }
   .studio-notice { margin-left: 20px; margin-right: 20px; }
   .app-bar-studio { margin-left: 0; flex-basis: 100%; }
 }
@@ -499,6 +489,7 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
   display: flex;
   flex-direction: column;
   gap: 20px;
+  scroll-padding-top: 64px;
   font-size: 13px;
 }
 .pg-field { display: flex; flex-direction: column; gap: 4px; font-weight: 500; color: var(--site-ink); }
@@ -507,7 +498,9 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 }
 .pg-editor .pg-group { min-inline-size: 0; border: 0; border-radius: 0; padding: 0; margin: 0; }
 .pg-editor .pg-group > legend,
-.pg-editor .pg-meta > summary {
+.pg-preview-controls legend,
+.pg-validation > summary,
+.pg-meta > summary {
   width: 100%;
   padding: 0 0 7px;
   border-bottom: 1px solid var(--site-border);
@@ -517,6 +510,8 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
   color: var(--site-faint);
 }
 .pg-token-editor { margin: 8px 0; }
+.pg-editor .gd-step > legend { margin-bottom: 8px; }
+.pg-preview-controls legend { margin-bottom: 8px; }
 .pg-color { min-width: 0; display: flex; align-items: center; gap: 8px; }
 .pg-color input[type="color"] { width: 30px; height: 26px; padding: 0; border: 1px solid #cbc2ac; border-radius: 5px; background: none; }
 .pg-token { min-width: 0; flex: 1; overflow-wrap: anywhere; font: 12px/1 var(--font-mono); color: var(--site-ink2); }
@@ -611,10 +606,9 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .zone.pg-canvas { padding: 0; display: flex; flex-direction: column; gap: 0; }
 .pg-preview-surface { min-width: 0; flex: 1; }
 .pg-preview-surface .theme-card { min-height: 100%; }
-.pg-preview-controls { display: flex; flex-direction: column; gap: 12px; }
+.pg-preview-controls { display: flex; flex-direction: column; gap: 20px; }
 .vision-filter-definitions { position: absolute; width: 0; height: 0; overflow: hidden; }
 .vision-control { min-width: 0; margin: 0; padding: 0; border: 0; }
-.vision-control > div { display: flex; flex-wrap: wrap; gap: 6px; }
 .theme-judgement { display: flex; flex-direction: column; gap: 0; }
 .pg-ok { margin: 0; color: #2e7d32; font-weight: 600; }
 .pg-fails { color: #b5341f; }
@@ -631,8 +625,8 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .pg-rule-jump { display: block; width: 100%; margin: 0; padding: 3px 5px; border: 0; border-radius: 5px; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
 .pg-rule-jump:hover { background: rgba(120, 90, 30, 0.08); }
 .pg-contrast-jump { display: inline; width: auto; padding: 0; font: inherit; text-decoration: underline; text-underline-offset: 2px; }
-.pg-validation { border: 1px solid var(--site-border); border-radius: 8px; background: var(--site-surface); font-size: 13px; }
-.pg-validation > summary { cursor: pointer; padding: 11px 13px; color: var(--site-ink2); font-weight: 600; border-radius: 8px; }
+.pg-validation { border: 0; border-radius: 0; background: none; font-size: 13px; }
+.pg-validation > summary { cursor: pointer; color: var(--site-ink2); }
 .pg-validation > summary:hover { color: var(--site-ink); }
 .pg-validation > summary.pg-summary-pass { color: #2e7d32; }
 .pg-validation > summary.pg-summary-fail { color: #a12d1b; }
@@ -651,15 +645,10 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 @media (prefers-reduced-motion: reduce) {
   .is-celebrating { animation: none; background-image: none; }
 }
-.pg-validation-body { display: flex; flex-direction: column; gap: 12px; padding: 2px 13px 13px; }
+.pg-validation-body { display: flex; flex-direction: column; gap: 12px; padding: 10px 0 0; }
 .pg-contrast summary, .pg-json summary { cursor: pointer; color: var(--site-ink2); font-weight: 500; }
 .pg-contrast table { border-collapse: collapse; margin-top: 8px; font: 12px/1.4 var(--font-mono); }
 .pg-contrast th, .pg-contrast td { text-align: left; padding: 2px 14px 2px 0; }
-/* Export — the finale of the workflow. Verdict first, then the actions it gates. */
-.pg-ship { border: 1px solid var(--site-border); border-radius: 8px; background: var(--site-surface); padding: 13px 15px 15px; font-size: 13px; }
-.pg-ship-verdict { margin-bottom: 12px; font-weight: 600; }
-.pg-blocked-jump { padding: 0; border: 0; background: none; color: #b5341f; font: 600 13px/1.4 inherit; text-align: left; cursor: pointer; }
-.pg-blocked-jump:hover { text-decoration: underline; }
 .format-export { display: flex; flex-direction: column; gap: 14px; }
 .fx-primary { display: flex; align-items: end; gap: 10px; flex-wrap: wrap; }
 .fx-primary label { display: grid; gap: 3px; color: var(--site-ink2); font-size: 11px; }
@@ -675,25 +664,15 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .format-export button:disabled { background: transparent; border: 1px dashed var(--site-border); color: var(--site-faint); cursor: not-allowed; box-shadow: none; }
 .pg-json pre { margin: 8px 0 0; padding: 12px 14px; background: var(--site-surface); border: 1px solid var(--site-border); border-radius: 8px; overflow: auto; font: 12px/1.5 var(--font-mono); max-height: 320px; }
 
-/* Collapsed meta — tone, description, fonts live behind a disclosure so colors
-   lead the rail. */
+/* Details stay collapsed so validation remains the inspector's primary task. */
 .pg-meta > summary { cursor: pointer; }
 .pg-meta > summary:hover { color: var(--site-ink2); }
 .pg-meta-body { display: flex; flex-direction: column; gap: 10px; padding-top: 10px; }
+.pg-theme-id { display: block; min-width: 0; padding: 5px 7px; border: 1px solid #cbc2ac; border-radius: 6px; background: var(--site-paper); color: var(--site-ink2); font: 12px/1.4 var(--font-mono); overflow-wrap: anywhere; }
 
 /* Editor-scoped preview chips: the shared PanePicker checkboxes read as chips
    here; the gallery keeps its stock look. */
 .pg-preview-controls .pane-toggles { min-width: 0; margin: 0; padding: 0; border: 0; display: flex; flex-wrap: wrap; gap: 6px; }
-.pg-preview-controls .pane-toggles legend,
-.vision-control legend {
-  width: 100%;
-  margin-bottom: 1px;
-  padding: 0;
-  font: 500 11px/1.4 var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--site-faint);
-}
 .pg-preview-controls .pane-toggles label,
 .vision-control button {
   padding: 4px 9px;
@@ -725,10 +704,29 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 
 /* Guided view — lives in the control-rail zone; adds stepped choice controls. */
 .gd-step { display: flex; flex-direction: column; gap: 10px; }
-.gd-moods { display: flex; flex-wrap: wrap; gap: 8px; }
+.gd-moods { display: flex; }
 .gd-mood { min-width: 80px; flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 8px; border: 1px solid #cbc2ac; border-radius: 6px; cursor: pointer; font-weight: 500; color: var(--site-ink2); background: var(--site-surface); }
 .gd-mood input { margin: 0; }
-.gd-mood-on { border-color: var(--site-accent); background: rgba(48, 87, 125, 0.08); color: var(--site-accent); }
+.pg-segmented { display: inline-flex; max-width: 100%; gap: 0; flex-wrap: nowrap; }
+.pg-segmented > button,
+.pg-segmented > label {
+  min-width: 0;
+  margin: 0;
+  padding: 4px 9px;
+  border: 1px solid var(--site-border);
+  border-radius: 0;
+  background: var(--site-surface);
+  color: var(--site-ink2);
+  font: 12px/1.4 var(--font-mono);
+  cursor: pointer;
+}
+.pg-segmented > * + * { margin-left: -1px; }
+.pg-segmented > :first-child { border-radius: 6px 0 0 6px; }
+.pg-segmented > :last-child { border-radius: 0 6px 6px 0; }
+.pg-segmented > .is-on { position: relative; z-index: 1; border-color: var(--site-accent); background: var(--site-accent); color: #fbf7ee; }
+.pg-segmented > .gd-mood { flex: 1; min-width: 0; }
+.pg-segmented input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; clip-path: inset(50%); }
+.pg-segmented > label:has(:focus-visible) { outline: 2px solid var(--site-accent); outline-offset: 2px; }
 .gd-slider { display: flex; align-items: center; gap: 10px; font-weight: 500; color: var(--site-ink); }
 .gd-slider > span { min-width: 62px; }
 
