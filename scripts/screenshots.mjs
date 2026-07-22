@@ -1,7 +1,7 @@
 // Regenerate the theme gallery PNGs the root README references.
 //
 //   cd app && npm install && npx playwright install chromium   # one-time
-//   cd app && npm run screenshots                              # regenerate all 14
+//   cd app && npm run screenshots                              # regenerate all themes
 //
 // Starts the explorer's Vite dev server, opens each theme in screenshot mode
 // (?theme=<id>&shot=1 — one chrome-free card that signals readiness once fonts

@@ -7,7 +7,7 @@ problem), Markdown, and git. The PNGs are committed.
 
 ## Regenerate
 
-One command captures all 14, driven by Playwright against the app's screenshot
+One command captures all themes, driven by Playwright against the app's screenshot
 mode (`?theme=<id>&shot=1` — a single chrome-free card that signals readiness
 once its fonts load):
 
@@ -15,7 +15,7 @@ once its fonts load):
 cd app
 npm install                     # first time
 npx playwright install chromium # first time
-npm run screenshots             # writes docs/screenshots/candela-<id>.png for all 14
+npm run screenshots             # writes docs/screenshots/candela-<id>.png for all themes
 ```
 
 `scripts/screenshots.mjs` starts the app's dev server, iterates the theme ids

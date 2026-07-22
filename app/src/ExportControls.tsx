@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { strToU8, zipSync } from 'fflate';
 import { FORMAT_EMITTERS, installReadme } from '../../lib/emitters.js';
 import { ansiMapping, type Theme } from './themes';
+import { slugify } from './derive';
 
 interface ExportControlsProps {
   theme: Theme;
@@ -26,10 +27,6 @@ const FORMAT_DESCRIPTIONS: Record<string, string> = {
   helix: 'A Helix TOML theme and its install guide.',
 };
 
-function slugify(value: string): string {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'custom-theme';
-}
-
 function downloadZip(name: string, files: Map<string, string>): void {
   const entries = Object.fromEntries(
     [...files].map(([path, content]) => [path, strToU8(content)]),
@@ -43,7 +40,7 @@ function downloadZip(name: string, files: Map<string, string>): void {
 }
 
 function exportTheme(theme: Theme): Theme {
-  return { ...theme, id: slugify(theme.name) };
+  return { ...theme, id: slugify(theme.name, 'custom-theme') };
 }
 
 export function ExportControls({ theme, canExport, onCopyShareLink, shareLinkCopied, copyJsonButton }: ExportControlsProps) {

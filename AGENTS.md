@@ -113,10 +113,10 @@ protan/deutan separation. It reads the JSON read-only — it reports, humans dec
 
 Releasing is CI-driven and main-only: dispatch the `Release` workflow
 (`gh workflow run release.yml -f bump=<patch|minor|major> --ref main`) and CI
-validates, builds every package, then bumps `package.json`, tags `vX.Y.Z`, and
-publishes a GitHub Release with all artifacts + `SHA256SUMS.txt`. The build runs
-*before* the tag, so a broken build never leaves a dangling tag. Nothing is built
-or committed locally. Use the `release` skill (`/release`) — it decides whether a
+validates, creates an unpushed version commit and `vX.Y.Z` tag, builds every package
+at that version, then pushes and publishes a GitHub Release with all artifacts plus
+`SHA256SUMS.txt`. A failed build leaves no remote commit or tag. Nothing is built or
+committed locally. Use the `release` skill (`/release`) — it decides whether a
 release is warranted and which bump to pick. Editor-marketplace publishing is a
 separate, credentialed, manually-gated step. Full runbook: `docs/release-runbook.md`.
 
@@ -126,8 +126,7 @@ separate, credentialed, manually-gated step. Full runbook: `docs/release-runbook
   `id`, `name`, `tone`, `tags` (non-empty; the gallery's tag filter), `mode` (`light`/`dark`), `fonts`, and the full `colors` block. `build/` regenerates for all
   formats automatically; add the theme to README's theme table (and the gallery) by hand.
 - *New tool format*: add a pure emitter and install manual in `lib/emitters.js` (hex helpers in `lib/colors.js`);
-  terminal formats derive from the top-level `ansiMapping` block. See README's "How themes are
-  generated" for the token→format mappings.
+  terminal formats derive from the top-level `ansiMapping` block.
 
 ## Work tracking
 

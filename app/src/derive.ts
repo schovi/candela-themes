@@ -110,8 +110,8 @@ function hasUnchangedDerivedColors(choices: GuidedChoices): boolean {
     );
 }
 
-export function slugify(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'my-theme';
+export function slugify(name: string, fallback = 'my-theme'): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || fallback;
 }
 
 export function deriveTheme(choices: GuidedChoices): Theme {

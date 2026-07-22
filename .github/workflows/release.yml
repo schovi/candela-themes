@@ -1,10 +1,8 @@
 # Cut a release entirely in CI. Dispatch this (GitHub UI or
-# `gh workflow run release.yml -f bump=minor`) and CI validates, builds every
-# package, and only then bumps the version, tags, and publishes the GitHub
-# Release. A failed build never creates a tag. Main-only.
-#
-# Build order matters: bump the version FIRST so the generated artifacts carry
-# the new version, then build, then tag/push/publish.
+# `gh workflow run release.yml -f bump=minor`) and CI validates, creates an
+# unpushed version commit and tag, builds every package at that version, then
+# pushes and publishes the GitHub Release. A failed build leaves no remote
+# commit or tag. Main-only.
 #
 # Publishing to editor marketplaces is a separate, manually-gated workflow
 # (publish-marketplaces.yml) — releasing never touches marketplace credentials.

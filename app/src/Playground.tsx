@@ -8,7 +8,7 @@ import { ExportControls } from './ExportControls';
 import { SiteBrandNav } from './SiteShell';
 import { Dialog } from './Dialog';
 import { applyPaletteHelperValues, type PaletteHelper, type PaletteHelperValues } from './paletteHelpers';
-import { ACCENT_L, ACCENT_SAT, DEFAULT_CHOICES, DIAG, MOOD_BG, deriveChoices, deriveTheme, SYNTAX_TOKENS, type GuidedChoices, type SyntaxToken } from './derive';
+import { ACCENT_L, ACCENT_SAT, DEFAULT_CHOICES, DIAG, MOOD_BG, deriveChoices, deriveTheme, slugify, SYNTAX_TOKENS, type GuidedChoices, type SyntaxToken } from './derive';
 import { decodeSharedDraft, encodeSharedDraft, type SharedDraft, type SharedDraftMode } from './shareDraft';
 // Shared rule module — the exact same invariants scripts/validate.js enforces
 // (both import the same lib/ ESM; change a rule once and both reflect it).
@@ -176,10 +176,6 @@ function VisionFilterDefinitions() {
       <filter id="vision-deutan" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="0.29275 0.70725 0 0 0  0.29275 0.70725 0 0 0  -0.02234 0.02234 1 0 0  0 0 0 1 0" /></filter>
     </defs>
   </svg>;
-}
-
-function slugify(name: string): string {
-  return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'my-theme';
 }
 
 function cloneTheme(t: Theme): Theme {

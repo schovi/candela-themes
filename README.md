@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/candela-sepia-paper.png" alt="Candela 01 · Sepia Paper across a terminal, Ruby, Kotlin, Markdown, and diagnostics">
+  <img src="docs/screenshots/candela-sepia-paper.png" alt="Candela 01 · Sepia Paper across terminal, TypeScript, Markdown, and git previews">
 </p>
 
 <p align="center">
@@ -93,7 +93,7 @@ The two dark companions:
 
 ## Gallery
 
-Preview all 16 themes across a terminal, Ruby, Kotlin, Markdown, and diagnostics.
+Preview all 16 themes across terminal, TypeScript, Markdown, and git panes.
 
 | | |
 | --- | --- |
@@ -253,122 +253,7 @@ byte-identical files). Hex helpers live in `lib/colors.js`; pure per-format emit
 and their install manuals live in `lib/emitters.js`. The Node generator is only the
 filesystem shell, while the browser editor calls the same emitters for downloads.
 
-The tables below are the token → format mappings each emitter uses.
-
-### Terminal (ANSI 16-color)
-
-The top-level `ansiMapping` block maps tokens to the 16 ANSI slots, plus
-`background = bg`, `foreground = ink`, `cursor = cursor`,
-`selectionBackground = selection`. It's one sensible default (e.g. `yellow → kw`,
-`red → num`); change it once and all six terminal formats regenerate.
-
-### Editors — TextMate scopes (VS Code, Sublime)
-
-UI tokens map to the editor's UI keys (`editor.background = surface`,
-`editor.foreground = ink`, `editorLineHighlightBackground = lineHighlight`, …);
-syntax tokens map to `tokenColors` scopes:
-
-| Candela token | TextMate scope(s) |
-| --- | --- |
-| `kw` | `keyword`, `storage` |
-| `str` | `string` |
-| `fn` | `entity.name.function`, `support.function` |
-| `num` | `constant.numeric`, `constant.language` |
-| `type` | `entity.name.type`, `entity.name.class`, `support.type` |
-| `builtin` | `support`, `variable.language`, `constant.other.symbol` |
-| `punct` | `punctuation`, `keyword.operator` |
-| `faint` | `comment` |
-
-The VS Code emitter writes a complete, vsix-ready extension at `build/vscode/`:
-one `package.json` contributing all 16 themes and one
-`themes/candela-<id>-color-theme.json` per theme (`"type": "light"`, workbench
-`colors{}` + `tokenColors[]`). The whole workbench is themed (activity bar, side
-bar, tabs, status bar, panels, integrated terminal), not just the editor pane.
-`package.json` carries full Marketplace metadata (repository/homepage/bugs point
-at the real repo; version tracks the root `package.json`), and the emitter also
-drops a bundled `README.md`, a `.vscodeignore`, a 128px `icon.png`, and a copy of
-the root MIT `LICENSE` so packaging is warning-free.
-
-Sublime reuses the same scope table. Its emitter writes a complete package
-directory at `build/sublime/`: one `candela-<id>.sublime-color-scheme` per theme,
-a bundled README, and a Package Control install message. `npm run
-package:sublime` regenerates that directory and uses the system `zip` command to
-create `dist/candela-themes.sublime-package`; packaging tooling stays separate
-from the generator's zero-runtime-dependency path.
-
-### JetBrains / IntelliJ
-
-`build/intellij/` is a complete IntelliJ Platform Gradle project. Its emitted
-`build.gradle.kts` and `settings.gradle.kts` use `buildPlugin` to package the
-resources. Per theme: an editor color scheme (emitted twice with identical
-content — `.xml`, which the plugin's `editorScheme` loads, and `.icls` for the
-manual Import Scheme dialog) and a UI theme `.theme.json`, plus one
-`META-INF/plugin.xml` registering all 16 as `themeProvider` extensions. Two hex
-conventions: **the scheme XML drops the leading `#`** (`value="9a5b2c"`);
-**`.theme.json` keeps it** (`"#9a5b2c"`).
-
-`.icls` general editor colors and the editor background/foreground:
-
-| Candela token | `.icls` key | Section |
-| --- | --- | --- |
-| `surface` | `TEXT` → `BACKGROUND` | `<attributes>` |
-| `ink` | `TEXT` → `FOREGROUND` | `<attributes>` |
-| `cursor` | `CARET_COLOR` | `<colors>` |
-| `lineHighlight` | `CARET_ROW_COLOR` | `<colors>` |
-| `selection` | `SELECTION_BACKGROUND` | `<colors>` |
-| `ink2` | `LINE_NUMBERS_COLOR` | `<colors>` |
-| `border` | `GUTTER_BACKGROUND`, `INDENT_GUIDE` | `<colors>` |
-
-`.icls` syntax attributes (`FOREGROUND` per key):
-
-| Candela token | `.icls` attribute key(s) |
-| --- | --- |
-| `kw` | `DEFAULT_KEYWORD` |
-| `str` | `DEFAULT_STRING` |
-| `fn` | `DEFAULT_FUNCTION_DECLARATION` |
-| `num` | `DEFAULT_NUMBER` |
-| `type` | `DEFAULT_CLASS_NAME` |
-| `builtin` | `DEFAULT_CONSTANT`, `DEFAULT_METADATA` |
-| `punct` | `DEFAULT_OPERATION_SIGN`, `DEFAULT_BRACES`, `DEFAULT_DOT` |
-| `faint` | `DEFAULT_LINE_COMMENT`, `DEFAULT_BLOCK_COMMENT` |
-| `error` | `ERRORS_ATTRIBUTES` (`EFFECT_COLOR` + `ERROR_STRIPE_COLOR`, wavy) |
-| `warning` | `WARNING_ATTRIBUTES` (`EFFECT_COLOR` + `ERROR_STRIPE_COLOR`, wavy) |
-
-Each `.theme.json` sets `dark` from the theme's `mode` (dark themes also inherit
-`parent_scheme="Darcula"` in the scheme XML so unstyled editor attributes fall
-back dark), points `editorScheme` at its `.xml`, and carries a modest `ui{}`
-frame (backgrounds from `bg`/`surface`, borders from `border`, text from
-`ink`/`ink2`/`faint`, accents from `fn`).
-
-### Zed, Neovim, Helix
-
-- **Zed** → `build/zed/`, a theme extension with an `extension.toml` manifest
-  and one theme *family* at `themes/candela.json` (`$schema` v0.2.0,
-  `themes[]`), each entry's `appearance` set from the theme's `mode`
-  (`"light"` or `"dark"`). UI keys map
-  `editor.background = surface`, `editor.foreground = ink`,
-  `editor.active_line.background = lineHighlight`,
-  `text/text.muted/text.placeholder = ink/ink2/faint`, `border = border`,
-  `players[0] = {cursor, selection}`; `style.syntax{}` maps `keyword→kw`,
-  `string→str`, `function→fn`, `number/constant→num`, `type/constructor→type`,
-  `variable.special/attribute→builtin`, `operator/punctuation→punct`,
-  `comment→faint`; `terminal.ansi.*` reuses `ansiMapping`.
-- **Neovim** → `build/nvim/colors/candela-<id>.lua`, a self-contained Lua colorscheme
-  (loads with `:colorscheme candela-<id>`, no plugins). Sets
-  `vim.o.background = 'light'`, legacy highlight groups (`Keyword→kw`,
-  `String→str`, `Function→fn`, `Number/Constant→num`, `Type→type`,
-  `PreProc/Special→builtin`, `Operator/Delimiter→punct`, `Comment→faint` italic,
-  `Normal = ink on bg`, `Visual = selection`, `CursorLine = lineHighlight`).
-  Neovim links Treesitter groups to these by default. Plus the 16
-  `vim.g.terminal_color_N` slots from `ansiMapping`. The generated plugin root
-  also includes a README with plugin-manager and manual installation instructions.
-- **Helix** → `build/helix/candela-<id>.toml`, a `[palette]` table of every token
-  with top-level scope keys: `ui.background = bg`, `ui.text = ink`,
-  `ui.cursor = {fg=bg, bg=cursor}`, `ui.selection = {bg=selection}`,
-  `ui.cursorline = {bg=lineHighlight}`, `ui.linenr = ink2`; syntax `keyword→kw`,
-  `string→str`, `function→fn`, `constant[.numeric]→num`, `type→type`,
-  `variable.builtin/label→builtin`, `punctuation/operator→punct`, `comment→faint`,
-  `diagnostic.error/warning → error/warning`.
+`lib/emitters.js` is the source of truth for each generated layout and token mapping.
 
 ## Contributing / extending
 
@@ -388,73 +273,11 @@ Then from the repo root, `npm run app` serves the explorer and
 `npm run app:screenshots` regenerates the gallery PNGs. See
 [`docs/screenshots/README.md`](docs/screenshots/README.md).
 
-The explorer is a static multi-page site (built by Vite, no SPA/router). Its
-home page and gallery are pre-rendered into the built HTML, then React hydrates
-them for interactivity; the Editor remains client-rendered. The home
-page at `/` pitches Candela and indexes every theme, the gallery at
-`/themes` shows each theme across sample panes (with a filter bar — fulltext
-search over name/tone/tags/fonts, a mode select, and multi-select tag chips — and a per-theme anchor
-so any theme is directly linkable, e.g. `/themes#lagoon`; each card also has a
-**Customize** action that opens the Editor preloaded with that theme via
-`/editor?theme=<id>`). The unified theme tool lives at `/editor`:
-
-- On `/editor` the site header merges with the studio bar into a single full-width app
-  bar: the Candela wordmark and nav on one side; on the other the draft name
-  (inline-editable, with its id and autosave state), a live status chip — green "all
-  checks pass" or red "N checks failing" that jumps to validation — the Simple/Pro
-  toggle, and quiet Download draft JSON / Start over actions. Below the bar the editor
-  is a full-viewport three-zone workspace — control rail (left) · preview canvas
-  (center) · inspector (right) — each zone scrolling independently so the page body
-  never scrolls on desktop. Below ~980px the zones collapse to a single scrolling
-  column in story order (controls → previews → inspector), usable down to 600px. Before
-  a draft exists the app shell still renders, with the four starting cards centered in
-  the workspace.
-- **Simple** mode derives a palette from background mood, darkness, accent hues,
-  and diagnostic hues; the accent wheel is a hue dial rendered at the desaturated
-  band guided accents actually ship at, with every syntax token's hue plotted on the
-  ring and the selected token + angle read out in the center. **Pro** mode exposes
-  hex plus H/S/L per token in compact rows (swatch, name, hex, HSL readout) that
-  expand one at a time into sliders. Every slider is a calibrated gauge: channel-true
-  gradient track, tick marks, and a numeric readout; lightness tracks keep the
-  green pass-zone shading. Theme name lives in the app bar; tone, description,
-  and fonts sit behind a Details disclosure at the end of the control rail.
-  Both modes edit one browser-local autosaved draft and share configurable preview panes.
-  Token controls pair their abbreviations with plain-language labels; hover, keyboard
-  focus, and the selected Simple accent highlight matching preview text.
-  **Download draft JSON** downloads that working theme for backup or later reopening.
-  **Copy link** creates a shareable URL containing the exact draft and editor mode, even
-  when hard validation failures block export. Opening one restores the shared draft, or
-  asks whether to replace an existing browser draft without hiding or discarding it.
-  Damaged links show a notice and fall back normally.
-  Global palette helpers are fixed `-50` to `50` controls: each thumb keeps its
-  exact value, and the combined palette is recalculated from one stable baseline
-  instead of accumulating incremental nudges.
-- Export readiness is always visible in the app-bar status chip while detailed hard
-  failures, allowed warnings, and per-token contrast values live in the right-hand
-  inspector: a **Validation** panel with export as its finale and the Theme JSON as a
-  collapsed section below. Hard failures block export; warnings do not. Each result pairs plain adjustment guidance with the
-  exact rule output, and both the chip and the blocked-export line jump to the failing
-  list. Export is the page's finale: verdict first, then the target-tool download,
-  with secondary actions (all-formats zip, Copy theme JSON, Copy link) each captioned;
-  when validation flips to all-pass, the status sweeps green (instant under reduced
-  motion). The contrast table shows only enforced
-  checks, including their required floor and pass/fail status. Colorblind or grayscale
-  warnings can switch the preview directly to the relevant vision simulation. The Normal,
-  Grayscale, Protan, and Deutan views affect only palette swatches and preview panes, and
-  reset to Normal on each load.
-  A tool-specific zip contains
-  that tool's emitted theme and install manual; the selected tool explains its contents and
-  links to installation instructions. The full zip contains every supported format, every
-  manual, and the raw theme.
-- The editor first offers four starting points: a balanced blank theme, any Candela
-  theme, the Simple editor, or a saved JSON draft. A saved draft can be opened only
-  as a starting point, and the chooser hides after a selection.
-  A saved browser draft opens the editor directly with a resume notice. A valid
-  `/editor?theme=<id>` link opens directly unless a draft is present, in which case the
-  editor keeps the draft visible until the visitor chooses whether to replace it. Unknown
-  theme ids show a notice and fall back to the saved draft or starting-point chooser.
-  Confirmed **Start over** clears the browser draft and returns to the chooser. The
-  old `/builder` URL redirects to `/editor`.
+The static app has three routes: `/` introduces Candela, `/themes` provides the
+filterable gallery, and `/editor` creates or customizes a theme. Gallery cards use
+configurable preview panes, defaulting to terminal, TypeScript, Markdown, and git,
+and link directly into the editor. The editor offers Simple and Pro controls over
+one browser-local draft, validates it, and downloads individual or combined formats.
 
 The editor runs the same invariants as `scripts/validate.js` (shared code in `lib/`), so
 **Copy theme JSON** stays disabled until every hard rule passes. Paste the result
@@ -462,36 +285,13 @@ into a new `themes[]` entry and it clears `node scripts/validate.js` as-is.
 
 ## Publishing the explorer
 
-The explorer is published at **<https://candela.ink>** by **Cloudflare Pages
-git integration**: every push to `main` triggers a Cloudflare build of the repo, and
-every PR gets a free preview URL (commented on the PR). There is no deploy step in
-this repo — Cloudflare owns the build and deploy.
-
-Every publish is **gated on validation**: the Pages build command runs
-`node ../scripts/validate.js` before the app build, so malformed source JSON or a
-broken design invariant fails the build and nothing ships. GitHub Actions
-([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs the *same* gate
-(JSON validity → `scripts/validate.js` → `cd app && npm ci && npm run build`) on
-every PR and push to `main`, so bad changes are caught before merge. Keep the two
-in sync — one gate expressed twice. Screenshot regeneration (Playwright) is
-deliberately **not** in the pipeline: it is heavy and rewrites committed PNGs; run
-it locally when the gallery changes.
-
-The exact Pages settings (project `candela-themes`):
+Cloudflare Pages publishes the explorer on pushes to `main` and creates previews
+for pull requests. The build runs the theme validator before Vite, while GitHub
+Actions runs the same checks before merge. Screenshots remain a local command.
 
 | Setting | Value |
 | --- | --- |
-| Production branch | `main` |
-| Root directory | `app` |
-| Build command | `node ../scripts/validate.js && npm run build` |
-| Build output directory | `dist` |
-| Custom domain | `candela.ink` (proxied apex CNAME → `candela-themes.pages.dev`); `candela.schovi.cz` 301-redirects here via [`app/public/_redirects`](app/public/_redirects) |
-| Node version | `NODE_VERSION=20` env var on the project (production + preview); `app/.node-version` pins the same for local tooling |
-
-The project is provisioned and live. If it ever needs re-creating: everything
-(project, build config, domain, env vars) is manageable over the Cloudflare API
-*except* the **Cloudflare Workers & Pages GitHub App** installation — that is a
-browser OAuth flow, done in the dashboard via **Workers & Pages → Create → Pages
-→ Connect to Git** (authorize the app for `schovi/candela-themes` from within
-that flow; installing it from GitHub's side alone does not link the Cloudflare
-account).
+| Project | `candela-themes`, branch `main`, root `app` |
+| Build | `node ../scripts/validate.js && npm run build` |
+| Output | `dist` |
+| Domain | `candela.ink`; `candela.schovi.cz` redirects through [`app/public/_redirects`](app/public/_redirects) |
