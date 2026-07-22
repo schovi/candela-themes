@@ -9,10 +9,9 @@
 </p>
 
 <p align="center">
-  14 light color themes for terminals and editors, plus two dark companions.
-  For people who like dark mode but can't use it comfortably: prescription lenses,
-  astigmatism, glare sensitivity, plain eye strain. Candela keeps the calm
-  feel of a good pastel dark theme — on paper instead of pitch black.
+  14 light themes for terminals and editors, plus two dark companions.
+  Candela brings the calm feel of a good pastel dark theme to an off-white canvas
+  for people who find dark mode uncomfortable.
 </p>
 
 <p align="center">
@@ -26,15 +25,14 @@
 </p>
 
 <p align="center">
-  <strong><a href="https://candela.ink">Browse every theme live at candela.ink</a></strong> — no clone needed.<br>
-  All 16 themes are in the <a href="#gallery">gallery below</a>; the design rules live in
-  <a href="AGENTS.md">AGENTS.md</a>, the vision science in <a href="docs/vision-research.md">docs/vision-research.md</a>.
+  <strong><a href="https://candela.ink">Browse every theme live at candela.ink</a></strong><br>
+  Or explore all 16 themes in the <a href="#gallery">gallery below</a>.
 </p>
 
-## Why most light themes hurt
+## Why Candela feels calmer
 
-They're usually too bright and too saturated. Candela follows a few rules to fix
-that:
+They're often too bright and too saturated. Candela follows a few rules to make
+light themes calmer:
 
 1. **Off-white backgrounds, never pure white.** Pure white glares. Soft tinted
    paper (`bg`, with panels a shade lighter in `surface`) doesn't.
@@ -43,21 +41,22 @@ that:
 3. **Strong contrast, not maximal.** Body text (`ink` on `surface`) clears WCAG
    AAA (7:1+). Secondary text (`ink2`) and comments (`faint`) step down but
    still clear WCAG AA (4.5:1 against `bg`, the surface terminals paint on).
-4. **Low-saturation colors.** Saturated text is what causes the colored fringing
-   astigmatic eyes see. Desaturating the accents is the fix.
-5. **Blue and orange carry the meaning.** They stay distinct for almost all types
-   of color blindness, so keywords, strings, and functions don't blur together.
+4. **Low-saturation colors.** Desaturated accents reduce the colored fringing
+   that can make text harder to read.
+5. **Blue and orange carry the meaning.** Keeping them distinct helps keywords,
+   strings, and functions stay easy to tell apart, including for many people with
+   color-vision deficiencies.
 6. **Same colors mean the same thing in every theme,** so switching never makes
    you relearn what you're looking at.
 
-Each rule is explained (with sources, and where common advice gets it wrong) in
+The vision-science rationale, including where common advice gets it wrong, is in
 [`docs/vision-research.md`](docs/vision-research.md).
 
 ## The 16 themes
 
 Themes 01–10 are the main palettes, from calm neutrals to stronger pastels.
-11–14 are experiments, each built around one idea. 15–16 are dark themes,
-extracted from iTerm favorites and tuned to the same contrast invariants.
+11–14 explore one design idea each. 15–16 are dark companions tuned to the same
+contrast rules.
 
 | # | Name | Tone | Code font | Prose font |
 | --- | --- | --- | --- | --- |
@@ -78,17 +77,14 @@ extracted from iTerm favorites and tuned to the same contrast invariants.
 | 15 | Nocturne | *Dark* (One Dark heritage) | JetBrains Mono | Public Sans |
 | 16 | Borealis | *Dark* (pastel) | DM Mono | DM Sans |
 
-What each experiment asks:
+What each experiment explores:
 
-- **Graphite Mono** — what if almost everything is gray and one blue does the
-  work? (fewest color fringes)
-- **Tungsten** — what if we drop blue light for evening use, like a warm bulb?
-  (better for sleep; blue light doesn't cause eye strain, see the research doc)
-- **E-Ink Slate** — what if syntax is nearly grayscale, like a Kindle? (no glow)
-- **Contrast Max** — what if sharpness, not glare, is your limit? (deep accents,
-  near-white paper)
+- **Graphite Mono** — near-monochrome syntax with one blue accent.
+- **Tungsten** — a warm palette for evening use.
+- **E-Ink Slate** — nearly grayscale syntax, like a Kindle.
+- **Contrast Max** — deep accents and near-white paper for maximum legibility.
 
-And two dark themes, for when you do want the lights off:
+The two dark companions:
 
 - **Nocturne** — Atom's classic One Dark, the palette a generation of developers
   grew up on, with accents lifted just enough to clear AA on the dark ground.
@@ -97,9 +93,7 @@ And two dark themes, for when you do want the lights off:
 
 ## Gallery
 
-Each shot is one theme across a terminal, Ruby, Kotlin, Markdown, and
-diagnostics, from the theme explorer (`app/`). Regenerate with
-`npm run app:screenshots` (see [`docs/screenshots/README.md`](docs/screenshots/README.md)).
+Preview all 16 themes across a terminal, Ruby, Kotlin, Markdown, and diagnostics.
 
 | | |
 | --- | --- |
@@ -115,12 +109,9 @@ diagnostics, from the theme explorer (`app/`). Regenerate with
 ## Install
 
 **Download a release.** The [latest GitHub release](https://github.com/schovi/candela-themes/releases/latest)
-ships a ready-made archive for every tool (terminals, editors, Neovim, Helix), one
-all-formats ZIP, and a `SHA256SUMS.txt` manifest. This is the canonical download
-channel for Neovim, Helix, and the terminal formats. Editor-marketplace listings
-(VS Code, Open VSX, JetBrains, Zed, Sublime) come online per the
-[release runbook](docs/release-runbook.md); marketplace links are added here once
-those listings exist.
+includes ready-made archives for terminals, editors, Neovim, and Helix, plus an
+all-formats ZIP and a `SHA256SUMS.txt` manifest. Marketplace links are added here
+as VS Code, Open VSX, JetBrains, Zed, and Sublime listings become available.
 
 **Or build from source:**
 
@@ -146,10 +137,10 @@ Theme ids: `sepia-paper`, `slate-mist`, `sage`, `solarized-lite`, `blossom`,
 
 ### VS Code
 
-Run `npm run package` to rebuild every theme and create all supported packages.
-The format-specific commands below remain available when only one package is needed.
+Run `npm run package` to build all supported packages. Format-specific commands
+are available below when you need only one package.
 
-The generated extension (all 16 themes) lives at `build/vscode/`.
+The extension, containing all 16 themes, lives at `build/vscode/`.
 
 - **As a `.vsix` (recommended):** `npm run package:vscode` builds and packages it
   into `dist/candela-themes-<version>.vsix`, then **Extensions → ⋯ → Install from
@@ -161,13 +152,13 @@ Then **Preferences: Color Theme** and pick any *Candela NN · …* entry.
 
 ### IntelliJ / JetBrains IDEs
 
-The theme plugin (all 16 themes) is generated at `build/intellij/`. Each theme
+The theme plugin, containing all 16 themes, lives at `build/intellij/`. Each theme
 ships an editor color scheme (as `.xml`, which the plugin's `editorScheme`
 loads, plus an identical `.icls` for manual import) and a UI theme
 (`.theme.json`).
 
 - **As a plugin zip (recommended):** install JDK 17+ and Gradle 9+, then run
-  `npm run package:intellij`. This regenerates the plugin, runs `buildPlugin`, and
+  `npm run package:intellij`. This builds the plugin, runs `buildPlugin`, and
   writes `dist/candela-themes-intellij-<version>.zip`. In the IDE, choose
   **Settings → Plugins → ⚙ → Install Plugin from Disk…** and select the zip.
 - **Editor scheme only:** **Settings → Editor → Color Scheme → ⚙ → Import
@@ -177,14 +168,12 @@ loads, plus an identical `.icls` for manual import) and a UI theme
   **Settings → Appearance & Behavior → Appearance → Theme** and pick a Candela
   theme.
 
-The generated plugin does not yet include a Marketplace icon.
-
 ### Other terminals
 
-The same ANSI palette is generated for six terminals. Pick your file and import
-per that terminal's docs:
+The same ANSI palette is available for six terminals. Pick your file and import
+it according to that terminal's documentation:
 
-Run `npm run package:bundles` to regenerate the themes and create one release
+Run `npm run package:bundles` to create one release
 archive per terminal under `dist/`. Each archive contains all 16 theme files and
 short installation instructions; loose files remain available under `build/`.
 
@@ -199,23 +188,21 @@ short installation instructions; loose files remain available under `build/`.
 
 ### Zed
 
-The generated extension (all 16 themes) lives at `build/zed/`. In Zed, open
+The extension, containing all 16 themes, lives at `build/zed/`. In Zed, open
 **Extensions**, choose **Install Dev Extension**, and select that directory.
 `npm run package:zed` copies the complete extension to `dist/zed/` for dev install
-and writes `dist/candela-themes-zed-<version>.tar.gz` for download. Zed extension
-registry submission is a manual PR — see the [release runbook](docs/release-runbook.md).
+and writes `dist/candela-themes-zed-<version>.tar.gz` for download.
 
 ### Sublime Text
 
 Run `npm run package:sublime`, then copy
 `dist/candela-themes.sublime-package` into Sublime Text's `Installed Packages/`
 folder. For a loose-file install, copy the `.sublime-color-scheme` files from
-`build/sublime/` into `Packages/User/`. Package Control submission is a manual PR —
-see the [release runbook](docs/release-runbook.md).
+`build/sublime/` into `Packages/User/`.
 
 ### Neovim
 
-The generated plugin (all 16 themes) lives at `build/nvim/`. Extract the release
+The Neovim plugin, containing all 16 themes, lives at `build/nvim/`. Extract the release
 archive and point lazy.nvim or packer at that local plugin directory, or copy its
 `colors/` directory onto your runtimepath. Then run `:colorscheme
 candela-sepia-paper` (or another theme id). `npm run package:nvim` writes the
@@ -224,9 +211,9 @@ release archive to `dist/candela-themes-nvim-<version>.tar.gz`.
 ### Helix
 
 Drop-in files for all 16 themes live under `build/helix/`. Install them per
-Helix's documentation. Run `npm run package:bundles` to regenerate the themes
-and create `dist/candela-themes-helix-<version>.tar.gz`, containing all 16 files
-and installation instructions.
+Helix's documentation. Run `npm run package:bundles` to create
+`dist/candela-themes-helix-<version>.tar.gz`, containing all 16 files and
+installation instructions.
 
 ## How themes are generated
 
@@ -251,11 +238,8 @@ needs:
 }
 ```
 
-Every entry declares `mode` (`"light"` or `"dark"`) and a non-empty `tags` array —
-both required and validated (`node scripts/validate.js` fails a theme missing either).
-`mode` drives the gallery's light/dark filter; `tags` drive its tag filter, where each
-theme carries the atomic tags behind its `tone` label (so `pastel-cool` is `["pastel",
-"cool"]` and selecting `cool` matches it alongside `dark / cool`).
+Every entry declares `mode` (`"light"` or `"dark"`) and a non-empty `tags` array.
+Both are required by validation, and `mode` and `tags` power the explorer's filters.
 
 Build from the repo root:
 
