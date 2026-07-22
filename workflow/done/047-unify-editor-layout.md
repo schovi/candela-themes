@@ -1,6 +1,6 @@
 # 047 — Unify the editor layout
 
-priority: 20
+done: 2026-07-22
 
 ## What & why
 

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { themes, tokenReference, type Theme, type ColorToken } from './themes';
+import { themes, themeVars, tokenReference, type Theme, type ColorToken } from './themes';
 import { ThemeCard } from './ThemeCard';
 import { autoFix } from './autofix';
 import { DEFAULT_PANES, type PaneKey } from './samples/Panes';
@@ -185,6 +185,13 @@ function cloneTheme(t: Theme): Theme {
 type EditorMode = SharedDraftMode;
 interface StoredState { draft: Theme; choices: GuidedChoices; mode: EditorMode; panes: PaneKey[] }
 interface DraftReplacement { draft: Theme; mode: EditorMode }
+interface DraftActivity { verb: 'resumed' | 'saved'; at: number }
+
+function relativeDraftStatus(activity: DraftActivity, now: number): string {
+  const minutes = Math.max(0, Math.floor((now - activity.at) / 60_000));
+  const prefix = activity.verb === 'resumed' ? 'Last draft resumed' : 'Draft saved';
+  return `${prefix} ${minutes === 0 ? 'just now' : `${minutes} min ago`}`;
+}
 
 // Calibrated scale: gradient track (channel-true where the axis is a color
 // channel), engraved ticks under it, and a mono numeric readout. The optional
@@ -439,16 +446,17 @@ export function Playground() {
     const fork = initialFork();
     const stored = loadStoredState();
     const share = INITIAL_SHARED_DRAFT;
-    if (share.sharedDraft && stored) return { ...stored, editing: true, replacement: share.sharedDraft, notice: null };
-    if (share.sharedDraft) return { draft: share.sharedDraft.draft, choices: deriveChoices(share.sharedDraft.draft), mode: share.sharedDraft.mode, panes: [...DEFAULT_PANES], editing: true, replacement: null, notice: null };
+    const resumedActivity = stored ? { verb: 'resumed', at: Date.now() } as const : null;
+    if (share.sharedDraft && stored) return { ...stored, editing: true, replacement: share.sharedDraft, notice: null, activity: resumedActivity };
+    if (share.sharedDraft) return { draft: share.sharedDraft.draft, choices: deriveChoices(share.sharedDraft.draft), mode: share.sharedDraft.mode, panes: [...DEFAULT_PANES], editing: true, replacement: null, notice: null, activity: null };
     if (share.requested) {
-      if (stored) return { ...stored, editing: true, replacement: null, notice: 'This share link is damaged or not a Candela theme.' };
-      return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: false, replacement: null, notice: 'This share link is damaged or not a Candela theme.' };
+      if (stored) return { ...stored, editing: true, replacement: null, notice: 'This share link is damaged or not a Candela theme.', activity: resumedActivity };
+      return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: false, replacement: null, notice: 'This share link is damaged or not a Candela theme.', activity: null };
     }
-    if (fork.validDeepLink && stored) return { ...stored, editing: true, replacement: { draft: fork.theme, mode: 'pro' as const }, notice: null };
-    if (fork.validDeepLink) return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: true, replacement: null, notice: null };
-    if (stored) return { ...stored, editing: true, replacement: null, notice: fork.requestedId ? `Theme '${fork.requestedId}' not found.` : `Resuming your draft '${stored.draft.name}'` };
-    return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: false, replacement: null, notice: fork.requestedId ? `Theme '${fork.requestedId}' not found.` : null };
+    if (fork.validDeepLink && stored) return { ...stored, editing: true, replacement: { draft: fork.theme, mode: 'pro' as const }, notice: null, activity: resumedActivity };
+    if (fork.validDeepLink) return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: true, replacement: null, notice: null, activity: null };
+    if (stored) return { ...stored, editing: true, replacement: null, notice: fork.requestedId ? `Theme '${fork.requestedId}' not found.` : null, activity: resumedActivity };
+    return { draft: fork.theme, choices: structuredClone(DEFAULT_CHOICES), mode: 'pro' as const, panes: [...DEFAULT_PANES], editing: false, replacement: null, notice: fork.requestedId ? `Theme '${fork.requestedId}' not found.` : null, activity: null };
   }, []);
   const [seed, setSeed] = useState(() => initialFork().seed);
   const [draft, setDraft] = useState<Theme>(initial.draft);
@@ -458,6 +466,8 @@ export function Playground() {
   const [editing, setEditing] = useState(initial.editing);
   const [replacement, setReplacement] = useState<DraftReplacement | null>(initial.replacement);
   const [notice, setNotice] = useState<string | null>(initial.notice);
+  const [draftActivity, setDraftActivity] = useState<DraftActivity | null>(initial.activity);
+  const [relativeTimeNow, setRelativeTimeNow] = useState(Date.now);
   const [startOverDialogOpen, setStartOverDialogOpen] = useState(false);
   const [selectedAccent, setSelectedAccent] = useState<SyntaxToken>('kw');
   const [openToken, setOpenToken] = useState<ColorToken | null>(null);
@@ -470,11 +480,23 @@ export function Playground() {
   const validationRef = useRef<HTMLDetailsElement | null>(null);
   const [helperValues, setHelperValues] = useState<PaletteHelperValues>({ contrast: 0, saturation: 0, warmth: 0, darkness: 0 });
   const helperBaseline = useRef<Theme>(cloneTheme(initial.draft));
+  const persistedState = JSON.stringify({ draft, choices, mode, panes: [...panes] });
+  const lastPersistedState = useRef(persistedState);
 
   useEffect(() => {
-    if (!editing) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ draft, choices, mode, panes: [...panes] }));
-  }, [draft, choices, mode, panes, editing]);
+    if (!editing || persistedState === lastPersistedState.current) return;
+    localStorage.setItem(STORAGE_KEY, persistedState);
+    lastPersistedState.current = persistedState;
+    const savedAt = Date.now();
+    setDraftActivity({ verb: 'saved', at: savedAt });
+    setRelativeTimeNow(savedAt);
+  }, [editing, persistedState]);
+
+  useEffect(() => {
+    if (!draftActivity) return;
+    const timer = window.setInterval(() => setRelativeTimeNow(Date.now()), 60_000);
+    return () => window.clearInterval(timer);
+  }, [draftActivity]);
 
   useEffect(() => setShareLinkCopied(false), [draft, mode]);
 
@@ -544,7 +566,7 @@ export function Playground() {
     localStorage.removeItem(STORAGE_KEY);
     setSeed(themes[0].id); replaceDraftAndResetHelpers(cloneTheme(BLANK_TEMPLATE)); setChoices(structuredClone(DEFAULT_CHOICES));
     setMode('pro'); setPanes(new Set(DEFAULT_PANES)); setImportError('');
-    setCopied(false); setEditing(false); setNotice(null); setStartOverDialogOpen(false);
+    setCopied(false); setEditing(false); setNotice(null); setDraftActivity(null); setStartOverDialogOpen(false);
   };
 
   const openReplacement = () => {
@@ -731,7 +753,7 @@ export function Playground() {
               onChange={(event) => mode === 'pro' ? setField('name', event.target.value) : updateChoiceMetadata({ name: event.target.value })}
               aria-label="Theme name"
             />
-            <span className="studio-bar-meta">id: {id} · <span className="studio-save-dot" aria-hidden="true" />saved</span>
+            <span className="studio-bar-meta">id: {id}</span>
           </div>
           <button
             type="button"
@@ -747,6 +769,7 @@ export function Playground() {
             <button type="button" className={mode === 'pro' ? 'is-on' : ''} onClick={() => switchMode('pro')}>Pro</button>
           </div>
           <div className="studio-bar-actions">
+            {draftActivity && <span className="studio-draft-status">{relativeDraftStatus(draftActivity, relativeTimeNow)}</span>}
             <button type="button" onClick={downloadRaw}>Download draft JSON</button>
             <button className="studio-start-over" type="button" onClick={startOver}>Start over</button>
           </div>
@@ -886,14 +909,7 @@ export function Playground() {
 
       </aside>
 
-      <div className="zone pg-canvas">
-        <div className="pg-preview-controls">
-          <PanePicker panes={panes} onChange={setPanes} />
-          <div className="vision-control" role="group" aria-label="Vision simulation">
-            <span>Vision:</span>
-            {VISION_MODES.map((simulation) => <button key={simulation.value} type="button" className={visionMode === simulation.value ? 'is-on' : ''} aria-pressed={visionMode === simulation.value} onClick={() => setVisionMode(simulation.value)}>{simulation.label}</button>)}
-          </div>
-        </div>
+      <div className="zone pg-canvas" style={{ ...themeVars(draft), background: 'var(--bg)' }}>
         <VisionFilterDefinitions />
         <div
           className="pg-preview-surface"
@@ -905,6 +921,15 @@ export function Playground() {
         </div>
       </div>
       <aside className="zone pg-inspector">
+        <div className="pg-preview-controls">
+          <PanePicker panes={panes} onChange={setPanes} />
+          <fieldset className="vision-control">
+            <legend>Vision</legend>
+            <div>
+              {VISION_MODES.map((simulation) => <button key={simulation.value} type="button" className={visionMode === simulation.value ? 'is-on' : ''} aria-pressed={visionMode === simulation.value} onClick={() => setVisionMode(simulation.value)}>{simulation.label}</button>)}
+            </div>
+          </fieldset>
+        </div>
         <details id="editor-validation" ref={validationRef} className={justPassed ? 'pg-validation is-celebrating' : 'pg-validation'} open={validationOpenOverride ?? failures.length > 0}>
           <summary onClick={(event) => {
             event.preventDefault();
