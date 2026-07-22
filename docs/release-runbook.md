@@ -44,6 +44,13 @@ local `main` picks up CI's version-bump commit.
 The version decision (bump or skip) is guided by the `release` skill (`/release`),
 which reasons about whether the changes since the last tag are worth shipping.
 
+> **If you protect `main`:** step 5 pushes the bump commit straight to `main` using
+> the default `GITHUB_TOKEN`, which works only because `main` is currently
+> unprotected. Adding branch protection (required PRs/reviews) will make that push
+> fail. To keep releasing, either allow the Actions bot to bypass protection for this
+> push (a branch-protection carve-out / bypass list), or switch to a release-PR model
+> where CI opens a PR with the bump and merging it triggers the tag + build.
+
 ### Local dry run (optional)
 
 CI gates the build, but a full local dry run catches a generator/packaging break
