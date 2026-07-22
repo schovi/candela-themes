@@ -83,7 +83,7 @@ jobs:
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '9.0'
+          gradle-version: '9.0.0'
       - run: npm ci
       - run: npm run package:intellij
       - name: Upload update to JetBrains Marketplace
