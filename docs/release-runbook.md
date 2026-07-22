@@ -12,8 +12,8 @@ Channels, at a glance:
 | VS Code Marketplace | store listing | Yes (`Publish` workflow) |
 | Open VSX | store listing | Yes (`Publish` workflow) |
 | JetBrains Marketplace | store listing | Yes, after first approval (`Publish` workflow) |
-| Zed extension registry | PR to `zed-industries/extensions` | No — manual PR each version |
-| Sublime Package Control | semver git tag, one-time channel PR | No publisher; tags drive it |
+| Zed extension registry | submodule → `candela-themes-zed` dist repo | Dist repo auto-synced; version-bump PR each release |
+| Sublime Package Control | tags on `candela-themes-sublime` dist repo | Yes, after one-time channel PR (tags drive it) |
 | Neovim / Helix / terminals | GitHub Releases (canonical) | Yes (the tag) |
 
 ## Cut a release
@@ -140,25 +140,51 @@ each update) can run. Do these once, then hand control to the workflow above.
    publish via the API without re-review. The plugin `id` (`com.candela.themes`) and
    numeric id are permanent.
 
-### Zed (manual, every version)
+### Dedicated distribution repos
 
-No non-interactive publisher. Publishing and each update is a PR to
+Zed and Sublime both install from *committed git contents*, but this repo's `build/`
+is gitignored. So the generated layouts are republished, one tagged commit per
+release, into two dedicated repos:
+
+- **<https://github.com/schovi/candela-themes-zed>** — `extension.toml`,
+  `themes/candela.json`, `LICENSE`.
+- **<https://github.com/schovi/candela-themes-sublime>** — the 16
+  `.sublime-color-scheme` files, `messages`, `README.md`, `LICENSE`.
+
+Both are generated — never hand-edit. The release workflow syncs and tags them via
+`scripts/publish-extension-repos.js` (also runnable locally:
+`node scripts/publish-extension-repos.js [zed|sublime]`). CI needs a cross-repo token
+because the default `GITHUB_TOKEN` can't push to other repos:
+
+| Secret | Scope | Used by |
+| --- | --- | --- |
+| `DIST_PUSH_TOKEN` | `contents:write` on both dist repos (fine-grained PAT) | `Release` workflow, dist-repo sync step |
+
+Until that secret is set, the sync step logs a warning and skips (the release itself
+still succeeds).
+
+### Zed (submodule PR, version bump each release)
+
+No non-interactive publisher. The one-time listing is a PR to
 <https://github.com/zed-industries/extensions>:
 
-1. Add the theme repo as an **HTTPS** git submodule under `extensions/candela-themes`.
-2. Add a top-level `extensions.toml` entry with the `id` and `version`, run
-   `pnpm sort-extensions`, and open the PR. On merge, Zed's CI packages and publishes.
-3. The extension `id` (`candela-themes`) is permanent. The repo must include a
-   license (required since 2025-10-01). For each release, bump `version` in
-   `extensions.toml` in a new PR.
+1. Add **`candela-themes-zed`** as an **HTTPS** git submodule under
+   `extensions/candela-themes`, pinned at the release tag.
+2. Add a top-level `extensions.toml` entry with the `id` (`candela-themes`) and
+   `version`, run `pnpm sort-extensions`, open the PR. On merge, Zed's CI packages
+   and publishes.
+3. The `id` is permanent; the dist repo carries the required license. Each later
+   release: bump the submodule to the new tag + bump `version` in `extensions.toml`
+   in a new PR (the dist repo is already synced by CI).
 
-### Sublime Package Control (one-time listing, then tags)
+### Sublime Package Control (one-time channel PR, then tags)
 
-No publisher; Package Control polls git tags. `npm version` already creates a semver
-tag, so the listing needs setting up only once:
+No publisher; Package Control polls git tags on the dist repo, which CI tags every
+release, so the listing needs setting up only once:
 
 1. Fork <https://github.com/wbond/package_control_channel>, add a repository entry
-   under `repository/` with the GitHub URL and `"tags": true`.
+   under `repository/` pointing at `candela-themes-sublime` with `"tags": true`.
 2. Run the ChannelRepositoryTools tests locally, open the PR, await human review.
-3. After the listing is merged, every new `vX.Y.Z` tag is picked up automatically —
-   no further PRs. (Branch-based releases are deprecated; tags are required.)
+3. After the listing is merged, every new `vX.Y.Z` tag on the dist repo is picked up
+   automatically — no further PRs. (Branch-based releases are deprecated; tags are
+   required.)

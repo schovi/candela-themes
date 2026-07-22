@@ -98,3 +98,18 @@ jobs:
             dist/*.vsix \
             dist/*.sublime-package \
             dist/SHA256SUMS.txt
+
+      # Zed and Sublime install from committed git contents, so the generated
+      # layouts are republished + tagged in their own repos. Package Control picks
+      # the new Sublime tag up automatically; Zed still needs a per-release PR to
+      # zed-industries/extensions bumping the version (see docs/release-runbook.md).
+      # Needs a cross-repo token; the default GITHUB_TOKEN can't push to other repos.
+      - name: Sync Zed + Sublime extension repos
+        env:
+          DIST_PUSH_TOKEN: ${{ secrets.DIST_PUSH_TOKEN }}
+        run: |
+          if [ -z "$DIST_PUSH_TOKEN" ]; then
+            echo "::warning::DIST_PUSH_TOKEN not set — skipping Zed/Sublime dist-repo sync."
+            exit 0
+          fi
+          node scripts/publish-extension-repos.js
