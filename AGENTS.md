@@ -109,6 +109,17 @@ protan/deutan separation. It reads the JSON read-only — it reports, humans dec
    formats and Helix.
    All artifacts go into `dist/` (also gitignored).
 
+### Releasing a new version
+
+Releasing is CI-driven and main-only: dispatch the `Release` workflow
+(`gh workflow run release.yml -f bump=<patch|minor|major> --ref main`) and CI
+validates, builds every package, then bumps `package.json`, tags `vX.Y.Z`, and
+publishes a GitHub Release with all artifacts + `SHA256SUMS.txt`. The build runs
+*before* the tag, so a broken build never leaves a dangling tag. Nothing is built
+or committed locally. Use the `release` skill (`/release`) — it decides whether a
+release is warranted and which bump to pick. Editor-marketplace publishing is a
+separate, credentialed, manually-gated step. Full runbook: `docs/release-runbook.md`.
+
 ### Adding a 17th theme or new format
 
 - *New theme*: add one entry to `themes[]` with every token filled in (nothing implicit) —

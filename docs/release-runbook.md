@@ -18,28 +18,36 @@ Channels, at a glance:
 
 ## Cut a release
 
-The root `package.json` version **is** the release version. Bump it and tag in one
-step:
+Releasing runs entirely in CI. Dispatch the `Release` workflow, main only, and pick
+the semver bump:
 
 ```sh
-npm version X.Y.Z        # updates package.json + package-lock.json, commits, tags vX.Y.Z
-git push origin main --follow-tags
+gh workflow run release.yml -f bump=<patch|minor|major> --ref main
 ```
 
-Pushing the `vX.Y.Z` tag triggers the `Release` workflow, which:
+(Or GitHub → Actions → Release → Run workflow.) The workflow then, in one job:
 
-1. fails immediately if the tag name doesn't equal `v<package.json version>`;
+1. refuses to run off `main`;
 2. runs the repository gates (source-JSON validity, `scripts/validate.js`, explorer build);
-3. runs `npm run package` then `npm run package:release`;
-4. creates the GitHub Release with generated notes and uploads every artifact plus
-   `SHA256SUMS.txt`.
+3. bumps `package.json` (the version source), commits, and tags `vX.Y.Z` — locally in
+   the runner, not yet pushed;
+4. runs `npm run package` then `npm run package:release`. **This build is the gate:**
+   if any package fails, the job stops here and the tag never reaches the remote, so a
+   broken build never leaves a dangling tag;
+5. pushes the bump commit + tag to `main` and creates the GitHub Release with generated
+   notes and every artifact plus `SHA256SUMS.txt`.
 
-Everything is rebuilt from the tag — generated `build/` and `dist/` are never
-committed, so a release never depends on local state.
+Everything is rebuilt in the runner — generated `build/` and `dist/` are never
+committed, so a release never depends on local state. After a release, `git pull` so
+local `main` picks up CI's version-bump commit.
 
-### Dry run before tagging
+The version decision (bump or skip) is guided by the `release` skill (`/release`),
+which reasons about whether the changes since the last tag are worth shipping.
 
-Reproduce the release build from a clean checkout without publishing anything:
+### Local dry run (optional)
+
+CI gates the build, but a full local dry run catches a generator/packaging break
+before you spend a CI run:
 
 ```sh
 npm ci
@@ -48,7 +56,7 @@ ls dist/                  # native artifacts, Zed archive, all-formats ZIP, SHA2
 ```
 
 Requires `node`, `python3`, a JDK (17+) and Gradle (9+) for the IntelliJ build, and
-system `zip`/`tar`. CI installs these; install them locally for a full dry run.
+system `zip`/`tar`.
 
 ### candela.ink download links
 
