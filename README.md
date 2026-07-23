@@ -110,8 +110,13 @@ Preview all 16 themes across terminal, TypeScript, Markdown, and git panes.
 
 **Download a release.** The [latest GitHub release](https://github.com/schovi/candela-themes/releases/latest)
 includes ready-made archives for terminals, editors, Neovim, and Helix, plus an
-all-formats ZIP and a `SHA256SUMS.txt` manifest. Marketplace links are added here
-as VS Code, Open VSX, JetBrains, Zed, and Sublime listings become available.
+all-formats ZIP and a `SHA256SUMS.txt` manifest.
+
+**From a marketplace.** Live listings:
+
+- **VS Code:** [marketplace.visualstudio.com/items?itemName=Candela.candela-themes](https://marketplace.visualstudio.com/items?itemName=Candela.candela-themes)
+
+More (Open VSX, JetBrains, Zed, Sublime) are added here as each listing goes live.
 
 **Or build from source:**
 
@@ -142,7 +147,10 @@ are available below when you need only one package.
 
 The extension, containing all 16 themes, lives at `build/vscode/`.
 
-- **As a `.vsix` (recommended):** `npm run package:vscode` builds and packages it
+- **From the Marketplace (recommended):** search **Candela Themes** in the Extensions
+  view, or install from
+  [the listing](https://marketplace.visualstudio.com/items?itemName=Candela.candela-themes).
+- **As a `.vsix`:** `npm run package:vscode` builds and packages it
   into `dist/candela-themes-<version>.vsix`, then **Extensions → ⋯ → Install from
   VSIX…** on that file.
 - **From source:** copy `build/vscode/` into `~/.vscode/extensions/candela-themes/`

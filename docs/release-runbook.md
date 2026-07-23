@@ -96,7 +96,10 @@ Configure the environment once: repo **Settings → Environments → New environ
 ## First submissions
 
 Each store needs a one-time manual setup before the automation (or, for Zed/Sublime,
-each update) can run. Do these once, then hand control to the workflow above.
+each update) can run. Do these once, then hand control to the workflow above. For the
+step-by-step first-time walkthrough (with prerequisites and verify links), see
+[`marketplace-playbook.md`](marketplace-playbook.md); the terse per-store reference and
+exact secret names follow here.
 
 ### VS Code Marketplace
 
