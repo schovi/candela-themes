@@ -742,9 +742,6 @@ export function Playground() {
             {draftActivity && <span className="studio-draft-status">{relativeDraftStatus(draftActivity, relativeTimeNow)}</span>}
             <button className="studio-export-trigger" type="button" aria-haspopup="dialog" aria-expanded={exportDialogOpen} onClick={() => setExportDialogOpen(true)}>
               Save &amp; Export
-              <svg className="studio-export-chevron" aria-hidden="true" viewBox="0 0 12 8">
-                <path d="m1 1 5 5 5-5" />
-              </svg>
             </button>
             <button className="studio-start-over" type="button" onClick={startOver}>Start over</button>
           </div>
@@ -974,6 +971,12 @@ export function Playground() {
             </label>
           </div>
         </details>
+        <details className="pg-meta pg-json">
+          <summary>Theme JSON</summary>
+          <div className="pg-meta-body">
+            <pre>{json}</pre>
+          </div>
+        </details>
       </aside>
       </div>
       </>}
@@ -986,10 +989,6 @@ export function Playground() {
           draftJsonButton={<button type="button" onClick={downloadRaw}>Save draft JSON</button>}
           copyJsonButton={<button type="button" onClick={copy} disabled={!canExport}>{copied ? 'Copied!' : 'Copy theme JSON'}</button>}
         />
-        <details className="pg-json">
-          <summary>Theme JSON</summary>
-          <pre>{json}</pre>
-        </details>
       </Dialog>}
       {replacement && <Dialog
         title="Open theme?"

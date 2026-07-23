@@ -447,8 +447,7 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
   cursor: pointer;
 }
 .studio-bar-actions button:hover { border-color: var(--site-border); background: var(--site-surface); color: var(--site-ink); }
-.studio-bar-actions .studio-export-trigger { display: inline-flex; align-items: center; gap: 7px; border-color: var(--site-border); background: var(--site-surface); color: var(--site-ink); font-weight: 600; }
-.studio-export-chevron { width: 10px; height: 7px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.studio-bar-actions .studio-export-trigger { border-color: var(--site-border); background: var(--site-surface); color: var(--site-ink); font-weight: 600; }
 .studio-bar-actions .studio-start-over { color: #a12d1b; }
 .studio-bar-actions .studio-start-over:hover { border-color: #b5341f; background: #fdf0ee; }
 .studio-modes { display: flex; align-items: center; }
