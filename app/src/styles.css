@@ -404,7 +404,10 @@ a:focus-visible, button:focus-visible {
 .pg-tab-status.is-pass { color: #2e7d32; }
 .pg-tab-status.is-fail { color: #a12d1b; }
 .pg-inspector-panel { min-width: 0; }
-.pg-inspector-panel.pg-json pre { margin: 0; }
+/* JSON fills the inspector height and drops the bordered card — it reads as an
+   app panel, not a web callout. The pre scrolls inside the full-height area. */
+.pg-inspector-panel.pg-json { flex: 1; min-height: 0; display: flex; }
+.pg-inspector-panel.pg-json pre { flex: 1; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; max-height: none; overflow: auto; }
 .editor-workspace--welcome {
   display: flex;
   align-items: center;
@@ -652,9 +655,31 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .zone.pg-canvas { padding: 0; display: flex; flex-direction: column; gap: 0; }
 .pg-preview-surface { min-width: 0; flex: 1; }
 .pg-preview-surface .theme-card { min-height: 100%; }
+/* The panes carry inline font/padding shared with the gallery. Scope the
+   editor's smaller, denser sizing here (!important to beat the inline styles) so
+   preview content matches the compact validation/rail scale — and the gallery
+   keeps its larger showcase size untouched. */
+.pg-preview-surface .theme-card { padding: 14px 16px; }
+.pg-preview-surface .samples { gap: 14px; }
+.pg-preview-surface .pane-bar { padding: 8px 12px !important; }
+.pg-preview-surface .pane pre { padding: 12px 15px !important; font-size: 12.5px !important; line-height: 1.6 !important; }
+.pg-preview-surface .pane > div:not(.pane-bar) { padding: 13px 16px !important; font-size: 13px !important; line-height: 1.55 !important; }
+.pg-preview-surface .pane > div:not(.pane-bar) h1 { font-size: 19px !important; line-height: 1.25 !important; margin-bottom: 9px !important; }
+.pg-preview-surface .pane code { font-size: 11.5px !important; }
 /* Preview view-controls live on top of the canvas they act on, not in the
-   right rail — a solid app toolbar rather than a detached web sidebar. */
-.pg-canvas-toolbar { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 10px 28px; padding: 11px 20px; border-bottom: 1px solid var(--site-border); background: var(--site-surface); }
+   right rail. A single slim row: a Previews multi-select popover and a Vision
+   select — compact, so the panes below start high instead of being pushed down. */
+.pg-canvas-toolbar { display: flex; align-items: center; gap: 12px; padding: 7px 16px; border-bottom: 1px solid var(--site-border); background: var(--site-surface); }
+.tb-popover { position: relative; }
+.tb-popover > summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px; border: 1px solid var(--site-border); border-radius: 6px; background: var(--site-paper); font: 12px/1.4 var(--font-mono); color: var(--site-ink2); }
+.tb-popover > summary::-webkit-details-marker { display: none; }
+.tb-popover[open] > summary { border-color: var(--site-accent); color: var(--site-ink); }
+.tb-count { min-width: 18px; padding: 1px 6px; border-radius: 9px; background: var(--site-accent); color: #fbf7ee; font-size: 11px; text-align: center; }
+.tb-menu { position: absolute; z-index: 5; top: calc(100% + 5px); left: 0; min-width: 172px; display: flex; flex-direction: column; gap: 1px; padding: 6px; border: 1px solid var(--site-border); border-radius: 8px; background: var(--site-surface); box-shadow: 0 10px 30px rgba(40, 34, 22, 0.2); }
+.tb-menu label { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 5px; font: 12px/1.4 var(--font-mono); color: var(--site-ink2); cursor: pointer; }
+.tb-menu label:hover { background: rgba(95, 88, 75, 0.09); color: var(--site-ink); }
+.tb-field { display: inline-flex; align-items: center; gap: 7px; font: 12px/1.4 var(--font-mono); color: var(--site-faint); }
+.tb-field select { padding: 4px 8px; border: 1px solid var(--site-border); border-radius: 6px; background: var(--site-paper); font: 12px/1.4 var(--font-mono); color: var(--site-ink); cursor: pointer; }
 .vision-filter-definitions { position: absolute; width: 0; height: 0; overflow: hidden; }
 .vision-control { min-width: 0; margin: 0; padding: 0; border: 0; }
 .theme-judgement { display: flex; flex-direction: column; gap: 0; }

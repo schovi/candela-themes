@@ -2,8 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { themes, themeVars, tokenReference, type Theme, type ColorToken } from './themes';
 import { ThemeCard } from './ThemeCard';
 import { autoFix } from './autofix';
-import { DEFAULT_PANES, type PaneKey } from './samples/Panes';
-import { PanePicker } from './PanePicker';
+import { DEFAULT_PANES, PANE_ORDER, type PaneKey } from './samples/Panes';
 import { ExportControls } from './ExportControls';
 import { SiteBrandNav } from './SiteShell';
 import { Dialog } from './Dialog';
@@ -736,6 +735,12 @@ export function Playground() {
     navigator.clipboard?.writeText(json).then(() => setCopied(true), () => setCopied(false));
   };
 
+  const togglePane = (key: PaneKey) => setPanes((current) => {
+    const next = new Set(current);
+    next.has(key) ? next.delete(key) : next.add(key);
+    return next;
+  });
+
   const copyShareLink = () => {
     const url = new URL(window.location.href);
     url.hash = `d=${encodeSharedDraft({ draft, mode })}`;
@@ -875,13 +880,22 @@ export function Playground() {
       <div className="zone pg-canvas" style={{ ...themeVars(draft), background: 'var(--bg)' }}>
         <VisionFilterDefinitions />
         <div className="pg-canvas-toolbar">
-          <PanePicker panes={panes} onChange={setPanes} />
-          <fieldset className="vision-control">
-            <legend>Vision</legend>
-            <div className="pg-segmented">
-              {VISION_MODES.map((simulation) => <button key={simulation.value} type="button" className={visionMode === simulation.value ? 'is-on' : ''} aria-pressed={visionMode === simulation.value} onClick={() => setVisionMode(simulation.value)}>{simulation.label}</button>)}
+          <details className="tb-popover">
+            <summary>Previews<span className="tb-count">{panes.size}</span></summary>
+            <div className="tb-menu">
+              {PANE_ORDER.map((pane) => (
+                <label key={pane.key}>
+                  <input type="checkbox" checked={panes.has(pane.key)} onChange={() => togglePane(pane.key)} />
+                  {pane.label}
+                </label>
+              ))}
             </div>
-          </fieldset>
+          </details>
+          <label className="tb-field">Vision
+            <select value={visionMode} onChange={(event) => setVisionMode(event.target.value as VisionMode)}>
+              {VISION_MODES.map((simulation) => <option key={simulation.value} value={simulation.value}>{simulation.label}</option>)}
+            </select>
+          </label>
         </div>
         <div
           className="pg-preview-surface"
