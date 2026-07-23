@@ -679,6 +679,9 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .fx-primary .fx-caption { flex-basis: 100%; margin: 0; }
 .fx-download { font: 500 14px/1 inherit; padding: 8px 16px; border-radius: 7px; border: 1px solid var(--site-accent); background: var(--site-accent); color: #fbf7ee; cursor: pointer; }
 .fx-download:hover:not(:disabled) { background: #274664; }
+.fx-or { color: var(--site-faint); font-size: 13px; padding-bottom: 8px; }
+.fx-download-all { padding: 8px 16px; border: 1px solid var(--site-border); border-radius: 7px; background: var(--site-paper); color: var(--site-ink); font: 500 14px/1 inherit; cursor: pointer; }
+.fx-download-all:hover:not(:disabled) { border-color: var(--site-accent); color: var(--site-accent); }
 .fx-secondary { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 7px 12px; align-items: center; }
 .fx-secondary button { justify-self: start; padding: 6px 12px; border: 1px solid var(--site-border); border-radius: 6px; background: var(--site-paper); color: var(--site-ink); font: inherit; font-size: 13px; cursor: pointer; }
 .fx-secondary button:hover:not(:disabled) { border-color: var(--site-accent); color: var(--site-accent); }

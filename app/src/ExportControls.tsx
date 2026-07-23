@@ -96,13 +96,13 @@ export function ExportControls({ theme, canExport, onCopyShareLink, shareLinkCop
         >
           Download for {selectedFormat.label}
         </button>
+        <span className="fx-or">or</span>
+        <button type="button" className="fx-download-all" disabled={!canExport} onClick={downloadFull} title="Every tool, every manual, one zip.">Download all</button>
         <p className="fx-caption">{FORMAT_DESCRIPTIONS[selectedFormat.tool]} <a href="https://github.com/schovi/candela-themes#install">Install instructions →</a></p>
       </div>
       <div className="fx-secondary">
         {draftJsonButton}
         <span className="fx-caption">Keep an editable copy, including work that does not pass validation yet.</span>
-        <button type="button" disabled={!canExport} onClick={downloadFull}>Download all formats</button>
-        <span className="fx-caption">Every tool, every manual, one zip.</span>
         {copyJsonButton}
         <span className="fx-caption">Paste into candela-themes.json → themes[].</span>
         <button type="button" onClick={onCopyShareLink}>{shareLinkCopied ? 'Copied!' : 'Copy link'}</button>
