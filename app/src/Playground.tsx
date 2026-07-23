@@ -874,7 +874,7 @@ export function Playground() {
           onPointerOver={highlightFromPreview}
           onPointerLeave={clearPreviewHighlight}
         >
-          <ThemeCard theme={draft} panes={panes} previewFilter={visionMode === 'normal' ? undefined : `url(#vision-${visionMode})`} highlightToken={highlightedToken ?? undefined} />
+          <ThemeCard theme={draft} panes={panes} previewFilter={visionMode === 'normal' ? undefined : `url(#vision-${visionMode})`} highlightToken={highlightedToken ?? undefined} showMeta={false} />
         </div>
       </div>
       <aside className="zone pg-inspector">

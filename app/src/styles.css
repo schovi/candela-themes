@@ -51,9 +51,11 @@ a:focus-visible, button:focus-visible {
   text-decoration: none;
 }
 .wordmark img { display: block; }
-.site-nav { display: flex; gap: 22px; font-size: 15px; }
+.site-nav { display: flex; align-items: center; gap: 22px; font-size: 15px; }
 .site-nav a { color: var(--site-ink2); text-decoration: none; }
 .site-nav a:hover { color: var(--site-ink); }
+.site-nav-github { display: inline-flex; }
+.site-nav-github svg { display: block; }
 .site-nav a[aria-current="page"] {
   color: var(--site-ink);
   font-weight: 700;
@@ -837,8 +839,8 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .gd-dial-degree-s { bottom: 1px; left: 50%; transform: translateX(-50%); }
 .gd-dial-degree-w { left: -8px; top: 50%; transform: translateY(-50%); }
 
-.gd-tokens { display: flex; flex-wrap: wrap; gap: 6px; }
-.gd-token { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border: 1px solid #cbc2ac; border-radius: 6px; background: var(--site-surface); cursor: pointer; font: 12px/1 var(--font-mono); color: var(--site-ink2); }
+.gd-tokens { display: grid; grid-template-columns: 1fr; gap: 6px; }
+.gd-token { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border: 1px solid #cbc2ac; border-radius: 6px; background: var(--site-surface); cursor: pointer; font: 12px/1 var(--font-mono); color: var(--site-ink2); text-align: left; }
 .gd-token:hover:not(.gd-token-on) { border-color: var(--site-faint); color: var(--site-ink); }
 /* Selection is a subtle tint (the dial's centre label already names the accent),
    so it never reads as a box outline — that treatment is reserved for .rail-hi,
