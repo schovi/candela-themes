@@ -94,7 +94,7 @@ export function ExportControls({ theme, canExport, onCopyShareLink, shareLinkCop
           disabled={!canExport}
           onClick={() => downloadFormat(selectedTool)}
         >
-          Download for {selectedFormat.label}
+          Download
         </button>
         <span className="fx-or">or</span>
         <button type="button" className="fx-download-all" disabled={!canExport} onClick={downloadFull} title="Every tool, every manual, one zip.">Download all</button>
