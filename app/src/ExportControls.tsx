@@ -94,7 +94,7 @@ export function ExportControls({ theme, canExport, onCopyShareLink, shareLinkCop
           disabled={!canExport}
           onClick={() => downloadFormat(selectedTool)}
         >
-          Download
+          Download for {selectedFormat.label}
         </button>
         <span className="fx-or">or</span>
         <button type="button" className="fx-download-all" disabled={!canExport} onClick={downloadFull} title="Every tool, every manual, one zip.">Download all</button>
@@ -102,7 +102,7 @@ export function ExportControls({ theme, canExport, onCopyShareLink, shareLinkCop
       </div>
       <div className="fx-secondary">
         {draftJsonButton}
-        <span className="fx-caption">Download the theme as a JSON file you can reopen and keep editing later — even before it passes validation.</span>
+        <span className="fx-caption">An editable JSON copy you can reopen later, even before it validates.</span>
         {copyJsonButton}
         <span className="fx-caption">Copy the full theme definition (colors, fonts, metadata) as JSON to your clipboard.</span>
         <button type="button" onClick={onCopyShareLink}>{shareLinkCopied ? 'Copied!' : 'Copy link'}</button>
