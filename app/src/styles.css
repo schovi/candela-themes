@@ -132,6 +132,7 @@ a:focus-visible, button:focus-visible {
 }
 .hero-cta:hover { background: #274664; }
 .hero-cta-alt { font-size: 15px; color: var(--site-accent); text-underline-offset: 3px; }
+.hero-install { margin: 14px 0 0; font-size: 15px; }
 .hero-invariants { margin: 22px 0 0; }
 
 /* The hero demo: a real sample pane, repainted live by the theme switcher.

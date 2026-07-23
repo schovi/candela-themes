@@ -115,8 +115,9 @@ all-formats ZIP and a `SHA256SUMS.txt` manifest.
 **From a marketplace.** Live listings:
 
 - **VS Code:** [marketplace.visualstudio.com/items?itemName=Candela.candela-themes](https://marketplace.visualstudio.com/items?itemName=Candela.candela-themes)
+- **Open VSX** (VSCodium, Cursor, Windsurf, Gitpod): [open-vsx.org/extension/candela/candela-themes](https://open-vsx.org/extension/candela/candela-themes)
 
-More (Open VSX, JetBrains, Zed, Sublime) are added here as each listing goes live.
+More (JetBrains, Zed, Sublime) are added here as each listing goes live.
 
 **Or build from source:**
 

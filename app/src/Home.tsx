@@ -87,6 +87,12 @@ export function Home() {
             <a className="hero-cta" href="/themes">Browse the gallery</a>
             <a className="hero-cta-alt" href={`${REPO}/releases/latest`}>Download latest release</a>
           </div>
+          <p className="home-body hero-install">
+            Install for VS Code from the{' '}
+            <a href="https://marketplace.visualstudio.com/items?itemName=Candela.candela-themes">VS&nbsp;Code Marketplace</a>{' '}
+            or <a href="https://open-vsx.org/extension/candela/candela-themes">Open&nbsp;VSX</a>{' '}
+            (VSCodium, Cursor, Windsurf).
+          </p>
           <p className="home-data hero-invariants">
             ink : paper ≥ 7:1 (AAA) · every token ≥ 4.5:1 (AA)<br />
             never #ffffff · never #000000
