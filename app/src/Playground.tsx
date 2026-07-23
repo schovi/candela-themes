@@ -416,6 +416,10 @@ function TokenEditor({ token, value, gradient, open, highlighted, onToggle, setC
             setHexInput(next);
             if (HEX.test(next)) setColor(token, next);
           }}
+          // Never leave the field diverged from the model: an invalid hex is
+          // never committed, so on blur snap the input back to the live value
+          // instead of stranding a red field the validation panel can't see.
+          onBlur={() => setHexInput(value)}
           aria-label={`${token} hex`}
         />
       </div>
@@ -476,7 +480,7 @@ export function Playground() {
   const [importError, setImportError] = useState('');
   const [copied, setCopied] = useState(false);
   const [shareLinkCopied, setShareLinkCopied] = useState(false);
-  const [validationOpenOverride, setValidationOpenOverride] = useState<boolean | null>(null);
+  const [inspectorTab, setInspectorTab] = useState<'validation' | 'details' | 'json'>('validation');
   const [visionMode, setVisionMode] = useState<VisionMode>('normal');
   const [helperValues, setHelperValues] = useState<PaletteHelperValues>({ contrast: 0, saturation: 0, warmth: 0, darkness: 0 });
   const helperBaseline = useRef<Theme>(cloneTheme(initial.draft));
@@ -598,7 +602,7 @@ export function Playground() {
       if (!validImportedTheme(parsed)) throw new Error('Theme must include every token as a #rrggbb color.');
       replaceDraftAndResetHelpers({ ...parsed, id: parsed.id || slugify(parsed.name), tags: parsed.tags ?? ['custom'], mode: parsed.mode ?? 'light' });
       setChoices(structuredClone(DEFAULT_CHOICES)); setMode('pro');
-      setCopied(false); setValidationOpenOverride(null); setImportError(''); setEditing(true);
+      setCopied(false); setImportError(''); setEditing(true);
     } catch (error) { setImportError(error instanceof Error ? error.message : 'Could not import this file.'); }
   };
 
@@ -669,6 +673,11 @@ export function Playground() {
       return () => clearTimeout(timer);
     }
   }, [failures.length]);
+
+  // Errors pull focus: surface the Validation tab whenever failures appear, so a
+  // broken color is never hidden behind the Details or JSON tab.
+  const hasFailures = failures.length > 0;
+  useEffect(() => { if (hasFailures) setInspectorTab('validation'); }, [hasFailures]);
 
   // Inspector → rail: reveal and focus the controls for the named token. Pro
   // opens its disclosure (one-at-a-time via setOpenToken); Simple selects the
@@ -865,6 +874,15 @@ export function Playground() {
 
       <div className="zone pg-canvas" style={{ ...themeVars(draft), background: 'var(--bg)' }}>
         <VisionFilterDefinitions />
+        <div className="pg-canvas-toolbar">
+          <PanePicker panes={panes} onChange={setPanes} />
+          <fieldset className="vision-control">
+            <legend>Vision</legend>
+            <div className="pg-segmented">
+              {VISION_MODES.map((simulation) => <button key={simulation.value} type="button" className={visionMode === simulation.value ? 'is-on' : ''} aria-pressed={visionMode === simulation.value} onClick={() => setVisionMode(simulation.value)}>{simulation.label}</button>)}
+            </div>
+          </fieldset>
+        </div>
         <div
           className="pg-preview-surface"
           onClick={inspectFromPreview}
@@ -875,25 +893,17 @@ export function Playground() {
         </div>
       </div>
       <aside className="zone pg-inspector">
-        <div className="pg-preview-controls">
-          <PanePicker panes={panes} onChange={setPanes} />
-          <fieldset className="vision-control">
-            <legend>Vision</legend>
-            <div className="pg-segmented">
-              {VISION_MODES.map((simulation) => <button key={simulation.value} type="button" className={visionMode === simulation.value ? 'is-on' : ''} aria-pressed={visionMode === simulation.value} onClick={() => setVisionMode(simulation.value)}>{simulation.label}</button>)}
-            </div>
-          </fieldset>
-        </div>
-        <details id="editor-validation" className={justPassed ? 'pg-validation is-celebrating' : 'pg-validation'} open={validationOpenOverride ?? failures.length > 0}>
-          <summary onClick={(event) => {
-            event.preventDefault();
-            setValidationOpenOverride(!(validationOpenOverride ?? failures.length > 0));
-          }}>
-            <span className="pg-validation-title">Validation</span>
+        <div className="pg-inspector-tabs" role="tablist">
+          <button type="button" role="tab" aria-selected={inspectorTab === 'validation'} className={inspectorTab === 'validation' ? 'is-on' : ''} onClick={() => setInspectorTab('validation')}>
+            Validation
             {failures.length > 0
-              ? <span className="pg-validation-status is-fail">✕ {failures.length} {failures.length === 1 ? 'error' : 'errors'}{warnings.length > 0 ? ` · ${warnings.length} ${warnings.length === 1 ? 'warning' : 'warnings'}` : ''}</span>
-              : warnings.length > 0 && <span className="pg-validation-status is-pass">✓ {warnings.length} {warnings.length === 1 ? 'warning' : 'warnings'}</span>}
-          </summary>
+              ? <span className="pg-tab-status is-fail">✕ {failures.length}</span>
+              : <span className="pg-tab-status is-pass">✓</span>}
+          </button>
+          <button type="button" role="tab" aria-selected={inspectorTab === 'details'} className={inspectorTab === 'details' ? 'is-on' : ''} onClick={() => setInspectorTab('details')}>Details</button>
+          <button type="button" role="tab" aria-selected={inspectorTab === 'json'} className={inspectorTab === 'json' ? 'is-on' : ''} onClick={() => setInspectorTab('json')}>JSON</button>
+        </div>
+        {inspectorTab === 'validation' && <div className={justPassed ? 'pg-validation pg-inspector-panel is-celebrating' : 'pg-validation pg-inspector-panel'}>
           <div className="pg-validation-body">
             {failures.length === 0 ? (
               <p className="pg-ok">All contrast rules pass — ready to export.</p>
@@ -938,9 +948,8 @@ export function Playground() {
               </section>
             )}
           </div>
-        </details>
-        <details className="pg-meta">
-          <summary>Details</summary>
+        </div>}
+        {inspectorTab === 'details' && <div className="pg-inspector-panel">
           <div className="pg-meta-body">
             <label className="pg-field">Name
               <input
@@ -970,13 +979,10 @@ export function Playground() {
               </select>
             </label>
           </div>
-        </details>
-        <details className="pg-meta pg-json">
-          <summary>Theme JSON</summary>
-          <div className="pg-meta-body">
-            <pre>{json}</pre>
-          </div>
-        </details>
+        </div>}
+        {inspectorTab === 'json' && <div className="pg-inspector-panel pg-json">
+          <pre>{json}</pre>
+        </div>}
       </aside>
       </div>
       </>}
