@@ -102,11 +102,11 @@ export function ExportControls({ theme, canExport, onCopyShareLink, shareLinkCop
       </div>
       <div className="fx-secondary">
         {draftJsonButton}
-        <span className="fx-caption">Keep an editable copy, including work that does not pass validation yet.</span>
+        <span className="fx-caption">Download the theme as a JSON file you can reopen and keep editing later — even before it passes validation.</span>
         {copyJsonButton}
-        <span className="fx-caption">Paste into candela-themes.json → themes[].</span>
+        <span className="fx-caption">Copy the full theme definition (colors, fonts, metadata) as JSON to your clipboard.</span>
         <button type="button" onClick={onCopyShareLink}>{shareLinkCopied ? 'Copied!' : 'Copy link'}</button>
-        <span className="fx-caption">Share this exact draft — works even while blocked.</span>
+        <span className="fx-caption">Copy a shareable link that reopens this exact draft in the editor.</span>
       </div>
     </div>
   );
