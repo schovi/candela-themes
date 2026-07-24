@@ -12,7 +12,7 @@ export function PanePicker({ panes, onChange }: { panes: Set<PaneKey>; onChange:
       <legend>Previews</legend>
       {PANE_ORDER.map((pane) => (
         <label key={pane.key}>
-          <input type="checkbox" checked={panes.has(pane.key)} onChange={() => toggle(pane.key)} />
+          <input type="checkbox" aria-label={pane.label} checked={panes.has(pane.key)} onChange={() => toggle(pane.key)} />
           {pane.label}
         </label>
       ))}

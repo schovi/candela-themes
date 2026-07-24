@@ -1,6 +1,6 @@
 # 053 — Editor a11y and popover/dialog behavior pass
 
-priority: 60
+done: 2026-07-24
 
 ## What & why
 

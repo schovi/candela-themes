@@ -112,6 +112,8 @@ function explainRuleMessage(message: string): string | null {
 }
 
 type VisionMode = typeof VISION_MODES[number]['value'];
+type InspectorTab = 'validation' | 'details' | 'json';
+const INSPECTOR_TAB_ORDER: InspectorTab[] = ['validation', 'details', 'json'];
 
 function warningVisionMode(message: string): VisionMode | null {
   if (message.startsWith('error/ok grayscale separation')) return 'grayscale';
@@ -491,7 +493,8 @@ export function Playground() {
   const [importError, setImportError] = useState('');
   const [copied, setCopied] = useState(false);
   const [shareLinkCopied, setShareLinkCopied] = useState(false);
-  const [inspectorTab, setInspectorTab] = useState<'validation' | 'details' | 'json'>('validation');
+  const [inspectorTab, setInspectorTab] = useState<InspectorTab>('validation');
+  const previewsRef = useRef<HTMLDetailsElement | null>(null);
   const [visionMode, setVisionMode] = useState<VisionMode>('normal');
   const [helperValues, setHelperValues] = useState<PaletteHelperValues>({ contrast: 0, saturation: 0, warmth: 0, darkness: 0 });
   const helperBaseline = useRef<Theme>(cloneTheme(initial.draft));
@@ -514,6 +517,47 @@ export function Playground() {
   }, [draftActivity]);
 
   useEffect(() => setShareLinkCopied(false), [draft, mode]);
+
+  // Native <details> only closes on summary re-click; give the Previews popover
+  // the dismissal a menu is expected to have. Reads the ref live so it keeps
+  // working across the editing on/off remount without re-binding.
+  useEffect(() => {
+    const onPointerDown = (event: PointerEvent) => {
+      const details = previewsRef.current;
+      if (details?.open && !details.contains(event.target as Node)) details.open = false;
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      const details = previewsRef.current;
+      if (event.key === 'Escape' && details?.open) {
+        details.open = false;
+        details.querySelector('summary')?.focus();
+      }
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, []);
+
+  // Tablist: automatic activation on arrow/Home/End, with focus following the
+  // selection. Roving tabindex (only the selected tab is tabbable) is set per
+  // button in render.
+  const onInspectorTabKeyDown = (event: React.KeyboardEvent) => {
+    const current = INSPECTOR_TAB_ORDER.indexOf(inspectorTab);
+    const last = INSPECTOR_TAB_ORDER.length - 1;
+    let next = current;
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = current === last ? 0 : current + 1;
+    else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = current === 0 ? last : current - 1;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = last;
+    else return;
+    event.preventDefault();
+    const nextTab = INSPECTOR_TAB_ORDER[next];
+    setInspectorTab(nextTab);
+    document.getElementById(`inspector-tab-${nextTab}`)?.focus();
+  };
 
   // The orchestrated moment: a short green sweep when validation flips to
   // all-pass. CSS guards it behind prefers-reduced-motion.
@@ -843,7 +887,7 @@ export function Playground() {
             <legend>1 · Background</legend>
             <div className="gd-moods pg-segmented">{MOODS.map((mood) => (
               <label key={mood.value} className={choices.mood === mood.value ? 'gd-mood is-on' : 'gd-mood'}>
-                <input type="radio" name="mood" checked={choices.mood === mood.value} onChange={() => updateChoices({ mood: mood.value })} />{mood.label}
+                <input type="radio" name="mood" aria-label={mood.label} checked={choices.mood === mood.value} onChange={() => updateChoices({ mood: mood.value })} />{mood.label}
               </label>
             ))}</div>
             <div className="gd-slider"><span>Darkness</span><GaugeSlider
@@ -892,19 +936,19 @@ export function Playground() {
       <div className="zone pg-canvas" style={{ ...themeVars(draft), background: 'var(--bg)' }}>
         <VisionFilterDefinitions />
         <div className="pg-canvas-toolbar">
-          <details className="tb-popover">
+          <details className="tb-popover" ref={previewsRef}>
             <summary>Previews<span className="tb-count">{panes.size}</span></summary>
             <div className="tb-menu">
               {PANE_ORDER.map((pane) => (
                 <label key={pane.key}>
-                  <input type="checkbox" checked={panes.has(pane.key)} onChange={() => togglePane(pane.key)} />
+                  <input type="checkbox" aria-label={pane.label} checked={panes.has(pane.key)} onChange={() => togglePane(pane.key)} />
                   {pane.label}
                 </label>
               ))}
             </div>
           </details>
           <label className="tb-field">Vision
-            <select value={visionMode} onChange={(event) => setVisionMode(event.target.value as VisionMode)}>
+            <select aria-label="Vision simulation" value={visionMode} onChange={(event) => setVisionMode(event.target.value as VisionMode)}>
               {VISION_MODES.map((simulation) => <option key={simulation.value} value={simulation.value}>{simulation.label}</option>)}
             </select>
           </label>
@@ -919,17 +963,17 @@ export function Playground() {
         </div>
       </div>
       <aside className="zone pg-inspector">
-        <div className="pg-inspector-tabs" role="tablist">
-          <button type="button" role="tab" aria-selected={inspectorTab === 'validation'} className={inspectorTab === 'validation' ? 'is-on' : ''} onClick={() => setInspectorTab('validation')}>
+        <div className="pg-inspector-tabs" role="tablist" aria-label="Inspector" onKeyDown={onInspectorTabKeyDown}>
+          <button type="button" role="tab" id="inspector-tab-validation" aria-controls="inspector-panel-validation" aria-selected={inspectorTab === 'validation'} tabIndex={inspectorTab === 'validation' ? 0 : -1} className={inspectorTab === 'validation' ? 'is-on' : ''} onClick={() => setInspectorTab('validation')}>
             Validation
             {failures.length > 0
               ? <span className="pg-tab-status is-fail">✕ {failures.length}</span>
               : <span className="pg-tab-status is-pass">✓</span>}
           </button>
-          <button type="button" role="tab" aria-selected={inspectorTab === 'details'} className={inspectorTab === 'details' ? 'is-on' : ''} onClick={() => setInspectorTab('details')}>Details</button>
-          <button type="button" role="tab" aria-selected={inspectorTab === 'json'} className={inspectorTab === 'json' ? 'is-on' : ''} onClick={() => setInspectorTab('json')}>JSON</button>
+          <button type="button" role="tab" id="inspector-tab-details" aria-controls="inspector-panel-details" aria-selected={inspectorTab === 'details'} tabIndex={inspectorTab === 'details' ? 0 : -1} className={inspectorTab === 'details' ? 'is-on' : ''} onClick={() => setInspectorTab('details')}>Details</button>
+          <button type="button" role="tab" id="inspector-tab-json" aria-controls="inspector-panel-json" aria-selected={inspectorTab === 'json'} tabIndex={inspectorTab === 'json' ? 0 : -1} className={inspectorTab === 'json' ? 'is-on' : ''} onClick={() => setInspectorTab('json')}>JSON</button>
         </div>
-        {inspectorTab === 'validation' && <div className={justPassed ? 'pg-validation pg-inspector-panel is-celebrating' : 'pg-validation pg-inspector-panel'}>
+        {inspectorTab === 'validation' && <div role="tabpanel" id="inspector-panel-validation" aria-labelledby="inspector-tab-validation" tabIndex={0} className={justPassed ? 'pg-validation pg-inspector-panel is-celebrating' : 'pg-validation pg-inspector-panel'}>
           <div className="pg-validation-body">
             {failures.length === 0 ? (
               <p className="pg-ok">All contrast rules pass — ready to export.</p>
@@ -975,7 +1019,7 @@ export function Playground() {
             )}
           </div>
         </div>}
-        {inspectorTab === 'details' && <div className="pg-inspector-panel">
+        {inspectorTab === 'details' && <div role="tabpanel" id="inspector-panel-details" aria-labelledby="inspector-tab-details" tabIndex={0} className="pg-inspector-panel">
           <div className="pg-meta-body">
             <label className="pg-field">Name
               <input
@@ -1006,7 +1050,7 @@ export function Playground() {
             </label>
           </div>
         </div>}
-        {inspectorTab === 'json' && <div className="pg-inspector-panel pg-json">
+        {inspectorTab === 'json' && <div role="tabpanel" id="inspector-panel-json" aria-labelledby="inspector-tab-json" tabIndex={0} className="pg-inspector-panel pg-json">
           <pre>{json}</pre>
         </div>}
       </aside>
