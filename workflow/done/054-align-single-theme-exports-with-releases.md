@@ -1,6 +1,6 @@
 # 054 — Align editor single-theme exports with release emitters
 
-priority: 70
+done: 2026-07-24
 
 ## What & why
 
@@ -30,3 +30,15 @@ drop-in instructions instead of an extension. Terminal formats are already byte-
 - Exported artifacts no longer claim version 0.1.0 when a real version is known.
 - Zed export is either a valid installable extension or its caption honestly describes the drop-in nature; the choice is recorded in the task on completion.
 - `node scripts/generate.js` output for the 12 release formats is unchanged (no release regression).
+
+## Notes
+
+- Zed decision: emit a valid installable extension (`extension.toml` + `themes/candela.json`),
+  mirroring the released extension layout, rather than a bare drop-in `candela.json`. The Zed
+  install README fragment now describes the `zed: install dev extension` flow, matching the
+  release path documented in README's Zed section.
+- Version: single-theme IntelliJ/Zed scaffolds now derive from the named `DEFAULT_VERSION`
+  standalone fallback (the stray `0.1.0` literal in the IntelliJ Gradle scaffold is gone). No
+  real package version is available on the in-browser app export path, and threading one would
+  require app changes outside this task's boundary; the release/`emitFullFamily` path already
+  threads the real version.
