@@ -1,6 +1,6 @@
 # 051 — Lenient hex input and honest invalid-state UI
 
-priority: 40
+done: 2026-07-24
 
 ## What & why
 

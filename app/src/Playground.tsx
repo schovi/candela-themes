@@ -373,6 +373,17 @@ function lightnessZone(work: Theme, token: ColorToken, expected: ColorToken[]): 
   return allPass ? null : passZoneGradient(pass);
 }
 
+// Lenient paste-friendly hex parse: accepts the common formats (missing hash,
+// #rgb / rgb shorthand, any case) and returns canonical lowercase #rrggbb, or
+// null when the text is truly invalid. lib/colors.js normalizeHex stays strict.
+function parseHexLoose(text: string): string | null {
+  const body = text.trim().replace(/^#/, '');
+  const expanded = /^[0-9a-fA-F]{3}$/.test(body)
+    ? body.split('').map((c) => c + c).join('')
+    : body;
+  return /^[0-9a-fA-F]{6}$/.test(expanded) ? `#${expanded.toLowerCase()}` : null;
+}
+
 function TokenEditor({ token, value, gradient, open, highlighted, onToggle, setColor, setHighlightedToken }: {
   token: ColorToken;
   value: string;
@@ -385,7 +396,7 @@ function TokenEditor({ token, value, gradient, open, highlighted, onToggle, setC
 }) {
   const [hexInput, setHexInput] = useState(value);
   useEffect(() => setHexInput(value), [value]);
-  const valid = HEX.test(hexInput);
+  const valid = parseHexLoose(hexInput) !== null;
   const { h, s, l } = hexToHsl(value);
   const setHsl = (part: 'h' | 's' | 'l', v: number) => setColor(token, hslToHex({ h, s, l, [part]: v }));
   return (
@@ -399,7 +410,7 @@ function TokenEditor({ token, value, gradient, open, highlighted, onToggle, setC
       <div className="pg-color">
         <input
           type="color"
-          value={valid ? value : '#000000'}
+          value={value}
           onChange={(e) => setColor(token, e.target.value)}
           aria-label={`${token} color`}
         />
@@ -413,7 +424,8 @@ function TokenEditor({ token, value, gradient, open, highlighted, onToggle, setC
           onChange={(event) => {
             const next = event.target.value;
             setHexInput(next);
-            if (HEX.test(next)) setColor(token, next);
+            const canonical = parseHexLoose(next);
+            if (canonical) setColor(token, canonical);
           }}
           // Never leave the field diverged from the model: an invalid hex is
           // never committed, so on blur snap the input back to the live value
@@ -423,11 +435,11 @@ function TokenEditor({ token, value, gradient, open, highlighted, onToggle, setC
         />
       </div>
       {open && <div className="pg-sliders">
-        <GaugeSlider label="H" min={0} max={360} value={Math.round(h)} disabled={!valid} unit="°"
+        <GaugeSlider label="H" min={0} max={360} value={Math.round(h)} unit="°"
           track={hueTrack(s, l)} onChange={(v) => setHsl('h', v)} ariaLabel={`${token} hue`} />
-        <GaugeSlider label="S" min={0} max={100} value={Math.round(s * 100)} disabled={!valid}
+        <GaugeSlider label="S" min={0} max={100} value={Math.round(s * 100)}
           track={satTrack(h, l)} onChange={(v) => setHsl('s', v / 100)} ariaLabel={`${token} saturation`} />
-        <GaugeSlider label="L" min={0} max={100} value={Math.round(l * 100)} disabled={!valid}
+        <GaugeSlider label="L" min={0} max={100} value={Math.round(l * 100)}
           track={lightTrack(h, s)} zone={gradient} onChange={(v) => setHsl('l', v / 100)} ariaLabel={`${token} lightness`} />
       </div>}
     </div>
