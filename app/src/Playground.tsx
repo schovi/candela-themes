@@ -7,7 +7,7 @@ import { ExportControls } from './ExportControls';
 import { SiteBrandNav } from './SiteShell';
 import { Dialog } from './Dialog';
 import { applyPaletteHelperValues, type PaletteHelper, type PaletteHelperValues } from './paletteHelpers';
-import { ACCENT_L, ACCENT_SAT, DEFAULT_CHOICES, DIAG, MOOD_BG, deriveChoices, deriveTheme, slugify, SYNTAX_TOKENS, type GuidedChoices, type SyntaxToken } from './derive';
+import { ACCENT_L, ACCENT_SAT, DEFAULT_CHOICES, DIAG, MOOD_BG, applyAccentHue, applyBackground, applyDiagnosticHue, deriveChoices, deriveTheme, slugify, SYNTAX_TOKENS, type GuidedChoices, type Mood, type SyntaxToken } from './derive';
 import { decodeSharedDraft, encodeSharedDraft, type SharedDraft, type SharedDraftMode } from './shareDraft';
 // Shared rule module — the exact same invariants scripts/validate.js enforces
 // (both import the same lib/ ESM; change a rule once and both reflect it).
@@ -544,12 +544,26 @@ export function Playground() {
     setEditing(true);
   };
 
-  const updateChoices = (patch: Partial<GuidedChoices>) => {
-    const next = { ...choices, ...patch };
-    setChoices(next);
-    replaceDraftAndResetHelpers(deriveTheme(next));
+  // A guided (Simple-mode) edit touches only the tokens its control owns. It
+  // patches that one choice (so the slider/wheel reads the new position) and
+  // recomputes only the governed token(s) on the current draft — hand-tuned Pro
+  // tokens keep their hex. Palette-helper adjustments survive: the edit lands on
+  // the helper baseline and the current helper values re-apply on top (they are
+  // not reset to 0).
+  const applyGuidedEdit = (patch: Partial<GuidedChoices>, editBaseline: (theme: Theme) => Theme) => {
+    setChoices((current) => ({ ...current, ...patch }));
+    const baseline = editBaseline(helperBaseline.current);
+    helperBaseline.current = baseline;
+    setDraft(applyPaletteHelperValues(baseline, helperValues));
     setCopied(false);
   };
+
+  const setMood = (mood: Mood) => applyGuidedEdit({ mood }, (theme) => applyBackground(theme, mood, choices.darkness));
+  const setDarkness = (darkness: number) => applyGuidedEdit({ darkness }, (theme) => applyBackground(theme, choices.mood, darkness));
+  const setAccentHue = (hue: number) =>
+    applyGuidedEdit({ accentHues: { ...choices.accentHues, [selectedAccent]: hue } }, (theme) => applyAccentHue(theme, selectedAccent, hue));
+  const setDiagnosticHue = (token: 'error' | 'warning' | 'ok', hue: number) =>
+    applyGuidedEdit({ diagnosticHues: { ...choices.diagnosticHues, [token]: hue } }, (theme) => applyDiagnosticHue(theme, token, hue));
 
   const updateChoiceMetadata = (patch: Partial<Pick<GuidedChoices, 'name' | 'tone' | 'description' | 'fonts'>>) => {
     setChoices((current) => ({ ...current, ...patch }));
@@ -855,14 +869,14 @@ export function Playground() {
             <legend>1 · Background</legend>
             <div className="gd-moods pg-segmented">{MOODS.map((mood) => (
               <label key={mood.value} className={choices.mood === mood.value ? 'gd-mood is-on' : 'gd-mood'}>
-                <input type="radio" name="mood" aria-label={mood.label} checked={choices.mood === mood.value} onChange={() => updateChoices({ mood: mood.value })} />{mood.label}
+                <input type="radio" name="mood" aria-label={mood.label} checked={choices.mood === mood.value} onChange={() => setMood(mood.value)} />{mood.label}
               </label>
             ))}</div>
-            <div className="gd-slider"><span>Darkness</span><GaugeSlider
+            <div className="gd-slider"><span>Background darkness</span><GaugeSlider
               id="rail-token-bg"
               label="" min={0} max={100} value={choices.darkness}
               track={`linear-gradient(90deg, ${hslToHex({ ...MOOD_BG[choices.mood], l: 0.94 })}, ${hslToHex({ ...MOOD_BG[choices.mood], l: 0.88 })})`}
-              onChange={(v) => updateChoices({ darkness: v })} ariaLabel="Background darkness"
+              onChange={setDarkness} ariaLabel="Background darkness"
             /></div>
           </fieldset>
           <fieldset className="pg-group gd-step">
@@ -871,7 +885,7 @@ export function Playground() {
               hues={choices.accentHues}
               selected={selectedAccent}
               colors={draft.colors}
-              onChange={(hue) => updateChoices({ accentHues: { ...choices.accentHues, [selectedAccent]: hue } })}
+              onChange={setAccentHue}
             />
             <div className="gd-tokens">{SYNTAX_TOKENS.map((token) => <button key={token} type="button" id={`rail-token-${token}`} className={`gd-token${selectedAccent === token ? ' gd-token-on' : ''}${highlightedToken === token ? ' rail-hi' : ''}`} onClick={() => setSelectedAccent(token)} onPointerEnter={() => setHighlightedToken(token)} onPointerLeave={() => setHighlightedToken(null)} onFocus={() => setHighlightedToken(token)} onBlur={() => setHighlightedToken(null)}><span className="gd-chip" style={{ background: draft.colors[token] }} />{token} · {TOKEN_LABELS[token]}</button>)}</div>
           </fieldset>
@@ -884,7 +898,7 @@ export function Playground() {
                 id={`rail-token-${diagnostic.key}`}
                 label="" min={0} max={360} unit="°" value={choices.diagnosticHues[diagnostic.key]}
                 track={hueTrack(DIAG[diagnostic.key].s, DIAG[diagnostic.key].l)}
-                onChange={(v) => updateChoices({ diagnosticHues: { ...choices.diagnosticHues, [diagnostic.key]: v } })}
+                onChange={(v) => setDiagnosticHue(diagnostic.key, v)}
                 ariaLabel={`${diagnostic.key} hue`}
               />
             </div>)}

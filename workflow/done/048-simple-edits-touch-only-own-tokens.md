@@ -1,6 +1,6 @@
 # 048 — Simple-mode edits touch only their own tokens
 
-priority: 10
+done: 2026-07-24
 
 ## What & why
 
