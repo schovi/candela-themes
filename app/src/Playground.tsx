@@ -691,7 +691,20 @@ export function Playground() {
       ...check,
       ratio: contrastRatio(draft.colors[check.token], draft.colors[check.background]),
     }));
-    return { failures: result.failures, warnings: result.warnings, contrast };
+    // Warn-only display hint: two syntax accents landing on the same hex still
+    // pass the hard rules, but collapse two roles into one color. Computed here,
+    // not in lib/rules.js, so it stays a display concern.
+    const accentsByHex = new Map<string, SyntaxToken[]>();
+    for (const token of SYNTAX_TOKENS) {
+      const hex = (draft.colors[token] ?? '').toLowerCase();
+      const shared = accentsByHex.get(hex) ?? [];
+      shared.push(token);
+      accentsByHex.set(hex, shared);
+    }
+    const collisions = [...accentsByHex.values()]
+      .filter((tokens) => tokens.length > 1)
+      .map((tokens) => `Accents ${tokens.join(' and ')} share the same color — nudge one apart so the roles stay distinct.`);
+    return { failures: result.failures, warnings: [...result.warnings, ...collisions], contrast };
   }, [draft]);
 
   const passZones = useMemo(() => {
@@ -818,8 +831,7 @@ export function Playground() {
         </div>}
       </header>
       {notice && <div className="studio-notice" role="status">
-        <span>{notice}{notice.startsWith('Resuming') && ' — '}</span>
-        {notice.startsWith('Resuming') && <button type="button" onClick={startOver}>Start fresh?</button>}
+        <span>{notice}</span>
         <button className="studio-notice-dismiss" type="button" aria-label="Dismiss notice" onClick={() => setNotice(null)}>×</button>
       </div>}
       {!editing ? <div className="editor-workspace editor-workspace--welcome"><div className="studio-welcome">

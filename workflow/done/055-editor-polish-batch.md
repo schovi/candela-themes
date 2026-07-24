@@ -1,6 +1,6 @@
 # 055 — Editor polish batch: dead control, truncation, alignment, collision hint
 
-priority: 80
+done: 2026-07-24
 
 ## What & why
 

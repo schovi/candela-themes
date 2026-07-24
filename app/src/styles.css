@@ -419,7 +419,7 @@ a:focus-visible, button:focus-visible {
 .studio-welcome-head h3 { margin: 0 0 6px; font-size: 24px; }
 .studio-welcome-head p { margin: 0; color: var(--site-ink2); }
 .studio-start-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.studio-start-card { min-height: 190px; padding: 22px; border: 1px solid var(--site-border); border-radius: 12px; background: var(--site-surface); color: var(--site-ink); text-align: left; box-shadow: 0 3px 12px rgba(55, 45, 26, 0.06); }
+.studio-start-card { display: flex; flex-direction: column; min-height: 190px; padding: 22px; border: 1px solid var(--site-border); border-radius: 12px; background: var(--site-surface); color: var(--site-ink); text-align: left; box-shadow: 0 3px 12px rgba(55, 45, 26, 0.06); }
 button.studio-start-card { cursor: pointer; }
 button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--site-accent); transform: translateY(-1px); }
 .studio-start-card strong { display: block; margin-bottom: 8px; font-size: 18px; }
@@ -563,7 +563,7 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .pg-canvas-toolbar legend { margin-bottom: 8px; }
 .pg-color { min-width: 0; display: flex; align-items: center; gap: 8px; }
 .pg-color input[type="color"] { width: 30px; height: 26px; padding: 0; border: 1px solid #cbc2ac; border-radius: 5px; background: none; }
-.pg-token { min-width: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font: 12px/1 var(--font-mono); color: var(--site-ink2); }
+.pg-token { min-width: 0; flex: 1; overflow-wrap: anywhere; font: 12px/1.35 var(--font-mono); color: var(--site-ink2); }
 .pg-hex { width: 90px; max-width: 100%; flex: 0 1 90px; font: 12px/1 var(--font-mono); padding: 4px 6px; border: 1px solid #cbc2ac; border-radius: 5px; background: var(--site-surface); }
 .pg-hex-bad { border-color: #c0392b; background: #fdf0ee; }
 
