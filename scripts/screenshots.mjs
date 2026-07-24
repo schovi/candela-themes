@@ -5,7 +5,8 @@
 //
 // Starts the explorer's Vite dev server, opens each theme in screenshot mode
 // (?theme=<id>&shot=1 — one chrome-free card that signals readiness once fonts
-// load), and writes docs/screenshots/candela-<id>.png. Playwright is a devDep of
+// load), and writes docs/screenshots/candela-<NN>-<id>.png (NN = 1-based theme
+// order). Playwright is a devDep of
 // app/, so we resolve it from there rather than the repo root.
 
 import { spawn } from 'node:child_process';
@@ -55,14 +56,15 @@ try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, deviceScaleFactor: 2 });
   mkdirSync(OUT_DIR, { recursive: true });
 
-  for (const id of themeIds) {
+  for (const [index, id] of themeIds.entries()) {
     await page.goto(`${BASE}/?theme=${id}&shot=1`, { waitUntil: 'load' });
     const state = await page.waitForFunction(
       () => document.documentElement.dataset.shotReady ?? null,
       { timeout: 15_000 },
     ).then((h) => h.jsonValue());
     if (state !== '1') throw new Error(`theme '${id}' did not render (shotReady=${state})`);
-    const file = path.join(OUT_DIR, `candela-${id}.png`);
+    const num = String(index + 1).padStart(2, '0');
+    const file = path.join(OUT_DIR, `candela-${num}-${id}.png`);
     await page.locator('.theme-card').screenshot({ path: file });
     console.log(`wrote ${path.relative(ROOT, file)}`);
   }

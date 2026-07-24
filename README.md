@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/candela-sepia-paper.png" alt="Candela 01 · Sepia Paper across terminal, TypeScript, Markdown, and git previews">
+  <img src="docs/screenshots/candela-01-sepia-paper.png" alt="Candela 01 · Sepia Paper across terminal, TypeScript, Markdown, and git previews">
 </p>
 
 <p align="center">
@@ -97,14 +97,14 @@ Preview all 16 themes across terminal, TypeScript, Markdown, and git panes.
 
 | | |
 | --- | --- |
-| **01 · Sepia Paper**<br>![Sepia Paper](docs/screenshots/candela-sepia-paper.png) | **02 · Slate Mist**<br>![Slate Mist](docs/screenshots/candela-slate-mist.png) |
-| **03 · Sage**<br>![Sage](docs/screenshots/candela-sage.png) | **04 · Solarized Lite**<br>![Solarized Lite](docs/screenshots/candela-solarized-lite.png) |
-| **05 · Blossom**<br>![Blossom](docs/screenshots/candela-blossom.png) | **06 · Lagoon**<br>![Lagoon](docs/screenshots/candela-lagoon.png) |
-| **07 · Meadow**<br>![Meadow](docs/screenshots/candela-meadow.png) | **08 · Apricot**<br>![Apricot](docs/screenshots/candela-apricot.png) |
-| **09 · Periwinkle**<br>![Periwinkle](docs/screenshots/candela-periwinkle.png) | **10 · Ink & Coral**<br>![Ink & Coral](docs/screenshots/candela-ink-coral.png) |
-| **11 · Graphite Mono**<br>![Graphite Mono](docs/screenshots/candela-graphite-mono.png) | **12 · Tungsten**<br>![Tungsten](docs/screenshots/candela-tungsten.png) |
-| **13 · E-Ink Slate**<br>![E-Ink Slate](docs/screenshots/candela-eink-slate.png) | **14 · Contrast Max**<br>![Contrast Max](docs/screenshots/candela-contrast-max.png) |
-| **15 · Nocturne**<br>![Nocturne](docs/screenshots/candela-nocturne.png) | **16 · Borealis**<br>![Borealis](docs/screenshots/candela-borealis.png) |
+| **01 · Sepia Paper**<br>![Sepia Paper](docs/screenshots/candela-01-sepia-paper.png) | **02 · Slate Mist**<br>![Slate Mist](docs/screenshots/candela-02-slate-mist.png) |
+| **03 · Sage**<br>![Sage](docs/screenshots/candela-03-sage.png) | **04 · Solarized Lite**<br>![Solarized Lite](docs/screenshots/candela-04-solarized-lite.png) |
+| **05 · Blossom**<br>![Blossom](docs/screenshots/candela-05-blossom.png) | **06 · Lagoon**<br>![Lagoon](docs/screenshots/candela-06-lagoon.png) |
+| **07 · Meadow**<br>![Meadow](docs/screenshots/candela-07-meadow.png) | **08 · Apricot**<br>![Apricot](docs/screenshots/candela-08-apricot.png) |
+| **09 · Periwinkle**<br>![Periwinkle](docs/screenshots/candela-09-periwinkle.png) | **10 · Ink & Coral**<br>![Ink & Coral](docs/screenshots/candela-10-ink-coral.png) |
+| **11 · Graphite Mono**<br>![Graphite Mono](docs/screenshots/candela-11-graphite-mono.png) | **12 · Tungsten**<br>![Tungsten](docs/screenshots/candela-12-tungsten.png) |
+| **13 · E-Ink Slate**<br>![E-Ink Slate](docs/screenshots/candela-13-eink-slate.png) | **14 · Contrast Max**<br>![Contrast Max](docs/screenshots/candela-14-contrast-max.png) |
+| **15 · Nocturne**<br>![Nocturne](docs/screenshots/candela-15-nocturne.png) | **16 · Borealis**<br>![Borealis](docs/screenshots/candela-16-borealis.png) |
 
 ## Install
 
