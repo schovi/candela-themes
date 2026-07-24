@@ -1,6 +1,6 @@
 # 056 — Harden validation display plumbing against rules drift
 
-priority: 90
+done: 2026-07-24
 
 ## What & why
 
@@ -30,3 +30,10 @@ has a hole. Low urgency, cheap insurance.
 - A reworded rule message can't silently break token-jump/explanations (test or structured ids prove it).
 - Imported/shared drafts always end up with a defined, slugified id.
 - `node scripts/validate.js` output unchanged for the shipped themes file.
+
+## Notes
+
+- `checkAnsiMapping` is not run in the editor: the editor edits a single draft
+  theme, and `ansiMapping` lives only at the JSON top level (themes.ts reads
+  `themeData.ansiMapping`), never per-theme. A draft has no mapping to check, so
+  there is nothing to apply. Confirmed skip.

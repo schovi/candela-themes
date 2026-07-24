@@ -11,8 +11,9 @@ import { ACCENT_L, ACCENT_SAT, DEFAULT_CHOICES, DIAG, MOOD_BG, deriveChoices, de
 import { decodeSharedDraft, encodeSharedDraft, type SharedDraft, type SharedDraftMode } from './shareDraft';
 // Shared rule module — the exact same invariants scripts/validate.js enforces
 // (both import the same lib/ ESM; change a rule once and both reflect it).
-import { AA_CONTRAST, AAA_CONTRAST, expectedTokens, checkTheme } from '../../lib/rules.js';
+import { AA_CONTRAST, AAA_CONTRAST, AA_TOKENS, expectedTokens, checkTheme } from '../../lib/rules.js';
 import { contrastRatio, hexToHsl, hslToHex } from '../../lib/colors.js';
+import { explainRuleMessage, jumpTokenForMessage } from './ruleMessages';
 
 // Curated Google Fonts — exactly the families already loaded in index.html, so
 // every choice previews immediately with no extra network work.
@@ -75,41 +76,9 @@ const TOKEN_GROUPS: { label: string; tokens: ColorToken[] }[] = [
 
 const CONTRAST_CHECKS: { token: ColorToken; background: 'bg' | 'surface' | 'selection'; floor: number }[] = [
   { token: 'ink', background: 'surface', floor: AAA_CONTRAST },
-  ...(['kw', 'str', 'fn', 'num', 'type', 'builtin', 'punct', 'error', 'warning', 'ok', 'faint'] as ColorToken[])
-    .map((token) => ({ token, background: 'bg' as const, floor: AA_CONTRAST })),
+  ...(AA_TOKENS as ColorToken[]).map((token) => ({ token, background: 'bg' as const, floor: AA_CONTRAST })),
   { token: 'ink', background: 'selection', floor: AA_CONTRAST },
 ];
-
-function controlGroupForToken(token: string): string {
-  if (tokenReference.ui[token]) return 'UI';
-  if (tokenReference.syntax[token]) return 'Syntax';
-  return 'Diagnostics';
-}
-
-function explainRuleMessage(message: string): string | null {
-  const invalidHex = message.match(/^(\w+) is not a #rrggbb hex color$/);
-  if (invalidHex) return `Enter a six-digit hex color for ${invalidHex[1]} (${controlGroupForToken(invalidHex[1])}).`;
-  const missingToken = message.match(/^missing token '(\w+)'$/);
-  if (missingToken) return `Restore the ${missingToken[1]} color (${controlGroupForToken(missingToken[1])}).`;
-  if (message.includes('is not one of light/dark')) return 'Use Start over and choose a built-in theme or a valid saved draft (Starting point).';
-  if (message.startsWith('mode ')) return 'Move Background darkness to the other side of the midpoint (Simple), or adjust bg lightness (UI).';
-  if (message.startsWith('tags must ')) return 'Use Start over and choose a built-in theme or a valid saved draft (Starting point).';
-  if (message.startsWith('bg is pure ')) return 'Move the bg color away from pure white (UI).';
-  if (message.startsWith('surface is pure ')) return 'Move the surface color away from pure white (UI).';
-  if (message.startsWith('surface ') && message.includes('not lighter than bg')) return 'Make surface slightly lighter than bg (UI).';
-  if (message.startsWith('ink is pure ')) return 'Move the ink color away from pure black (UI).';
-  const contrastFailure = message.match(/^(\w+) on (bg|surface|selection) /);
-  if (contrastFailure) return `Lighten or darken ${contrastFailure[1]} until it passes (${controlGroupForToken(contrastFailure[1])}).`;
-  const collision = message.match(/^diagnostic collision: (\w+) and (\w+) share/);
-  if (collision) {
-    const groups = [...new Set([controlGroupForToken(collision[1]), controlGroupForToken(collision[2])])].join(' and ');
-    return `Choose different colors for ${collision[1]} and ${collision[2]} (${groups}).`;
-  }
-  if (message.includes('distinct accent hues')) return 'Spread the accent colors across 6–8 distinct hues (Syntax).';
-  if (message.startsWith('error/ok grayscale separation')) return 'Your error red and success green look too similar in grayscale. Lighten or darken one of them (Diagnostics).';
-  if (message.startsWith('error/ok protan/deutan distance')) return 'Your error red and success green may look too similar with red-green color blindness. Change one hue (Diagnostics).';
-  return null;
-}
 
 type VisionMode = typeof VISION_MODES[number]['value'];
 type InspectorTab = 'validation' | 'details' | 'json';
@@ -119,27 +88,6 @@ function warningVisionMode(message: string): VisionMode | null {
   if (message.startsWith('error/ok grayscale separation')) return 'grayscale';
   if (message.startsWith('error/ok protan/deutan distance')) return 'protan';
   if (message.includes('purple') && message.includes('blue')) return 'deutan';
-  return null;
-}
-
-// The rail control a rule/warning names, so its inspector row can jump there.
-// Matches the message shapes lib/rules.js emits (plus our own hex-format error);
-// null for messages that name no single token (invalid mode/tags, hue count).
-function jumpTokenForMessage(message: string): ColorToken | null {
-  const patterns = [
-    /^missing token '(\w+)'$/,
-    /^(\w+) is not a #rrggbb hex color$/,
-    /^(\w+) on (?:bg|surface|selection) /,
-    /^(\w+) is pure #/,
-    /^(surface) #[0-9a-f]{6} not lighter than /,
-    /^diagnostic collision: (\w+) and /,
-  ];
-  for (const pattern of patterns) {
-    const match = message.match(pattern);
-    if (match) return match[1] as ColorToken;
-  }
-  if (message.includes('requires bg lightness')) return 'bg';
-  if (message.startsWith('error/ok ')) return 'error';
   return null;
 }
 
@@ -297,10 +245,18 @@ function validImportedTheme(value: unknown): value is Theme {
     !!theme.colors && tokens.every((token) => HEX.test(theme.colors?.[token] ?? ''));
 }
 
+// validImportedTheme accepts-and-ignores `id` (it isn't a hard invariant), so an
+// imported/shared draft can arrive without one. Fill it from the name so draft.id
+// is never undefined downstream (export id, share round-trip, reseed).
+function withNormalizedId(theme: Theme): Theme {
+  return theme.id ? theme : { ...theme, id: slugify(theme.name) };
+}
+
 function loadStoredState(): StoredState | null {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null') as StoredState | null;
-    return parsed && validImportedTheme(parsed.draft) && (parsed.mode === 'simple' || parsed.mode === 'pro') ? parsed : null;
+    if (!parsed || !validImportedTheme(parsed.draft) || (parsed.mode !== 'simple' && parsed.mode !== 'pro')) return null;
+    return { ...parsed, draft: withNormalizedId(parsed.draft) };
   } catch { return null; }
 }
 
@@ -313,7 +269,7 @@ function loadSharedDraft(): { requested: boolean; sharedDraft: SharedDraft | nul
     return {
       requested: true,
       sharedDraft: validImportedTheme(parsed?.draft) && (parsed.mode === 'simple' || parsed.mode === 'pro')
-        ? { draft: parsed.draft, mode: parsed.mode }
+        ? { draft: withNormalizedId(parsed.draft), mode: parsed.mode }
         : null,
     };
   } catch {
@@ -655,7 +611,7 @@ export function Playground() {
     try {
       const parsed = JSON.parse(await file.text());
       if (!validImportedTheme(parsed)) throw new Error('Theme must include every token as a #rrggbb color.');
-      replaceDraftAndResetHelpers({ ...parsed, id: parsed.id || slugify(parsed.name), tags: parsed.tags ?? ['custom'], mode: parsed.mode ?? 'light' });
+      replaceDraftAndResetHelpers(withNormalizedId(parsed));
       setChoices(structuredClone(DEFAULT_CHOICES)); setMode('pro');
       setCopied(false); setImportError(''); setEditing(true);
     } catch (error) { setImportError(error instanceof Error ? error.message : 'Could not import this file.'); }
