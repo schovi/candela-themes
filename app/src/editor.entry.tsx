@@ -1,10 +1,11 @@
 import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
 import { SiteShell } from './SiteShell';
 import { Playground } from './Playground';
+import { mountOrHydrate } from './mount';
 import './styles.css';
 
-createRoot(document.getElementById('root')!).render(
+mountOrHydrate(
+  document.getElementById('root')!,
   <StrictMode>
     <SiteShell page="editor">
       <Playground />

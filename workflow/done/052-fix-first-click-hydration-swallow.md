@@ -1,6 +1,6 @@
 # 052 — Stop swallowing the first click after page load
 
-priority: 50
+done: 2026-07-24
 
 ## What & why
 

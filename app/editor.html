@@ -16,6 +16,7 @@
 </head>
 <body>
   <div id="root"></div>
+  <script>document.documentElement.classList.add('is-hydrating');document.getElementById('root').setAttribute('aria-busy','true');</script>
   <script type="module" src="/src/editor.entry.tsx"></script>
 </body>
 </html>

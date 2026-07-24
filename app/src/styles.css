@@ -29,6 +29,13 @@ a:focus-visible, button:focus-visible {
   outline-offset: 2px;
 }
 
+/* Pre-hydration guard: the inline script in each page shell adds .is-hydrating
+   only when JS is enabled, so no-JS users keep their (plain <a href>) nav. While
+   set, the root ignores clicks and shows a wait cursor so a first interaction is
+   visibly not-yet-live instead of silently dropped; mount.tsx lifts it on commit. */
+html.is-hydrating { cursor: progress; }
+html.is-hydrating #root { pointer-events: none; }
+
 /* Site shell — shared header/nav/footer on every page. */
 .site-header {
   display: flex;
