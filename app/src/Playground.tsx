@@ -643,6 +643,14 @@ export function Playground() {
     setCopied(false);
     updateDraftAndResetHelpers((current) => ({ ...current, fonts: { ...current.fonts, [which]: value } }));
   };
+  // Pro's explicit light/dark control. Simple derives mode from the darkness
+  // slider; Pro authors the flag directly, and the validation pane then judges bg
+  // against the chosen mode. Exported JSON carries it (VS Code uiTheme, IntelliJ
+  // dark flag).
+  const setThemeMode = (value: 'light' | 'dark') => {
+    setCopied(false);
+    updateDraftAndResetHelpers((current) => ({ ...current, mode: value }));
+  };
 
   const { failures, warnings, contrast } = useMemo(() => {
     const expected = expectedTokens(tokenReference) as string[];
@@ -875,7 +883,7 @@ export function Playground() {
             <div className="gd-slider"><span>Background darkness</span><GaugeSlider
               id="rail-token-bg"
               label="" min={0} max={100} value={choices.darkness}
-              track={`linear-gradient(90deg, ${hslToHex({ ...MOOD_BG[choices.mood], l: 0.94 })}, ${hslToHex({ ...MOOD_BG[choices.mood], l: 0.88 })})`}
+              track={`linear-gradient(90deg, ${hslToHex({ ...MOOD_BG[choices.mood], l: 0.94 })} 0%, ${hslToHex({ ...MOOD_BG[choices.mood], l: 0.82 })} 49%, ${hslToHex({ ...MOOD_BG[choices.mood], l: 0.28 })} 51%, ${hslToHex({ ...MOOD_BG[choices.mood], l: 0.1 })} 100%)`}
               onChange={setDarkness} ariaLabel="Background darkness"
             /></div>
           </fieldset>
@@ -1014,6 +1022,16 @@ export function Playground() {
               <span>ID</span>
               <output className="pg-theme-id">{id}</output>
             </div>
+            {mode === 'pro' && <div className="pg-field">
+              <span>Mode</span>
+              <div className="pg-segmented" role="group" aria-label="Light or dark mode">
+                {(['light', 'dark'] as const).map((themeMode) => (
+                  <label key={themeMode} className={draft.mode === themeMode ? 'gd-mood is-on' : 'gd-mood'}>
+                    <input type="radio" name="theme-mode" aria-label={themeMode} checked={draft.mode === themeMode} onChange={() => setThemeMode(themeMode)} />{themeMode[0].toUpperCase() + themeMode.slice(1)}
+                  </label>
+                ))}
+              </div>
+            </div>}
             <label className="pg-field">Tone
               <input value={mode === 'pro' ? draft.tone : choices.tone} onChange={(e) => mode === 'pro' ? setField('tone', e.target.value) : updateChoiceMetadata({ tone: e.target.value })} />
             </label>

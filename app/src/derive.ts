@@ -65,6 +65,38 @@ export const DEFAULT_CHOICES: GuidedChoices = {
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
+// The darkness slider spans two bands with a deliberate gap across the light/dark
+// boundary at its midpoint: no usable theme has a mid-luminance bg (too light to
+// be dark, too dark to be light — it clears text contrast neither way), so the
+// slider skips ~0.5-0.82 and the palette inverts as darkness crosses 50.
+const LIGHT_BG_MAX = 0.94; // darkness 0   — lightest light
+const LIGHT_BG_MIN = 0.82; // darkness ~50 — dimmest light
+const DARK_BG_MAX = 0.28; // darkness 50  — lightest dark
+const DARK_BG_MIN = 0.1; // darkness 100 — darkest dark
+
+function bgLightnessForDarkness(darkness: number): number {
+  const t = clamp(darkness, 0, 100);
+  return t < 50
+    ? LIGHT_BG_MAX - (LIGHT_BG_MAX - LIGHT_BG_MIN) * (t / 50)
+    : DARK_BG_MAX - (DARK_BG_MAX - DARK_BG_MIN) * ((t - 50) / 50);
+}
+
+// Inverse of bgLightnessForDarkness: recover the slider position from a bg's
+// lightness. A light bg lands in [0,50), a dark bg in [50,100], so Simple entry
+// from a dark theme keeps deriving dark. Muddy imports (bg 0.28-0.82) snap to
+// their band's near-boundary end.
+function darknessForBgLightness(bgLightness: number): number {
+  return bgLightness >= 0.5
+    ? clamp(((LIGHT_BG_MAX - bgLightness) / (LIGHT_BG_MAX - LIGHT_BG_MIN)) * 50, 0, 49)
+    : clamp(50 + ((DARK_BG_MAX - bgLightness) / (DARK_BG_MAX - DARK_BG_MIN)) * 50, 50, 100);
+}
+
+// The explicit light/dark signal a bg carries: below 0.5 lightness is dark. Both
+// backgroundShades bands and deriveTheme read it so mode always matches the bg.
+export function modeForBg(bgHex: string): 'light' | 'dark' {
+  return hexToHsl(bgHex).l < 0.5 ? 'dark' : 'light';
+}
+
 function hueDistance(first: number, second: number): number {
   const distance = Math.abs(first - second) % 360;
   return Math.min(distance, 360 - distance) / 180;
@@ -94,7 +126,7 @@ export function deriveChoices(draft: Theme): GuidedChoices {
     description: draft.description,
     fonts: { ...draft.fonts },
     mood,
-    darkness: clamp(((0.94 - background.l) / 0.06) * 100, 0, 100),
+    darkness: darknessForBgLightness(background.l),
     accentHues: Object.fromEntries(
       SYNTAX_TOKENS.map((token) => [token, hueOf(token, DEFAULT_CHOICES.accentHues[token])]),
     ) as Record<SyntaxToken, number>,
@@ -135,12 +167,26 @@ const BACKGROUND_TOKENS: BackgroundToken[] = [
 // Shared by deriveTheme (wholesale) and applyBackground (targeted Simple edit).
 function backgroundShades(mood: Mood, darkness: number): Record<BackgroundToken, string> {
   const base = MOOD_BG[mood];
-  const t = clamp(darkness, 0, 100) / 100;
-  // Ceiling kept off pure white so surface (bgL + 0.03) has headroom and never
-  // rounds to the same/lighter luminance as bg near white.
-  const bgL = 0.94 - 0.06 * t;
+  const bgL = bgLightnessForDarkness(darkness);
   // Mood-tinted shade at lightness l; sMul lets ink/selection carry a touch more tint.
   const shade = (l: number, sMul = 1) => hslToHex({ h: base.h, s: clamp(base.s * sMul, 0, 1), l: clamp(l, 0, 1) });
+  // Dark inverts the light scale's relationships (per the shipped dark themes):
+  // surface stays the lighter of the two, but border/selection/lineHighlight sit
+  // ABOVE bg and ink becomes light. Seeds are refined by the foreground fitter, so
+  // they only need the right side of the contrast floors.
+  if (bgL < 0.5) {
+    return {
+      bg: shade(bgL),
+      surface: shade(bgL + 0.03),
+      border: shade(bgL + 0.12),
+      ink: shade(0.8, 1.1),
+      ink2: shade(0.55),
+      faint: shade(0.58),
+      selection: shade(bgL + 0.14, 1.6),
+      cursor: shade(0.8, 1.1),
+      lineHighlight: shade(bgL + 0.06, 1.2),
+    };
+  }
   return {
     bg: shade(bgL),
     surface: shade(bgL + 0.03),
@@ -164,8 +210,14 @@ function backgroundShades(mood: Mood, darkness: number): Record<BackgroundToken,
 // foregrounds against the new bg. Accents and diagnostics keep their hexes.
 export function applyBackground(draft: Theme, mood: Mood, darkness: number): Theme {
   const expected = expectedTokens(tokenReference) as ColorToken[];
-  const work: Theme = { ...draft, colors: { ...draft.colors, ...backgroundShades(mood, darkness) } };
-  const fitSet = BACKGROUND_TOKENS.filter((token) => token !== 'bg' && token !== 'surface');
+  const shades = backgroundShades(mood, darkness);
+  const mode = modeForBg(shades.bg);
+  const work: Theme = { ...draft, mode, colors: { ...draft.colors, ...shades } };
+  // A light<->dark flip inverts the whole palette — a light-fitted accent can't
+  // render on a dark bg — so refit every foreground. A same-mode darkness nudge
+  // keeps task 048's promise: only the background-owned UI tokens move.
+  const flipped = mode !== draft.mode;
+  const fitSet = (flipped ? expected : BACKGROUND_TOKENS).filter((token) => token !== 'bg' && token !== 'surface');
   for (let pass = 0; pass < 2; pass++) {
     for (const token of fitSet) work.colors[token] = fitLightness(work, token, expected);
   }
@@ -219,7 +271,7 @@ export function deriveTheme(choices: GuidedChoices): Theme {
     name: choices.name,
     tone: choices.tone,
     tags: [choices.tone],
-    mode: 'light',
+    mode: modeForBg(colors.bg),
     description: choices.description,
     fonts: choices.fonts,
     colors,

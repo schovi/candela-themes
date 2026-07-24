@@ -34,7 +34,13 @@ export function fitLightness(work: Theme, token: ColorToken, expected: ColorToke
   let best = original;
   let bestFails = Infinity;
   let bestDistance = Infinity;
-  for (let step = 0; step <= LIGHTNESS_STEPS; step++) {
+  // bg must land on the side of 0.5 its declared mode requires. This is what makes
+  // Auto-fix move a dark-bg/light-mode conflict toward the user's mode (darken when
+  // mode says dark) instead of always lightening bg back to satisfy light. Steps
+  // 49/51 keep bg off exactly 0.5, which satisfies neither mode.
+  const loStep = token === 'bg' && work.mode === 'light' ? 51 : 0;
+  const hiStep = token === 'bg' && work.mode === 'dark' ? 49 : LIGHTNESS_STEPS;
+  for (let step = loStep; step <= hiStep; step++) {
     const l = step / LIGHTNESS_STEPS;
     const candidate = hslToHex({ h, s, l });
     work.colors[token] = candidate;

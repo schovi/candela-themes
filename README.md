@@ -272,8 +272,10 @@ what a pull request needs live in [`CONTRIBUTING.md`](.github/CONTRIBUTING.md). 
 [`AGENTS.md`](AGENTS.md) for the token roles and the design invariants to preserve.
 
 To preview every theme, run the explorer (`npm run app`): `/` introduces Candela,
-`/themes` is the filterable gallery, and `/editor` creates or customizes a theme with
-Simple and Pro controls over one browser-local draft. The editor runs the same
+`/themes` is the filterable gallery, and `/editor` creates or customizes a light or
+dark theme with Simple and Pro controls over one browser-local draft (in Simple the
+background-darkness slider crosses into dark past its midpoint; Pro sets the mode
+directly). The editor runs the same
 invariants as `scripts/validate.js` (shared code in `lib/`), so **Copy theme JSON**
 stays disabled until every hard rule passes; paste the result into a new `themes[]`
 entry and it clears `node scripts/validate.js` as-is.

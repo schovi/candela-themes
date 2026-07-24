@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "tsc && vite build && node scripts/prerender.mjs",
     "preview": "vite preview",
-    "test": "node --experimental-strip-types --test src/ruleMessages.test.ts",
+    "test": "node scripts/run-tests.mjs",
     "screenshots": "node ../scripts/screenshots.mjs"
   },
   "dependencies": {

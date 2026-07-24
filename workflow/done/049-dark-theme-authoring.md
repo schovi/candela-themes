@@ -1,6 +1,6 @@
 # 049 — Dark theme authoring in both editor modes
 
-priority: 20
+done: 2026-07-24
 depends: 048
 
 ## What & why
