@@ -1,0 +1,30 @@
+name: Theme or format request
+description: Suggest a new theme, a new tool/format, or a tweak to an existing theme.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        New themes are added to `themes/candela-themes.json`; new tool/formats are added
+        to `lib/emitters.js`. Describe what you want and why.
+  - type: dropdown
+    id: request-type
+    attributes:
+      label: Request type
+      options:
+        - New theme
+        - New tool/format
+        - Tweak to an existing theme
+        - Other
+  - type: textarea
+    id: what-and-why
+    attributes:
+      label: What and why
+      description: What are you asking for, and what problem does it solve?
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References or examples
+      description: Links, screenshots, or examples (optional).

@@ -112,3 +112,29 @@ ids. Bare `candela` for the product was rejected: the VS Code listing would stut
 single-word ids collide more easily, for no real gain. Display name is **"Candela Themes"**
 everywhere (dropped "Candela Light Themes" — inaccurate now that 2 dark themes ship).
 Settled before first publish, while every marketplace id is still mutable.
+
+## D8 — `main` branch protection deferred; a user repo can't grant Actions a ruleset bypass (2026-07-24)
+
+**Problem.** Task 046 asked to protect `main` (require PRs, the `validate-and-build`
+check, resolved conversations, linear history, no force-push/deletion) while letting
+**only** the GitHub Actions actor bypass, so the CI-driven release push (bump commit +
+tag straight to `main`) keeps working.
+
+**Options.** (A) Ruleset on `main` with a GitHub Actions bypass actor — the spec's
+intent. (B) Ruleset on `main` with no bypass — protects `main` but breaks the release
+push. (C) Defer `main` protection until a bypass path exists.
+
+**Choice.** C. The GitHub Actions bypass (`actor_type: "Integration"`, app id 15368)
+is rejected on this repo: `422 "Actor GitHub Actions integration must be part of the
+ruleset source or owner organization"`. On a **user-owned** (non-org) repo there is no
+native way to grant the release token a ruleset bypass, and no other native actor
+covers the `github-actions[bot]` push. Option B was rejected because breaking the
+documented CI release contract is worse than an unprotected `main`. Everything else in
+046 ships: the `v*` **tag** ruleset (blocks tag update/deletion), the `marketplace`
+environment (approval, `v*` tag policy, no admin bypass), Actions allowlist + SHA
+pinning, Dependabot/CodeQL/private reporting, and the community entry points. To finish
+`main` protection later, pick one: move the repo into an org (then the Actions bypass
+works), switch to a release-PR model, or push releases with a fine-grained PAT added as
+an admin bypass actor. Related: **immutable releases** has no stable REST endpoint on
+this account — enable it once in repo Settings by hand; the tag ruleset already covers
+tag immutability.

@@ -3,6 +3,10 @@
 # protected `marketplace` environment — so credentials are never reachable from
 # ordinary PR/branch/tag CI, and a maintainer must approve each run.
 #
+# Dispatch this against the release tag itself, so github.ref IS the tag and the
+# marketplace environment's `v*` tag policy actually gates the run:
+#   gh workflow run publish-marketplaces.yml --ref vX.Y.Z -f vscode=true
+#
 # Zed and Sublime Package Control have no non-interactive publisher; their
 # submissions/updates stay manual (see docs/release-runbook.md).
 name: Publish to marketplaces
@@ -10,9 +14,6 @@ name: Publish to marketplaces
 on:
   workflow_dispatch:
     inputs:
-      ref:
-        description: Release tag to publish (e.g. v0.1.0)
-        required: true
       vscode:
         description: Publish to VS Code Marketplace
         type: boolean
@@ -35,10 +36,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: marketplace
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.ref }}
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
       - run: npm ci
@@ -53,10 +52,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: marketplace
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.ref }}
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
       - run: npm ci
@@ -64,24 +61,22 @@ jobs:
       - name: ovsx publish
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
-        run: npx --yes ovsx publish "$(ls dist/candela-themes-*.vsix)" -p "$OVSX_PAT"
+        run: node_modules/.bin/ovsx publish "$(ls dist/candela-themes-*.vsix)" -p "$OVSX_PAT"
 
   jetbrains:
     if: ${{ inputs.jetbrains }}
     runs-on: ubuntu-latest
     environment: marketplace
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.ref }}
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
         with:
           distribution: temurin
           java-version: '17'
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
         with:
           gradle-version: '9.0.0'
       - run: npm ci

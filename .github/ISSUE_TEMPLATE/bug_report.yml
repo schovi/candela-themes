@@ -1,0 +1,52 @@
+name: Bug report
+description: Report something wrong with a theme, a generated package, or the explorer.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Please fill in what you can so the problem is easy to reproduce.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What went wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect instead?
+    validations:
+      required: true
+  - type: input
+    id: themes
+    attributes:
+      label: Which theme(s)
+      description: The affected theme name(s), if applicable.
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where
+      description: Where did you hit this?
+      options:
+        - VS Code
+        - JetBrains
+        - Zed
+        - Sublime
+        - Neovim
+        - Helix
+        - a terminal
+        - the web explorer
+        - other
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      description: Release version or commit SHA.
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps to trigger the problem.

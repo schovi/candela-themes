@@ -266,31 +266,17 @@ filesystem shell, while the browser editor calls the same emitters for downloads
 
 ## Contributing / extending
 
-`themes/candela-themes.json` is the single source of truth. Run `npm run build` to
-regenerate `build/` and `npm run validate` to check the design rules. Read
-[`AGENTS.md`](AGENTS.md) for the token roles and the rules to preserve when you
-add or tweak a theme.
+`themes/candela-themes.json` is the single source of truth; `build/` and `dist/` are
+generated and never committed. Local setup, the edit/validate loop, screenshots, and
+what a pull request needs live in [`CONTRIBUTING.md`](.github/CONTRIBUTING.md). Read
+[`AGENTS.md`](AGENTS.md) for the token roles and the design invariants to preserve.
 
-To preview every theme (palette, fonts, sample panes, diagnostics), run the
-explorer. First-time setup installs its deps under `app/`:
-
-```sh
-cd app && npm install && npx playwright install chromium
-```
-
-Then from the repo root, `npm run app` serves the explorer and
-`npm run app:screenshots` regenerates the gallery PNGs. See
-[`docs/screenshots/README.md`](docs/screenshots/README.md).
-
-The static app has three routes: `/` introduces Candela, `/themes` provides the
-filterable gallery, and `/editor` creates or customizes a theme. Gallery cards use
-configurable preview panes, defaulting to terminal, TypeScript, Markdown, and git,
-and link directly into the editor. The editor offers Simple and Pro controls over
-one browser-local draft, validates it, and downloads individual or combined formats.
-
-The editor runs the same invariants as `scripts/validate.js` (shared code in `lib/`), so
-**Copy theme JSON** stays disabled until every hard rule passes. Paste the result
-into a new `themes[]` entry and it clears `node scripts/validate.js` as-is.
+To preview every theme, run the explorer (`npm run app`): `/` introduces Candela,
+`/themes` is the filterable gallery, and `/editor` creates or customizes a theme with
+Simple and Pro controls over one browser-local draft. The editor runs the same
+invariants as `scripts/validate.js` (shared code in `lib/`), so **Copy theme JSON**
+stays disabled until every hard rule passes; paste the result into a new `themes[]`
+entry and it clears `node scripts/validate.js` as-is.
 
 ## Publishing the explorer
 

@@ -71,3 +71,12 @@ the sole maintainer and gives outside contributors a clear path from issue to me
 `docs/release-runbook.md` already records why branch protection needs an Actions bypass.
 When a second active maintainer joins, follow up by requiring one approval and preventing
 self-review of marketplace deployments.
+
+BLOCKER (see D8): `main` branch protection could not be applied. On this user-owned
+(non-org) repo GitHub rejects a GitHub Actions ruleset bypass (`422 "Actor GitHub Actions
+integration must be part of the ruleset source or owner organization"`), so an active
+`main` ruleset would break the CI-driven release push. `main` protection is deferred
+pending a human decision: org migration, release-PR model, or a PAT-based admin bypass.
+Immutable releases has no stable REST endpoint on this account — enable it once in repo
+Settings by hand (the `v*` tag ruleset already blocks tag update/deletion). Everything
+else in the spec is applied.

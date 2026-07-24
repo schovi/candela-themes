@@ -44,12 +44,15 @@ local `main` picks up CI's version-bump commit.
 The version decision (bump or skip) is guided by the `release` skill (`/release`),
 which reasons about whether the changes since the last tag are worth shipping.
 
-> **If you protect `main`:** step 5 pushes the bump commit straight to `main` using
-> the default `GITHUB_TOKEN`, which works only because `main` is currently
-> unprotected. Adding branch protection (required PRs/reviews) will make that push
-> fail. To keep releasing, either allow the Actions bot to bypass protection for this
-> push (a branch-protection carve-out / bypass list), or switch to a release-PR model
-> where CI opens a PR with the bump and merging it triggers the tag + build.
+> **`main` is intentionally unprotected.** Step 5 pushes the bump commit straight to
+> `main` using the default `GITHUB_TOKEN`, which works only because `main` is
+> unprotected. A ruleset requiring PRs would block that push, and on this
+> **user-owned** repo GitHub Actions cannot be granted a ruleset bypass (bypass actors
+> must belong to an owning organization). Branch protection is therefore deferred (see
+> D8 in [`docs/decisions.md`](decisions.md)); enabling it needs one of: moving the repo
+> into an org (the Actions bypass then works), a release-PR model where merging a bump
+> PR triggers the tag + build, or a fine-grained PAT with an admin bypass. Release tags
+> (`v*`) and the `marketplace` environment are protected regardless (below).
 
 ### Local dry run (optional)
 
@@ -78,8 +81,12 @@ D6 in [`docs/decisions.md`](decisions.md)).
 The `Publish to marketplaces` workflow (`.github/workflows/publish-marketplaces.yml`)
 is `workflow_dispatch`-only and every job runs in the protected `marketplace`
 GitHub environment. Ordinary PR/branch/tag CI cannot read the credentials, and a
-maintainer approves each run. Dispatch it with the release tag and toggle the
-targets to publish.
+maintainer approves each run. Dispatch it **against the release tag itself**, so
+`github.ref` is the tag and the environment's `v*` tag policy actually gates the run:
+
+```sh
+gh workflow run publish-marketplaces.yml --ref vX.Y.Z -f vscode=true
+```
 
 Secrets live on the `marketplace` environment:
 
@@ -90,8 +97,10 @@ Secrets live on the `marketplace` environment:
 | `JETBRAINS_TOKEN` | JetBrains | Marketplace **permanent** token |
 | `JETBRAINS_PLUGIN_ID` | JetBrains | numeric plugin id assigned at first upload |
 
-Configure the environment once: repo **Settings → Environments → New environment →
-`marketplace`**, add **Required reviewers**, then add the secrets above.
+The `marketplace` environment is already configured: it requires the sole
+maintainer's approval, permits self-review (one maintainer), forbids administrative
+bypass, and its deployment policy accepts only `v*` tags. Only the secrets above still
+need adding: repo **Settings → Environments → `marketplace`** → add each secret.
 
 ## First submissions
 
