@@ -1,6 +1,6 @@
 # 050 — Retune Sepia Paper to six distinct accent hues
 
-priority: 30
+done: 2026-07-24
 
 ## What & why
 
