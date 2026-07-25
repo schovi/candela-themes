@@ -31,21 +31,30 @@ so even a surface that cuts mid-string cuts after a whole sentence.
 
 ---
 
-## Paste-ready full description
+## Nothing here is pasted by hand
 
-Don't retype it. Run `npm run build` and paste the generated file — it already has
-the copy, the hero, the "Why Candela" block, the previews, and the per-tool install
-steps:
+Every store reads its copy from the packaged artifact, so a copy change reaches all
+of them through a normal release — never through a web form. See
+[`release-runbook.md`](release-runbook.md).
 
-| Target | Paste from |
-| --- | --- |
-| VS Code Marketplace, Open VSX | `build/vscode/README.md` |
-| Sublime / Package Control | `build/sublime/README.md` |
-| Neovim | `build/nvim/README.md` |
-| JetBrains detail page | `build/intellij/src/main/resources/META-INF/plugin.xml` `<description>` (HTML, not Markdown) |
-| Zed | `build/zed/extension.toml` `description` |
+| Store | Copy comes from | Reaches the store via |
+| --- | --- | --- |
+| VS Code, Open VSX | `build/vscode/package.json` + `README.md` | the `.vsix`, `Publish to marketplaces` |
+| JetBrains | `plugin.xml` `<description>` (HTML, not Markdown) | plugin upload, `Publish to marketplaces` |
+| Zed | `build/zed/extension.toml` `description` | `candela-themes-zed` dist repo + version-bump PR |
+| Sublime / Package Control | `build/sublime/README.md` | tags on the `candela-themes-sublime` dist repo |
+| Neovim, Helix, terminals | `build/nvim/README.md` and friends | GitHub Releases |
 
-For a web form that only takes a short field, use `SUMMARY`.
+The Package Control channel entry points at the dist repo with `"tags": true`; it
+holds no description of its own.
+
+To read a variant out for the rare hand-typed spot (the GitHub repo description, a
+social post), print it rather than retyping:
+
+```sh
+node -p "require('./lib/copy.js').SUMMARY"
+node -p "require('./lib/copy.js').DESCRIPTION"
+```
 
 ---
 

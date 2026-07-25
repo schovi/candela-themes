@@ -1,6 +1,6 @@
 # 045 — Unify and polish Candela copy across every read surface
 
-priority: 20
+done: 2026-07-25
 
 ## What & why
 
@@ -86,16 +86,21 @@ normal release.
 - `python3 -m json.tool themes/candela-themes.json > /dev/null`, `node
   scripts/validate.js`, `npm run build`, and `cd app && npm ci && npm run build` all pass.
 - The GitHub repo description and topics match the new copy (`gh repo view`).
-- The remaining web-form surfaces are applied by hand and confirmed by the user before
-  this task moves to `done/`.
+- ~~The remaining web-form surfaces are applied by hand and confirmed by the user before
+  this task moves to `done/`.~~ **Void — the premise was wrong.** No store carries
+  hand-typed copy: every listing reads it from the packaged artifact, so the new copy
+  reaches all of them through the normal `Release` + `Publish to marketplaces` flow.
 
 ## Notes
 
 - Decided at groom: one module with length variants (not per-surface copy, not a single
   string); comfort-first mode-neutral voice retiring "Light, measured for tired eyes.";
   automated length gates in validation; single task covering external surfaces too.
-- The last criterion is deliberately not repo-verifiable. `/work` finishes every repo-side
-  criterion, then hands over a paste-ready block for the JetBrains and Open VSX forms and
-  the Package Control channel PR; the task stays in `in-progress/` until the user confirms.
+- Groom assumed the JetBrains / Open VSX / Package Control listings needed hand-editing.
+  They don't — see `docs/marketplace-listing.md`. The copy ships to every store from the
+  packaged artifact, so this task ends in the repo and the stores update on the next
+  release. Zed's per-release version-bump PR carries no copy.
+- Zed's `extension.toml` gets `SUMMARY`, not `TAGLINE` as the spec said: `TAGLINE` is the
+  evocative brand line and reads poorly as a store description.
 - The voice change retires a brand line, so it is worth a `D9` entry in
   `docs/decisions.md`.
