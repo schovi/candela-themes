@@ -690,6 +690,15 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
 .vision-filter-definitions { position: absolute; width: 0; height: 0; overflow: hidden; }
 .vision-control { min-width: 0; margin: 0; padding: 0; border: 0; }
 .theme-judgement { display: flex; flex-direction: column; gap: 0; }
+
+/* Fixed-height screenshots (ShotView ?fill=1): the card fills the whole frame so
+   no page background shows below a short card, and the panes stretch to fill the
+   remaining height as tall editor windows instead of leaving dead space. */
+:root[data-shot-fill="1"] .theme-card { min-height: 100vh; box-sizing: border-box; display: flex; }
+:root[data-shot-fill="1"] .card-inner { display: flex; flex-direction: column; width: 100%; }
+:root[data-shot-fill="1"] .theme-judgement { flex: 1; }
+:root[data-shot-fill="1"] .samples { flex: 1; grid-auto-rows: 1fr; }
+:root[data-shot-fill="1"] .samples .pane { height: 100%; }
 .pg-ok { margin: 0; color: #2e7d32; font-weight: 600; }
 .pg-fails { color: #b5341f; }
 .pg-fails-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }

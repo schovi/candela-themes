@@ -11,6 +11,15 @@ const params = new URLSearchParams(window.location.search);
 mountOrHydrate(
   document.getElementById('root')!,
   <StrictMode>
-    {params.get('shot') === '1' ? <ShotView id={params.get('theme') ?? ''} /> : <Home />}
+    {params.get('shot') === '1' ? (
+      <ShotView
+        id={params.get('theme') ?? ''}
+        panes={params.get('panes')}
+        fill={params.get('fill') === '1'}
+        meta={params.get('meta') !== '0'}
+      />
+    ) : (
+      <Home />
+    )}
   </StrictMode>,
 );

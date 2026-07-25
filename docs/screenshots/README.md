@@ -1,7 +1,8 @@
 # Screenshots
 
-Gallery images for the root `README.md`, one per theme: `candela-<NN>-<id>.png`
-where `NN` is the 1-based theme order (e.g. `candela-01-sepia-paper.png`). Each is one theme rendered by the explorer app
+Gallery images for the root `README.md` live in `examples/`, one per theme:
+`candela-<NN>-<id>.png` where `NN` is the 1-based theme order (e.g.
+`candela-01-sepia-paper.png`). Each is one theme rendered by the explorer app
 (`app/`) across the four default panes — terminal, TypeScript (with an inline
 problem), Markdown, and git. The PNGs are committed.
 
@@ -15,7 +16,8 @@ once its fonts load):
 cd app
 npm install                     # first time
 npx playwright install chromium # first time
-npm run screenshots             # writes docs/screenshots/candela-<NN>-<id>.png for all themes
+# writes docs/screenshots/examples/candela-<NN>-<id>.png for all themes
+npm run screenshots -- --out=docs/screenshots/examples
 ```
 
 `scripts/screenshots.mjs` starts the app's dev server, iterates the theme ids
