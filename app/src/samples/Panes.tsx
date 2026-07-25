@@ -124,13 +124,14 @@ function Markdown() {
         }}
       >
         <h1 style={{ margin: '0 0 12px', font: '600 25px/1.2 var(--prose-font), system-ui, sans-serif', color: 'var(--ink)', letterSpacing: '-0.01em' }}>
-          Candela Light
+          Candela
         </h1>
         <p style={{ margin: '0 0 14px' }}>
-          A <strong style={{ color: 'var(--ink)', fontWeight: 700 }}>low-glare</strong> light theme for tired, prescription-wearing eyes.
+          A <strong style={{ color: 'var(--ink)', fontWeight: 700 }}>low-glare</strong> theme for tired, prescription-wearing eyes.
         </p>
         <ul style={{ margin: '0 0 14px', paddingLeft: 20 }}>
-          <li style={{ marginBottom: 4 }}>Soft, off-white paper background</li>
+          {/* Mode-neutral: this pane renders inside the dark themes too. */}
+          <li style={{ marginBottom: 4 }}>Never pure white, never pure black</li>
           <li>Desaturated <a href="#" data-token="fn" style={{ color: 'var(--fn)', textDecoration: 'underline', textUnderlineOffset: 2 }}>pastel syntax</a></li>
         </ul>
         <blockquote style={{ margin: '0 0 14px', padding: '6px 14px', borderLeft: '3px solid var(--fn)', color: 'var(--ink2)', fontStyle: 'italic' }}>

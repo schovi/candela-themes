@@ -18,7 +18,7 @@
     "package:zed": "node scripts/package-zed.js",
     "package:vscode": "node scripts/package-vscode.js",
     "app": "cd app && npm run dev",
-    "app:screenshots": "cd app && npm run screenshots"
+    "app:screenshots": "cd app && npm run screenshots -- --out=docs/screenshots/examples"
   },
   "devDependencies": {
     "@vscode/vsce": "^3.2.0",

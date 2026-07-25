@@ -31,6 +31,10 @@ const COPY_FILES = [
   'app/editor.html',
   'app/src/Home.tsx',
   'app/src/SiteShell.tsx',
+  // The sample README pane is rendered into every committed screenshot and every
+  // gallery card, so its prose is marketplace copy — it shipped "Candela Light"
+  // onto the JetBrains listing, on the dark themes included.
+  'app/src/samples/Panes.tsx',
 ];
 
 // The tagline's signature phrase. Any app source spelling it out is a second copy
@@ -40,6 +44,12 @@ const TAGLINE_PHRASE = /for tired eyes/i;
 const TAGLINE_SCANNED = ['app/src/Home.tsx', 'app/src/SiteShell.tsx'];
 
 const readCopyFile = (rel) => fs.readFileSync(path.join(ROOT, rel), 'utf8');
+
+// Comments are not copy a user ever reads, and counting them defeats the checks
+// below — a `{/* ...dark... */}` note was enough to mask a light-only claim in the
+// prose beside it. Block comments only; stripping `//` would eat URLs.
+const withoutComments = (text) =>
+  text.replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\*[\s\S]*?\*\//g, '').replace(/<!--[\s\S]*?-->/g, '');
 
 // Pull one attribute value out of the static HTML. Deliberately not a parser:
 // these are three hand-written lines in a file we control.
@@ -75,10 +85,16 @@ function checkCopy() {
   }
 
   for (const rel of COPY_FILES) {
-    const text = readCopyFile(rel);
+    const text = withoutComments(readCopyFile(rel));
     const counts = text.match(new RegExp(copy.THEME_COUNT_PATTERN.source, 'gi')) || [];
     for (const hit of new Set(counts)) {
       failures.push(`copy: ${rel} hard-codes a theme count ("${hit.trim()}")`);
+    }
+    // File-level mode balance, the same rule the copy.js strings get: a surface
+    // that describes Candela as "light" must also name the dark companions, or
+    // it is a light-only claim. Catches prose no title/count regex can see.
+    if (/\blight\b/i.test(text) && !/\bdark\b/i.test(text)) {
+      failures.push(`copy: ${rel} describes Candela as light without naming dark`);
     }
     // Page titles are the loudest place a light-only claim hides.
     const titles = [

@@ -278,8 +278,12 @@ html.is-hydrating #root { pointer-events: none; }
   font-size: 15px;
   line-height: 1.5;
   color: var(--ink2);
-  max-width: 680px;
+  /* Descriptions run ~100-215 chars. 680px wrapped even the short ones and left a
+     single word stranded in the screenshots; this fits most on one line and lets
+     balancing even out the long ones instead of orphaning a word. */
+  max-width: 1000px;
   font-family: var(--prose-font), system-ui, sans-serif;
+  text-wrap: balance;
 }
 .swatches {
   display: flex;
