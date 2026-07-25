@@ -22,8 +22,22 @@ const SOURCE = path.join(ROOT, 'themes/candela-themes.json');
 
 // Files whose human-read copy must stay count-free and mode-neutral. Excludes
 // docs/marketplace-listing.md, which quotes "14 light, 2 dark" as the example of
-// what not to write.
-const COPY_FILES = ['README.md', 'app/index.html', 'app/themes.html', 'app/editor.html'];
+// what not to write. The .tsx files are here because the site footer once
+// hard-coded its own light-only tagline where an HTML-only scan couldn't see it.
+const COPY_FILES = [
+  'README.md',
+  'app/index.html',
+  'app/themes.html',
+  'app/editor.html',
+  'app/src/Home.tsx',
+  'app/src/SiteShell.tsx',
+];
+
+// The tagline's signature phrase. Any app source spelling it out is a second copy
+// of the brand line that lib/copy.js can no longer govern — import TAGLINE
+// instead. Scoped to app sources: README legitimately carries TAGLINE verbatim.
+const TAGLINE_PHRASE = /for tired eyes/i;
+const TAGLINE_SCANNED = ['app/src/Home.tsx', 'app/src/SiteShell.tsx'];
 
 const readCopyFile = (rel) => fs.readFileSync(path.join(ROOT, rel), 'utf8');
 
@@ -91,6 +105,11 @@ function checkCopy() {
   }
   if (!readCopyFile('README.md').includes(copy.TAGLINE)) {
     failures.push('copy: README.md no longer carries the TAGLINE from lib/copy.js');
+  }
+  for (const rel of TAGLINE_SCANNED) {
+    if (TAGLINE_PHRASE.test(readCopyFile(rel))) {
+      failures.push(`copy: ${rel} spells out the tagline — import TAGLINE from lib/copy.js instead`);
+    }
   }
 
   return failures;

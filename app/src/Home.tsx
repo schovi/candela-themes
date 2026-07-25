@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { SiteShell } from './SiteShell';
 import { brand } from './branding';
-import { themes, lightThemes, darkThemes, themeVars, type Theme } from './themes';
+import { themes, themeVars, type Theme } from './themes';
 import { SamplePanes } from './samples/Panes';
 
 const REPO = 'https://github.com/schovi/candela-themes';
@@ -79,9 +79,9 @@ export function Home() {
         <div className="hero-copy">
           <h1 className="home-h1">{brand.tagline}</h1>
           <p className="home-body">
-            {lightThemes.length} light and {darkThemes.length} dark themes for terminals and
-            editors, tuned so you can read code all day — without the glare of pure white or
-            the harshness of pure black.
+            A family of light schemes for terminals and editors, plus dark companions, tuned
+            so you can read code all day — without the glare of pure white or the harshness
+            of pure black.
           </p>
           <div className="hero-ctas">
             <a className="hero-cta" href="/themes">Browse the gallery</a>
@@ -124,7 +124,7 @@ export function Home() {
       </section>
 
       <section className="theme-index">
-        <h2 className="home-h2">All {themes.length} themes</h2>
+        <h2 className="home-h2">Every theme</h2>
         <div className="home-grid">
           {themes.map((t) => (
             <ThemeIndexCard key={t.id} theme={t} />

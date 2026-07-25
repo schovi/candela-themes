@@ -55,7 +55,7 @@ export function SiteShell({ page, children }: { page: Page; children: ReactNode 
       </header>
       <main className="site-main">{children}</main>
       <footer className="site-footer">
-        <span>{brand.name} — light themes for tired eyes.</span>
+        <span>{brand.name} — {brand.tagline}</span>
       </footer>
     </div>
   );
