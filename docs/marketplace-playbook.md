@@ -103,6 +103,9 @@ Ongoing: re-run the workflow with `vscode` checked each release. Versions can't 
 The open registry used by VSCodium, Cursor, Gitpod and other non-Microsoft editors —
 same `.vsix` as VS Code.
 
+> Namespace `candela` claimed via
+> <https://github.com/EclipseFdn/open-vsx.org/issues/12041> — step 4 is done.
+
 1. Sign in at <https://open-vsx.org> with an **Eclipse account** (create one if needed).
 2. Sign the **Eclipse Publisher Agreement** — your profile prompts for it on first login.
 3. Generate an access token (Profile → **Access Tokens**); it's shown once. Store it as

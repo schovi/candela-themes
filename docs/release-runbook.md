@@ -126,6 +126,9 @@ exact secret names follow here.
 
 ### Open VSX
 
+> Namespace `candela` claimed via
+> <https://github.com/EclipseFdn/open-vsx.org/issues/12041> — step 3 is done.
+
 1. Sign in at <https://open-vsx.org> with an Eclipse account and sign the publisher
    agreement.
 2. Generate an access token (shown once) → `OVSX_PAT`.
