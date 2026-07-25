@@ -39,8 +39,8 @@ of them through a normal release — never through a web form. See
 
 | Store | Copy comes from | Reaches the store via |
 | --- | --- | --- |
-| VS Code, Open VSX | `build/vscode/package.json` + `README.md` | the `.vsix`, `Publish to marketplaces` |
-| JetBrains | `plugin.xml` `<description>` (HTML, not Markdown) | plugin upload, `Publish to marketplaces` |
+| VS Code, Open VSX | `build/vscode/package.json` + `README.md` | the `.vsix`, `Publish` |
+| JetBrains | `plugin.xml` `<description>` (HTML, not Markdown) | plugin upload, `Publish` |
 | Zed | `build/zed/extension.toml` `description` | `candela-themes-zed` dist repo + version-bump PR |
 | Sublime / Package Control | `build/sublime/README.md` | tags on the `candela-themes-sublime` dist repo |
 | Neovim, Helix, terminals | `build/nvim/README.md` and friends | GitHub Releases |

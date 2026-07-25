@@ -5,8 +5,9 @@ description: >
   decide whether a release is warranted, choose the semver bump, dispatch the
   CI release workflow, watch it, and verify the published assets. Use when the
   user says "/release", "cut a release", "publish a new version", "ship a
-  version", or "release the themes". Does NOT publish to editor marketplaces —
-  that is a separate, credentialed, manually-gated step (see
+  version", or "release the themes". The release also chains delivery to every
+  channel (dist repos + editor marketplaces); the irreversible store publishes
+  wait on a maintainer approving the `marketplace` environment gate (see
   docs/release-runbook.md). Project-specific; only meaningful in the
   candela-themes repo.
 ---
@@ -23,10 +24,18 @@ CI validates, creates an unpushed version commit and tag, builds every package a
 that version, then pushes and publishes the GitHub Release. A failed build leaves
 no remote commit or tag. Nothing is built or tagged on your machine.
 
-**Out of scope:** publishing to VS Code / Open VSX / JetBrains / Zed / Sublime.
-Those need credentials and one-time store registration, run through the separate
-`Publish to marketplaces` workflow, and are documented in `docs/release-runbook.md`.
-This skill stops at the GitHub Release and points the user there.
+**Delivery is chained, not separate.** The `release` job is followed by a `publish`
+job that calls `.github/workflows/publish.yml` at the new tag. That workflow syncs
+the Zed + Sublime dist repos immediately, and queues VS Code / Open VSX / JetBrains
+behind the protected `marketplace` environment — those three are irreversible
+(a published version number can never be reused), so a maintainer must approve them
+in the GitHub UI. A store with no credential secret configured warns and skips
+instead of failing the run.
+
+**Your job here** is the version decision and getting a green GitHub Release. You
+do **not** dispatch a second workflow: you tell the user the approval gate is
+waiting, and that Zed's registry still needs its manual submodule-bump PR
+(`docs/release-runbook.md`).
 
 ## Model (read first)
 
@@ -91,6 +100,10 @@ gh workflow run release.yml -f bump=<patch|minor|major> --ref main
 
 (Or the GitHub UI → Actions → Release → Run workflow → pick the bump, branch `main`.)
 
+Delivery to every channel is on by default. Add `-f publish=false` only when the
+user explicitly wants a tag without shipping it (a rehearsal, or a version they
+intend to supersede immediately).
+
 ## 6. Watch CI and verify
 
 ```sh
@@ -99,11 +112,19 @@ RUN=$(gh run list --workflow=release.yml --limit 1 --json databaseId -q '.[0].da
 gh run watch "$RUN" --exit-status      # capture ITS exit code directly
 ```
 
+`gh run watch` will sit on the `publish` job's marketplace gate until a human
+approves it — that pause is expected, not a hang. The GitHub Release itself is
+already complete at that point, so verify it (below) rather than waiting.
+
 Do **not** chain a trailing command after `gh run watch` that masks its exit status.
 
 - **On failure:** `gh run view "$RUN" --log-failed`, diagnose the root cause, fix,
   commit, push to `main`, then re-dispatch (step 5). No release commit or tag was
-  pushed, so there is nothing to unwind.
+  pushed, so there is nothing to unwind. **Unless the failure is in the `publish`
+  job** — by then the tag and Release are live and must not be re-cut. Fix the
+  cause and re-dispatch only the failed channel against the tag:
+  `gh workflow run publish.yml --ref vX.Y.Z -f <channel>=true` with the others
+  `=false`.
 - **On success:** confirm the Release is real and complete:
   ```sh
   V=$(node -p "require('./package.json').version")   # after: git pull, to see CI's bump
@@ -117,9 +138,12 @@ Do **not** chain a trailing command after `gh run watch` that masks its exit sta
 
 - Release URL, the asset list, the version chosen and why, and what changed since the
   last tag.
-- Remind the user that marketplace publishing is separate and manual: dispatch the
-  `Publish to marketplaces` workflow after the one-time store registration
-  (`docs/release-runbook.md`).
+- State the delivery status: dist repos synced automatically; VS Code / Open VSX /
+  JetBrains are **waiting on the maintainer's approval** of the `marketplace`
+  environment gate (link the run). Name any channel that warn-skipped for a missing
+  secret.
+- Remaining manual step: the Zed submodule + `version` bump PR to
+  `zed-industries/extensions` (`docs/release-runbook.md`). Sublime needs nothing.
 
 ## Delegation
 

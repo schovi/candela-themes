@@ -1,0 +1,187 @@
+# Deliver one released version to every downstream channel.
+#
+# Runs two ways:
+#
+#   automatically — release.yml calls this workflow as its final job, so a
+#                   release ships everywhere by default. That is the point: one
+#                   dispatch delivers the change to every channel, instead of
+#                   leaving the stores silently lagging behind the tag.
+#   manually      — `gh workflow run publish.yml --ref vX.Y.Z -f jetbrains=true`
+#                   to retry a single channel that failed, or to backfill a store
+#                   registered after the tag was cut. Uncheck what you don't want.
+#
+# Channels are split across jobs by how reversible they are, not by tool:
+#
+#   dist-repos        git pushes to our own Zed/Sublime distribution repos.
+#                     Reversible, no third-party account — no environment, no
+#                     approval, runs immediately.
+#   vscode / openvsx  publishes to third-party registries. A version number, once
+#   / jetbrains       taken, can never be reused or unpublished. Each runs in the
+#                     protected `marketplace` environment, so its credentials are
+#                     unreachable from ordinary PR/branch CI and a maintainer must
+#                     approve every run.
+#
+# Every channel defaults to `true`. A channel whose credential secret is missing
+# logs a warning and skips rather than failing the run, so a not-yet-registered
+# store never turns a good release red.
+#
+# Still manual after this: the per-release PR to zed-industries/extensions bumping
+# the submodule + version. Sublime Package Control picks the dist-repo tag up on
+# its own. See docs/release-runbook.md.
+name: Publish
+
+on:
+  workflow_call:
+    inputs:
+      # Callers run on a branch, but the artifacts must be built from the tag —
+      # otherwise a release would publish the pre-bump version. release.yml
+      # passes the tag it just pushed.
+      ref:
+        description: Git ref to build and publish from (defaults to this run's ref)
+        type: string
+        default: ''
+      dist_repos:
+        description: Sync the Zed + Sublime distribution repos
+        type: boolean
+        default: true
+      vscode:
+        description: Publish to VS Code Marketplace
+        type: boolean
+        default: true
+      openvsx:
+        description: Publish to Open VSX
+        type: boolean
+        default: true
+      jetbrains:
+        description: Publish to JetBrains Marketplace (plugin must already be approved)
+        type: boolean
+        default: true
+
+  workflow_dispatch:
+    inputs:
+      dist_repos:
+        description: Sync the Zed + Sublime distribution repos
+        type: boolean
+        default: true
+      vscode:
+        description: Publish to VS Code Marketplace
+        type: boolean
+        default: true
+      openvsx:
+        description: Publish to Open VSX
+        type: boolean
+        default: true
+      jetbrains:
+        description: Publish to JetBrains Marketplace (plugin must already be approved)
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Reversible: pushes generated Zed/Sublime layouts into our own dist repos and
+  # tags them. No marketplace environment — nothing here is irreversible, and
+  # gating it behind approval would only delay the channels that need no review.
+  dist-repos:
+    if: ${{ inputs.dist_repos }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+      # The generator has zero runtime dependencies, so no npm ci here.
+      - run: npm run build
+      - name: Sync Zed + Sublime extension repos
+        env:
+          DIST_PUSH_TOKEN: ${{ secrets.DIST_PUSH_TOKEN }}
+        run: |
+          if [ -z "$DIST_PUSH_TOKEN" ]; then
+            echo "::warning::DIST_PUSH_TOKEN not set — skipping Zed/Sublime dist-repo sync."
+            exit 0
+          fi
+          node scripts/publish-extension-repos.js
+
+  vscode:
+    if: ${{ inputs.vscode }}
+    runs-on: ubuntu-latest
+    environment: marketplace
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run package:vscode
+      - name: vsce publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          if [ -z "$VSCE_PAT" ]; then
+            echo "::warning::VSCE_PAT not set — skipping VS Code Marketplace publish."
+            exit 0
+          fi
+          node_modules/.bin/vsce publish --packagePath "$(ls dist/candela-themes-*.vsix)"
+
+  openvsx:
+    if: ${{ inputs.openvsx }}
+    runs-on: ubuntu-latest
+    environment: marketplace
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run package:vscode
+      - name: ovsx publish
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          if [ -z "$OVSX_PAT" ]; then
+            echo "::warning::OVSX_PAT not set — skipping Open VSX publish."
+            exit 0
+          fi
+          node_modules/.bin/ovsx publish "$(ls dist/candela-themes-*.vsix)" -p "$OVSX_PAT"
+
+  jetbrains:
+    if: ${{ inputs.jetbrains }}
+    runs-on: ubuntu-latest
+    environment: marketplace
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+      - uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
+        with:
+          gradle-version: '9.0.0'
+      - run: npm ci
+      - run: npm run package:intellij
+      - name: Upload update to JetBrains Marketplace
+        env:
+          JETBRAINS_TOKEN: ${{ secrets.JETBRAINS_TOKEN }}
+          JETBRAINS_PLUGIN_ID: ${{ secrets.JETBRAINS_PLUGIN_ID }}
+        run: |
+          if [ -z "$JETBRAINS_TOKEN" ] || [ -z "$JETBRAINS_PLUGIN_ID" ]; then
+            echo "::warning::JETBRAINS_TOKEN/JETBRAINS_PLUGIN_ID not set — skipping JetBrains publish."
+            exit 0
+          fi
+          curl -i --fail \
+            -H "Authorization: Bearer $JETBRAINS_TOKEN" \
+            -F pluginId="$JETBRAINS_PLUGIN_ID" \
+            -F file=@"$(ls dist/candela-themes-intellij-*.zip)" \
+            https://plugins.jetbrains.com/api/updates/upload

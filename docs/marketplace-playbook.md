@@ -64,10 +64,15 @@ out of ordinary PR / branch / tag CI and makes each publish wait for your approv
 2. Add **Required reviewers** (yourself) and save. Now a publish run pauses until you
    approve it.
 3. Add the secrets below as each store issues them (**Environment secrets**, not
-   repo-wide).
+   repo-wide). `DIST_PUSH_TOKEN` is the exception — that one is a *repository* secret,
+   since the `dist-repos` job runs outside this environment.
+4. Set **Deployment branches and tags** to allow both `main` and `v*`. `Release` calls
+   `Publish`, and a called workflow inherits the caller's ref (`main`), so a tags-only
+   policy blocks every automatic delivery. Your approval is the gate that matters; the
+   artifacts are still built from the tag `Release` passes in.
 
-The `Publish to marketplaces` workflow already declares `environment: marketplace` and
-is `workflow_dispatch`-only — you don't edit any YAML, just fill this in.
+The `Publish` workflow's store jobs already declare `environment: marketplace` — you
+don't edit any YAML, just fill this in.
 
 ## VS Code Marketplace — automated
 
@@ -84,7 +89,7 @@ The primary VS Code listing. Auth runs through Azure DevOps; the token is all CI
 5. First publish — dispatch the workflow:
 
    ```
-   Actions → Publish to marketplaces → Run workflow
+   Actions → Publish → Run workflow
      ref: vX.Y.Z    ✓ vscode
    → approve the environment gate
    ```
@@ -206,12 +211,14 @@ no more PRs.
 Once the secrets are in the `marketplace` environment and the first listings exist, the
 recurring release is short:
 
-1. Cut the release (dispatch the `Release` workflow — see the runbook). The tag builds
-   the GitHub Release and every artifact, and syncs the Zed/Sublime dist repos.
-2. Push the store updates that automate: Actions → `Publish to marketplaces` → pick the
-   tag, check VS Code / Open VSX / JetBrains → approve the gate.
-3. The two manual ones: Zed is a one-line `version` bump PR; Sublime needs nothing — it
-   follows the new tag.
+1. Cut the release (dispatch the `Release` workflow — see the runbook). It builds the
+   GitHub Release and every artifact, then calls `Publish`, which syncs the
+   Zed/Sublime dist repos and queues the three store jobs.
+2. Approve the `marketplace` environment gate when GitHub asks. That's the whole store
+   step — no second dispatch. (Only re-dispatch `Publish` manually if one store failed
+   and you want to retry just that channel.)
+3. The one manual leftover: Zed's one-line `version` bump PR. Sublime needs nothing —
+   it follows the new tag.
 
 GitHub Releases stays the canonical channel for Neovim, Helix, and the terminal formats
 — no registry to register there. The README and candela.ink link to `releases/latest`;

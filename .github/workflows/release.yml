@@ -4,8 +4,14 @@
 # pushes and publishes the GitHub Release. A failed build leaves no remote
 # commit or tag. Main-only.
 #
-# Publishing to editor marketplaces is a separate, manually-gated workflow
-# (publish-marketplaces.yml) — releasing never touches marketplace credentials.
+# Delivery to every downstream channel (Zed/Sublime dist repos, VS Code, Open
+# VSX, JetBrains) then runs automatically as the `publish` job, which calls
+# publish.yml — so shipping a change reaches every channel by default instead of
+# depending on someone remembering a second dispatch. The irreversible
+# third-party publishes inside that workflow still sit behind the protected
+# `marketplace` environment, so this job never touches store credentials and a
+# maintainer approves each store push. Pass `publish=false` to cut a tag without
+# delivering it.
 name: Release
 
 on:
@@ -16,6 +22,10 @@ on:
         type: choice
         options: [patch, minor, major]
         default: patch
+      publish:
+        description: Deliver to dist repos + marketplaces after the GitHub Release
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -23,6 +33,8 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.bump.outputs.version }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -66,11 +78,14 @@ jobs:
       # Bump first so generated manifests + artifact filenames carry the new
       # version. Creates the commit + tag locally; nothing is pushed yet.
       - name: Bump version and tag
+        id: bump
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           npm version "${{ inputs.bump }}" -m "release: v%s [skip ci]"
-          echo "VERSION=$(node -p "require('./package.json').version")" >> "$GITHUB_ENV"
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       # The build is the gate: if any package fails, the job stops here and the
       # tag never reaches the remote.
@@ -97,17 +112,18 @@ jobs:
             dist/*.sublime-package \
             dist/SHA256SUMS.txt
 
-      # Zed and Sublime install from committed git contents, so the generated
-      # layouts are republished + tagged in their own repos. Package Control picks
-      # the new Sublime tag up automatically; Zed still needs a per-release PR to
-      # zed-industries/extensions bumping the version (see docs/release-runbook.md).
-      # Needs a cross-repo token; the default GITHUB_TOKEN can't push to other repos.
-      - name: Sync Zed + Sublime extension repos
-        env:
-          DIST_PUSH_TOKEN: ${{ secrets.DIST_PUSH_TOKEN }}
-        run: |
-          if [ -z "$DIST_PUSH_TOKEN" ]; then
-            echo "::warning::DIST_PUSH_TOKEN not set — skipping Zed/Sublime dist-repo sync."
-            exit 0
-          fi
-          node scripts/publish-extension-repos.js
+  # Deliver the tag everywhere. Called (not dispatched) because a workflow_dispatch
+  # fired with GITHUB_TOKEN does not start a new run — workflow_call is the only
+  # chain that avoids introducing a PAT. Passes the tag explicitly: a called
+  # workflow inherits the caller's ref (main), which is one commit behind the bump.
+  publish:
+    needs: release
+    if: ${{ inputs.publish }}
+    uses: ./.github/workflows/publish.yml
+    with:
+      ref: v${{ needs.release.outputs.version }}
+      dist_repos: true
+      vscode: true
+      openvsx: true
+      jetbrains: true
+    secrets: inherit

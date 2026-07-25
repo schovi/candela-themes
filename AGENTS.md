@@ -117,8 +117,13 @@ validates, creates an unpushed version commit and `vX.Y.Z` tag, builds every pac
 at that version, then pushes and publishes a GitHub Release with all artifacts plus
 `SHA256SUMS.txt`. A failed build leaves no remote commit or tag. Nothing is built or
 committed locally. Use the `release` skill (`/release`) — it decides whether a
-release is warranted and which bump to pick. Editor-marketplace publishing is a
-separate, credentialed, manually-gated step. Full runbook: `docs/release-runbook.md`.
+release is warranted and which bump to pick.
+
+Delivery is chained, not a second command: `Release` calls the `Publish` workflow at
+the new tag, which syncs the Zed/Sublime dist repos immediately and queues VS Code /
+Open VSX / JetBrains behind the protected `marketplace` environment — those three are
+irreversible, so a maintainer approves them in the UI (D10 in `docs/decisions.md`).
+Full runbook: `docs/release-runbook.md`.
 
 ### Adding a 17th theme or new format
 

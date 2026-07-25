@@ -166,3 +166,44 @@ The voice is now **comfort-first and mode-neutral**: the brand line is
 light-only set. `docs/marketplace-listing.md` stopped carrying wording and became a
 routing table (which variant goes where, which generated file to paste, per-store caps
 with their sources).
+
+## D10 — Release chains delivery via `workflow_call`; the split is by reversibility, not by tool (2026-07-25)
+
+**Problem.** `Release` cut the tag and synced the Zed/Sublime dist repos;
+`Publish to marketplaces` pushed VS Code, Open VSX and JetBrains. Both were
+`workflow_dispatch`-only with every marketplace input defaulting to `false`. So a
+release shipped a tag while the stores silently stayed on the previous version until
+someone remembered a second dispatch, and the line between the two workflows read as
+arbitrary (why are Zed and Sublime in one and VS Code in the other?).
+
+**Options.** (A) Merge everything into `release.yml`. (B) Keep two workflows, chain
+them: `release.yml` calls `publish.yml` via `workflow_call`. (C) Keep them separate and
+just document harder that publishing is a second step.
+
+**Choice.** B. A is wrong because the halves differ in reversibility (a GitHub Release
+can be deleted and re-tagged; a version published to VS Code Marketplace, Open VSX or
+JetBrains is burned permanently), credential blast radius (the release job must never
+hold store tokens), failure semantics (three third-party APIs fail for reasons a
+correct build cannot prevent) and retry granularity. C is the status quo that produced
+the drift. Chaining gets delivery-by-default without giving up any of the four.
+
+`workflow_call` specifically, not `gh workflow run` from a release step: a
+`workflow_dispatch` fired with `GITHUB_TOKEN` does not start a new run, so dispatching
+would have meant introducing a PAT.
+
+Two consequences worth knowing:
+
+- The old file's name was a lie once the dist-repo sync moved in, so
+  `publish-marketplaces.yml` became `publish.yml` (`Publish`). Jobs are now grouped by
+  reversibility: `dist-repos` (git pushes to repos we own) runs with no environment and
+  no approval; `vscode`/`openvsx`/`jetbrains` stay in the protected `marketplace`
+  environment behind a required reviewer.
+- A called workflow inherits the **caller's** ref, so the `marketplace` environment's
+  deployment policy had to accept `main` alongside `v*` (amending the policy described
+  in D8). The tag policy was never the real protection — the required reviewer is, and
+  it is unchanged. Artifacts are still built from the tag: `release.yml` passes the tag
+  it just pushed as `publish.yml`'s `ref` input, so a delivery never publishes main's
+  HEAD.
+
+Every channel input now defaults to `true`, and each job warn-skips when its credential
+secret is absent, so a not-yet-registered store cannot turn a good release red.
