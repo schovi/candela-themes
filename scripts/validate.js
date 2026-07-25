@@ -5,15 +5,96 @@
 // AGENTS.md ("Design rules to preserve") into an automated pre-commit gate. Zero runtime
 // dependencies — runs on a stock Node install. Read-only: never edits the JSON.
 //
+// Also gates the listing copy in lib/copy.js: length caps per surface, the
+// no-theme-counts rule, the mode-neutral rule, and drift between the module and
+// the static <meta> tags it can't reach.
+//
 // Hard invariants fail the exit code; the accent-hue count is a judgement-call
 // warning that prints but never fails.
 
 const fs = require('fs');
 const path = require('path');
 const { expectedTokens, checkTheme, checkAnsiMapping } = require('../lib/rules');
+const copy = require('../lib/copy.js');
 
 const ROOT = path.join(__dirname, '..');
 const SOURCE = path.join(ROOT, 'themes/candela-themes.json');
+
+// Files whose human-read copy must stay count-free and mode-neutral. Excludes
+// docs/marketplace-listing.md, which quotes "14 light, 2 dark" as the example of
+// what not to write.
+const COPY_FILES = ['README.md', 'app/index.html', 'app/themes.html', 'app/editor.html'];
+
+const readCopyFile = (rel) => fs.readFileSync(path.join(ROOT, rel), 'utf8');
+
+// Pull one attribute value out of the static HTML. Deliberately not a parser:
+// these are three hand-written lines in a file we control.
+function htmlMeta(html, pattern) {
+  const match = html.match(pattern);
+  return match ? match[1] : null;
+}
+
+// Every copy invariant, as failure strings. Empty array = clean.
+function checkCopy() {
+  const failures = [];
+
+  for (const [name, cap] of Object.entries(copy.CAPS)) {
+    const value = copy[name];
+    if (value.length > cap) {
+      failures.push(`copy: ${name} is ${value.length} chars, over its ${cap}-char cap`);
+    }
+  }
+
+  // A truncating surface must cut after a whole sentence, not mid-clause. Holds
+  // as long as the long form opens with the short one verbatim.
+  if (!copy.DESCRIPTION.startsWith(copy.SUMMARY)) {
+    failures.push('copy: DESCRIPTION must start with SUMMARY so truncation lands after a full sentence');
+  }
+
+  for (const name of ['TAGLINE', 'SUMMARY', 'DESCRIPTION']) {
+    if (copy.THEME_COUNT_PATTERN.test(copy[name])) {
+      failures.push(`copy: ${name} hard-codes a theme count — say "a family", not a number`);
+    }
+    if (/\blight\b/i.test(copy[name]) && !/\bdark\b/i.test(copy[name])) {
+      failures.push(`copy: ${name} names light without dark — Candela is not a light-only set`);
+    }
+  }
+
+  for (const rel of COPY_FILES) {
+    const text = readCopyFile(rel);
+    const counts = text.match(new RegExp(copy.THEME_COUNT_PATTERN.source, 'gi')) || [];
+    for (const hit of new Set(counts)) {
+      failures.push(`copy: ${rel} hard-codes a theme count ("${hit.trim()}")`);
+    }
+    // Page titles are the loudest place a light-only claim hides.
+    const titles = [
+      ...text.matchAll(/<title>([^<]*)<\/title>/gi),
+      ...text.matchAll(/<meta property="og:title" content="([^"]*)"/gi),
+    ].map(([, value]) => value);
+    for (const title of titles) {
+      if (/\blight\b/i.test(title)) {
+        failures.push(`copy: ${rel} title claims a light-only set ("${title}")`);
+      }
+    }
+  }
+
+  // The home page and the README hard-code what lib/copy.js exports (neither can
+  // import it); keep them identical.
+  const home = readCopyFile('app/index.html');
+  const mirrored = [
+    [htmlMeta(home, /<title>([^<]*)<\/title>/), copy.SITE_TITLE, 'app/index.html <title>'],
+    [htmlMeta(home, /<meta name="description" content="([^"]*)"/), copy.DESCRIPTION, 'app/index.html meta description'],
+    [htmlMeta(home, /<meta property="og:description" content="([^"]*)"/), copy.SUMMARY, 'app/index.html og:description'],
+  ];
+  for (const [got, want, label] of mirrored) {
+    if (got !== want) failures.push(`copy: ${label} has drifted from lib/copy.js`);
+  }
+  if (!readCopyFile('README.md').includes(copy.TAGLINE)) {
+    failures.push('copy: README.md no longer carries the TAGLINE from lib/copy.js');
+  }
+
+  return failures;
+}
 
 const useColor = process.stdout.isTTY;
 const green = (s) => (useColor ? `\x1b[32m${s}\x1b[0m` : s);
@@ -39,6 +120,11 @@ function main() {
   }
 
   for (const f of checkAnsiMapping(data.ansiMapping, expected)) {
+    console.log(`${red('FAIL')}  ${f}`);
+    hardFailures++;
+  }
+
+  for (const f of checkCopy()) {
     console.log(`${red('FAIL')}  ${f}`);
     hardFailures++;
   }

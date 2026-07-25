@@ -138,3 +138,31 @@ works), switch to a release-PR model, or push releases with a fine-grained PAT a
 an admin bypass actor. Related: **immutable releases** has no stable REST endpoint on
 this account — enable it once in repo Settings by hand; the tag ruleset already covers
 tag immutability.
+
+## D9 — One copy module with three lengths; mode-neutral voice (2026-07-25)
+
+**Problem.** The Candela pitch was authored three times and had already drifted:
+`lib/emitters.js` `DESCRIPTION`, the template in `docs/marketplace-listing.md`, and
+`app/index.html`'s `<meta name="description">` each said it differently. Surfaces with
+hard length limits truncated copy written for unlimited ones — the JetBrains plugin card
+cut the 190-char description mid-clause at "...desaturated accents," (char 102). The
+brand line, `Light, measured for tired eyes.`, also excluded the two dark themes.
+
+**Options.** (A) One string everywhere, front-loaded, accept truncation. (B) One module
+exporting several lengths; each surface picks the one that fits. (C) Hand-written copy
+per marketplace.
+
+**Choice.** B. [`lib/copy.js`](../lib/copy.js) exports `TAGLINE` (brand line),
+`SUMMARY` (front-loaded store one-liner), `DESCRIPTION` (long form), and `WHY_CANDELA`.
+`DESCRIPTION` must open with `SUMMARY` verbatim, so a truncating surface always cuts
+after a complete sentence; constrained surfaces (Zed, the JetBrains card, the GitHub
+repo description, `og:description`) take `SUMMARY` and never truncate at all. C was
+rejected as the state we were already in by accident. `scripts/validate.js` gates the
+caps, the no-theme-counts rule, the mode-neutral rule, and drift between the module and
+the static `<meta>` tags in `app/*.html` and the README tagline, which cannot import it.
+
+The voice is now **comfort-first and mode-neutral**: the brand line is
+`Color, measured for tired eyes.` and no tagline or page title presents Candela as a
+light-only set. `docs/marketplace-listing.md` stopped carrying wording and became a
+routing table (which variant goes where, which generated file to paste, per-store caps
+with their sources).

@@ -5,11 +5,11 @@
 <h1 align="center">Candela</h1>
 
 <p align="center">
-  <strong>Light themes for tired eyes</strong>
+  <strong>Color, measured for tired eyes.</strong>
 </p>
 
 <p align="center">
-  14 light themes for terminals and editors, plus two dark companions.
+  A family of light schemes for terminals and editors, plus dark companions.
   Candela brings the calm feel of a good pastel dark theme to an off-white canvas
   for people who find dark mode uncomfortable.
 </p>
@@ -26,7 +26,7 @@
 
 <p align="center">
   <strong><a href="https://candela.ink">Browse every theme live at candela.ink</a></strong><br>
-  Or explore all 16 themes in the <a href="#gallery">gallery below</a>.
+  Or explore every theme in the <a href="#gallery">gallery below</a>.
 </p>
 
 ## Why Candela feels calmer
@@ -52,7 +52,7 @@ light themes calmer:
 The vision-science rationale, including where common advice gets it wrong, is in
 [`docs/vision-research.md`](docs/vision-research.md).
 
-## The 16 themes
+## The themes
 
 Themes 01–10 are the main palettes, from calm neutrals to stronger pastels.
 11–14 explore one design idea each. 15–16 are dark companions tuned to the same
@@ -93,7 +93,7 @@ The two dark companions:
 
 ## Gallery
 
-Preview all 16 themes across terminal, TypeScript, Markdown, and git panes.
+Preview every theme across terminal, TypeScript, Markdown, and git panes.
 
 | | |
 | --- | --- |
@@ -146,7 +146,7 @@ Theme ids: `sepia-paper`, `slate-mist`, `sage`, `solarized-lite`, `blossom`,
 Run `npm run package` to build all supported packages. Format-specific commands
 are available below when you need only one package.
 
-The extension, containing all 16 themes, lives at `build/vscode/`.
+The extension, containing every theme, lives at `build/vscode/`.
 
 - **From the Marketplace (recommended):** search **Candela Themes** in the Extensions
   view, or install from
@@ -161,7 +161,7 @@ Then **Preferences: Color Theme** and pick any *Candela NN · …* entry.
 
 ### IntelliJ / JetBrains IDEs
 
-The theme plugin, containing all 16 themes, lives at `build/intellij/`. Each theme
+The theme plugin, containing every theme, lives at `build/intellij/`. Each theme
 ships an editor color scheme (as `.xml`, which the plugin's `editorScheme`
 loads, plus an identical `.icls` for manual import) and a UI theme
 (`.theme.json`).
@@ -183,7 +183,7 @@ The same ANSI palette is available for six terminals. Pick your file and import
 it according to that terminal's documentation:
 
 Run `npm run package:bundles` to create one release
-archive per terminal under `dist/`. Each archive contains all 16 theme files and
+archive per terminal under `dist/`. Each archive contains every theme file and
 short installation instructions; loose files remain available under `build/`.
 
 | Terminal | File |
@@ -197,7 +197,7 @@ short installation instructions; loose files remain available under `build/`.
 
 ### Zed
 
-The extension, containing all 16 themes, lives at `build/zed/`. In Zed, open
+The extension, containing every theme, lives at `build/zed/`. In Zed, open
 **Extensions**, choose **Install Dev Extension**, and select that directory.
 `npm run package:zed` copies the complete extension to `dist/zed/` for dev install
 and writes `dist/candela-themes-zed-<version>.tar.gz` for download.
@@ -211,7 +211,7 @@ folder. For a loose-file install, copy the `.sublime-color-scheme` files from
 
 ### Neovim
 
-The Neovim plugin, containing all 16 themes, lives at `build/nvim/`. Extract the release
+The Neovim plugin, containing every theme, lives at `build/nvim/`. Extract the release
 archive and point lazy.nvim or packer at that local plugin directory, or copy its
 `colors/` directory onto your runtimepath. Then run `:colorscheme
 candela-sepia-paper` (or another theme id). `npm run package:nvim` writes the
@@ -219,9 +219,9 @@ release archive to `dist/candela-themes-nvim-<version>.tar.gz`.
 
 ### Helix
 
-Drop-in files for all 16 themes live under `build/helix/`. Install them per
+Drop-in files for every theme live under `build/helix/`. Install them per
 Helix's documentation. Run `npm run package:bundles` to create
-`dist/candela-themes-helix-<version>.tar.gz`, containing all 16 files and
+`dist/candela-themes-helix-<version>.tar.gz`, containing every file and
 installation instructions.
 
 ## How themes are generated
