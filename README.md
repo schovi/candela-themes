@@ -114,10 +114,11 @@ all-formats ZIP and a `SHA256SUMS.txt` manifest.
 
 **From a marketplace.** Live listings:
 
-- **VS Code:** [marketplace.visualstudio.com/items?itemName=Candela.candela-themes](https://marketplace.visualstudio.com/items?itemName=Candela.candela-themes)
+- **VS Code:** [marketplace.visualstudio.com/items?itemName=candela.candela-themes](https://marketplace.visualstudio.com/items?itemName=candela.candela-themes)
 - **Open VSX** (VSCodium, Cursor, Windsurf, Gitpod): [open-vsx.org/extension/candela/candela-themes](https://open-vsx.org/extension/candela/candela-themes)
+- **JetBrains IDEs:** [plugins.jetbrains.com/plugin/33084-candela-themes](https://plugins.jetbrains.com/plugin/33084-candela-themes)
 
-More (JetBrains, Zed, Sublime) are added here as each listing goes live.
+Zed and Sublime are added here once their registry listings land.
 
 **Or build from source:**
 
@@ -150,7 +151,7 @@ The extension, containing every theme, lives at `build/vscode/`.
 
 - **From the Marketplace (recommended):** search **Candela Themes** in the Extensions
   view, or install from
-  [the listing](https://marketplace.visualstudio.com/items?itemName=Candela.candela-themes).
+  [the listing](https://marketplace.visualstudio.com/items?itemName=candela.candela-themes).
 - **As a `.vsix`:** `npm run package:vscode` builds and packages it
   into `dist/candela-themes-<version>.vsix`, then **Extensions → ⋯ → Install from
   VSIX…** on that file.
@@ -161,12 +162,14 @@ Then **Preferences: Color Theme** and pick any *Candela NN · …* entry.
 
 ### IntelliJ / JetBrains IDEs
 
-The theme plugin, containing every theme, lives at `build/intellij/`. Each theme
-ships an editor color scheme (as `.xml`, which the plugin's `editorScheme`
-loads, plus an identical `.icls` for manual import) and a UI theme
-(`.theme.json`).
+Easiest path: **Settings → Plugins → Marketplace**, search *Candela Themes*
+([listing](https://plugins.jetbrains.com/plugin/33084-candela-themes)).
 
-- **As a plugin zip (recommended):** install JDK 17+ and Gradle 9+, then run
+To build it yourself, the plugin lives at `build/intellij/`. Each theme ships an editor
+color scheme (as `.xml`, which the plugin's `editorScheme` loads, plus an identical
+`.icls` for manual import) and a UI theme (`.theme.json`).
+
+- **As a plugin zip:** install JDK 17+ and Gradle 9+, then run
   `npm run package:intellij`. This builds the plugin, runs `buildPlugin`, and
   writes `dist/candela-themes-intellij-<version>.zip`. In the IDE, choose
   **Settings → Plugins → ⚙ → Install Plugin from Disk…** and select the zip.

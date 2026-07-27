@@ -18,16 +18,19 @@ split drives the whole plan.
 - **Automated** — CI can publish updates after setup: VS Code, Open VSX, JetBrains.
 - **Manual PR** — a pull request each version: Zed, Sublime Package Control.
 
-**Start the slow one first.** JetBrains reviews the first version by hand and it can
-sit for days. Submit it before the others so its review clock runs in the background.
+**Start the slow one first.** JetBrains reviews by hand and it can sit for days. Submit
+it before the others so its review clock runs in the background.
+
+> **Where this stands:** VS Code, Open VSX and JetBrains are all live. Zed and Sublime
+> Package Control are not listed yet — those two sections are the remaining work.
 
 ## Order of operations
 
 1. Confirm the prerequisites below — public repo, license, one real release, matching ids.
 2. Create the GitHub `marketplace` environment once. It gates every automated publish
    behind your approval and is where the secrets live.
-3. Submit JetBrains (slow manual review — get it in the queue).
-4. Set up VS Code + Open VSX (fast; both publish the same `.vsix`).
+3. Submit JetBrains (slow manual review — get it in the queue). ✔ done
+4. Set up VS Code + Open VSX (fast; both publish the same `.vsix`). ✔ done
 5. Open the Zed and Sublime PRs (external review, but no clock pressure).
 6. Hand off to automation — from here, releases and updates are near-hands-free.
 
@@ -96,10 +99,13 @@ The primary VS Code listing. Auth runs through Azure DevOps; the token is all CI
 
    Or once, locally: `npx vsce login candela` then `npx vsce publish`.
 
+   > Live at <https://marketplace.visualstudio.com/items?itemName=candela.candela-themes>
+   > — steps 1-4 done.
+
 **Expiry ahead:** classic Azure DevOps PATs retire **2026-12-01**. Plan to move to
 Entra ID workload-identity federation (`vsce publish --azure-credential`) before then.
 
-Verify: <https://marketplace.visualstudio.com/items?itemName=Candela.candela-themes>
+Verify: <https://marketplace.visualstudio.com/items?itemName=candela.candela-themes>
 
 Ongoing: re-run the workflow with `vscode` checked each release. Versions can't be reused.
 
@@ -135,11 +141,12 @@ Ongoing: same workflow, `openvsx` checked, each release.
 
 ## JetBrains Marketplace — automated after approval
 
-IntelliJ, PyCharm, WebStorm and the rest. The first version is hand-reviewed; updates
-after that go through the API.
+IntelliJ, PyCharm, WebStorm and the rest. Uploads go through the API; every version is
+hand-reviewed before it reaches users.
 
-**Do this first:** the first version is manually moderated before it goes live — it can
-take days.
+**Do this first:** moderation can take days.
+
+> Live at <https://plugins.jetbrains.com/plugin/33084-candela-themes> — steps 1-4 done.
 
 1. Sign in at <https://plugins.jetbrains.com> with a JetBrains account.
 2. Upload the first version through the web UI at <https://plugins.jetbrains.com/plugin/add>
@@ -149,12 +156,13 @@ take days.
 4. Create a permanent token: profile → **My Tokens** → generate. Store it as the
    `JETBRAINS_TOKEN` secret in the `marketplace` environment — the only one JetBrains
    needs.
-5. Later versions — dispatch the workflow with `jetbrains` checked. Updates to an
-   approved plugin publish via the API with no re-review.
+5. Later versions — dispatch the workflow with `jetbrains` checked. The upload returns
+   `201` immediately, but **each update is moderated too**: the response carries
+   `"approve": false` and the version reaches users once a moderator clears it.
 
-**Permanent:** the plugin id `com.candela.themes` and the numeric id are fixed once live.
+**Permanent:** the plugin id `com.candela.themes` and the numeric id (33084) are fixed.
 
-Ongoing: workflow with `jetbrains` checked; no review on updates.
+Ongoing: workflow with `jetbrains` checked, then wait out moderation.
 
 ## Zed extension registry — manual PR
 
@@ -163,8 +171,11 @@ Zed's registry has no publisher API. Every listing and update is a pull request.
 Zed pulls your extension as a **git submodule**, so it needs a public repo with the
 built `extension.toml` + `themes/candela.json` at its root. This repo keeps `build/`
 uncommitted, so the generated `build/zed/` is republished to the dedicated
-`candela-themes-zed` dist repo (synced automatically by the Release workflow — see the
-runbook), tagged per release.
+`candela-themes-zed` dist repo, which the `Publish` workflow's `dist-repos` job syncs
+and tags every release (see the runbook).
+
+> **`candela-theme` already in that registry is not ours** — different author, different
+> extension. Our id `candela-themes` is unclaimed.
 
 1. Fork <https://github.com/zed-industries/extensions>.
 2. Add `candela-themes-zed` as an **HTTPS** submodule under `extensions/candela-themes`
@@ -192,8 +203,8 @@ new tags flow automatically.
 
 Package Control installs your tagged repo contents, but the `.sublime-color-scheme`
 files are generated (uncommitted). They're republished to the dedicated
-`candela-themes-sublime` dist repo, which the Release workflow tags every release (see
-the runbook).
+`candela-themes-sublime` dist repo, which the `Publish` workflow's `dist-repos` job tags
+every release (see the runbook).
 
 1. Fork <https://github.com/wbond/package_control_channel>.
 2. Add a repository entry under `repository/` pointing at `candela-themes-sublime` with
@@ -209,17 +220,10 @@ no more PRs.
 
 ## Handoff to automation
 
-Once the secrets are in the `marketplace` environment and the first listings exist, the
-recurring release is short:
-
-1. Cut the release (dispatch the `Release` workflow — see the runbook). It builds the
-   GitHub Release and every artifact, and stops there.
-2. Deliver that tag: `gh workflow run publish.yml -f ref=vX.Y.Z`. It syncs the
-   Zed/Sublime dist repos immediately and queues the three store jobs. Approve the
-   `marketplace` environment gate when GitHub asks. To retry one store, re-dispatch
-   with the other channels `=false`.
-3. The one manual leftover: Zed's one-line `version` bump PR. Sublime needs nothing —
-   it follows the new tag.
+Once a store's setup above is done, it never needs this file again. The recurring
+release is two dispatches and one approval —
+[`release-runbook.md`](release-runbook.md) owns that loop; don't keep a second copy of
+it here.
 
 GitHub Releases stays the canonical channel for Neovim, Helix, and the terminal formats
 — no registry to register there. The README and candela.ink link to `releases/latest`;

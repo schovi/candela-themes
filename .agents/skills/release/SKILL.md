@@ -14,36 +14,26 @@ description: >
 
 # Release (Candela Themes)
 
-One deliberate loop to cut a versioned GitHub Release. It decides **whether** to
-release and **what** the version should be, then hands the build+tag+publish to CI.
-The version decision stays with you (inline); the mechanics are delegated.
+**Two dispatches, both from here.** `Release` (steps 5-6) cuts the tag and the GitHub
+Release. `Publish` (step 7) delivers that tag to the dist repos and the three stores.
+Everything runs in CI, **main only** — nothing is built or tagged on your machine.
 
-**How releasing works here:** the entire release runs in
-`.github/workflows/release.yml`, triggered by `workflow_dispatch`, **main only**.
-CI validates, creates an unpushed version commit and tag, builds every package at
-that version, then pushes and publishes the GitHub Release. A failed build leaves
-no remote commit or tag. Nothing is built or tagged on your machine.
-
-**Delivery is a second dispatch.** `Release` stops at the GitHub Release.
-`.github/workflows/publish.yml` then delivers that tag: it syncs the Zed + Sublime
-dist repos immediately, and queues VS Code / Open VSX / JetBrains behind the
-protected `marketplace` environment — those three are irreversible (a published
-version number can never be reused), so a maintainer must approve them in the GitHub
-UI. A store with no credential secret configured warns and skips instead of failing.
-
-**Your job here** is the version decision, a green GitHub Release, and then firing
-the publish dispatch (step 7) so the stores never lag the tag. Zed's registry still
-needs its manual submodule-bump PR (`docs/release-runbook.md`).
-
-## Model (read first)
+**Your job** is the version decision plus getting both dispatches green. The decision
+stays inline; the mechanics are CI's.
 
 - `themes/candela-themes.json` is the source of truth. `build/` and `dist/` are
-  generated and **gitignored — never committed**. The release artifacts live only
-  as GitHub Release assets, rebuilt in CI from `main`.
-- CI bumps the root `package.json` version and creates the `vX.Y.Z` commit and tag
-  in the runner before packaging. The version flows into every generated manifest
-  (VS Code, IntelliJ, Zed) via `scripts/generate.js`, and into artifact filenames.
-  CI pushes the commit and tag only after packaging succeeds.
+  generated and **gitignored — never committed**; artifacts exist only as Release
+  assets, rebuilt in CI from `main`.
+- CI bumps `package.json`, commits and tags in the runner, then packages. The version
+  flows into every generated manifest via `scripts/generate.js` and into artifact
+  filenames. The commit and tag are pushed only after packaging succeeds, so a failed
+  build leaves no remote commit or tag.
+- `Publish` gates the three stores behind the protected `marketplace` environment: a
+  published version number can never be reused, so a maintainer approves each run in
+  the GitHub UI. `dist-repos` needs no approval. A channel with no credential secret
+  warns and skips.
+
+Mechanics you don't need to re-derive live in `docs/release-runbook.md`.
 
 ## 1. Preconditions — hard gate, stop if any fail
 
@@ -113,19 +103,19 @@ Do **not** chain a trailing command after `gh run watch` that masks its exit sta
 - **On failure:** `gh run view "$RUN" --log-failed`, diagnose the root cause, fix,
   commit, push to `main`, then re-dispatch (step 5). No release commit or tag was
   pushed, so there is nothing to unwind.
-- **On success:** confirm the Release is real and complete:
+- **On success:** pull CI's bump commit, then confirm the Release:
   ```sh
-  V=$(node -p "require('./package.json').version")   # after: git pull, to see CI's bump
+  git pull
+  V=$(node -p "require('./package.json').version")
   gh release view "v$V" --json isDraft,url,assets -q '.url, "draft:\(.isDraft)", (.assets[].name)'
   ```
-  Confirm `isDraft=false` and the full asset set: every per-tool archive, the
-  `.vsix`, the `.sublime-package`, the Zed archive, the all-formats zip, and
-  `SHA256SUMS.txt`. Then `git pull` so local `main` picks up CI's version-bump commit.
+  Require `isDraft=false` and the full asset set: every per-tool archive, the `.vsix`,
+  the `.sublime-package`, the Zed archive, the all-formats zip, `SHA256SUMS.txt`.
 
 ## 7. Deliver the tag (second dispatch)
 
-Only after the Release is verified green. The tag goes in as the **`ref` input**;
-never as `--ref`, which would run the copy of publish.yml that existed at that tag:
+Only after the Release is green. Pass the tag as the **`ref` input** — `--ref` selects
+which *version of publish.yml* runs, which is not what you want:
 
 ```sh
 gh workflow run publish.yml -f ref="v$V"
@@ -133,20 +123,27 @@ PUB=$(gh run list --workflow=publish.yml --limit 1 --json databaseId -q '.[0].da
 gh run view "$PUB" --json jobs -q '.jobs[] | "\(.name) \(.status) \(.conclusion // "")"'
 ```
 
-`dist-repos` runs immediately. `vscode`, `openvsx` and `jetbrains` sit `waiting` on
-the `marketplace` environment gate until the maintainer approves in the UI — expected,
-not a hang. Don't `gh run watch` this one to completion; report the gate instead.
+`dist-repos` runs immediately; the three store jobs sit `waiting` on the gate until the
+maintainer approves — expected, not a hang. Report the gate rather than watching to
+completion. Once approved, `gh run watch "$PUB" --exit-status` and confirm each channel:
 
-Re-dispatch a single channel the same way, others `=false`:
+```sh
+curl -s "https://plugins.jetbrains.com/api/plugins/33084/updates" | head -c 200
+curl -s "https://open-vsx.org/api/candela/candela-themes" | head -c 200
+```
+
+VS Code's gallery API lags the publish by minutes; `Published … v$V` in the job log is
+the real confirmation. JetBrains moderates every update, so a `201` means uploaded, not
+live.
+
+Retry one channel with the others `=false`:
 `gh workflow run publish.yml -f ref="v$V" -f jetbrains=true -f vscode=false -f openvsx=false -f dist_repos=false`
 
 ## 8. Report
 
-- Release URL, the asset list, the version chosen and why, and what changed since the
-  last tag.
-- State the delivery status: dist repos synced; VS Code / Open VSX / JetBrains are
-  **waiting on the maintainer's approval** of the `marketplace` environment gate
-  (link the publish run). Name any channel that warn-skipped for a missing secret.
+- Release URL, asset list, the version chosen and why, what changed since the last tag.
+- Per-channel delivery status. Name any channel that warn-skipped for a missing secret,
+  and say plainly that JetBrains is queued for moderation rather than live.
 - Remaining manual step: the Zed submodule + `version` bump PR to
   `zed-industries/extensions` (`docs/release-runbook.md`). Sublime needs nothing.
 

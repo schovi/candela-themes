@@ -123,8 +123,9 @@ Delivery is a **second, separate dispatch** — `Release` stops at the GitHub Re
 Once the tag exists, `gh workflow run publish.yml -f ref=vX.Y.Z` syncs the
 Zed/Sublime dist repos immediately and queues VS Code / Open VSX / JetBrains behind
 the protected `marketplace` environment — those three are irreversible, so a
-maintainer approves them in the UI (D10 in `docs/decisions.md`). Pass the tag as the
-`ref` **input**, not `--ref`: `--ref` picks which version of the workflow file runs.
+maintainer approves them in the UI (D10 + D11 in `docs/decisions.md`). Pass the tag as
+the `ref` **input**, not `--ref`: `--ref` picks which version of the workflow file runs.
+JetBrains moderates every update, so a green job means uploaded, not live.
 Full runbook: `docs/release-runbook.md`.
 
 ### Adding a 17th theme or new format

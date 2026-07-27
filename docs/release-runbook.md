@@ -6,23 +6,29 @@ owns how they ship.
 
 Channels, at a glance:
 
-| Channel | How it ships | Automated updates |
+| Channel | Listed? | How an update ships |
 | --- | --- | --- |
-| GitHub Releases | `Release` workflow on a `vX.Y.Z` tag | Yes (the tag) |
-| VS Code Marketplace | store listing | Yes (`Publish`, after maintainer approval) |
-| Open VSX | store listing | Yes (`Publish`, after maintainer approval) |
-| JetBrains Marketplace | store listing | Yes after first approval (`Publish`, after maintainer approval) |
-| Zed extension registry | submodule → `candela-themes-zed` dist repo | Dist repo auto-synced; version-bump PR each release |
-| Sublime Package Control | tags on `candela-themes-sublime` dist repo | Yes, after one-time channel PR (tags drive it) |
-| Neovim / Helix / terminals | GitHub Releases (canonical) | Yes (the tag) |
+| GitHub Releases | live | `Release` creates it from the tag |
+| Neovim / Helix / terminals | live | GitHub Releases is canonical — no registry |
+| VS Code Marketplace | live | `Publish` → `vscode`, after you approve the gate |
+| Open VSX | live | `Publish` → `openvsx`, after you approve the gate |
+| JetBrains Marketplace | live | `Publish` → `jetbrains`, then JetBrains moderates the update |
+| Zed extension registry | **not yet** | dist repo auto-synced; then a submodule + `version` PR |
+| Sublime Package Control | **not yet** | dist repo auto-tagged; tags drive it once the channel PR lands |
 
-**Two dispatches, in order.** `Release` cuts the tag and the GitHub Release, and
-stops. `Publish` then delivers that tag to the channels above. They are separate
-commands on purpose — they differ in reversibility, failure modes and retry
-granularity (see [Why release and publish are separate](#why-release-and-publish-are-separate)) —
-so cutting a release is never blocked by a store outage, and re-publishing never
-risks re-tagging. The cost is remembering step two; the `release` skill reminds you,
-and so does a notice at the end of every `Release` run.
+**Two dispatches, in order.** `Release` cuts the tag and stops; `Publish` delivers that
+tag. The whole loop:
+
+```sh
+gh workflow run release.yml -f bump=patch --ref main   # 1. cut the tag
+git pull                                               # 2. pick up CI's bump commit
+gh workflow run publish.yml -f ref=vX.Y.Z              # 3. deliver it
+# 4. approve the `marketplace` gate in the Actions UI
+```
+
+Use the `release` skill (`/release`) to drive it — it picks the bump and runs all four
+steps. Everything below is the detail behind them. Why two commands and not one:
+[Why release and publish are separate](#why-release-and-publish-are-separate).
 
 ## Cut a release
 
@@ -121,27 +127,17 @@ than failing. A store you haven't registered yet never turns a good release red.
 
 ### Why release and publish are separate
 
-Two dispatches rather than one chained pipeline, because the halves differ in four
-ways that matter:
+A GitHub Release is reversible; a published store version is not. The release build is
+atomic and gates the tag push, while store uploads fail for reasons this repo cannot
+prevent (rate limits, expired PATs, moderation queues) — so a flaky upload must never
+invalidate correct artifacts, and a retry must never risk re-tagging. Keeping them
+apart also keeps store tokens out of the job that pushes to `main`. Full reasoning,
+including why the two were briefly chained: D10 and D11 in
+[`docs/decisions.md`](decisions.md).
 
-1. **Reversibility.** A GitHub Release can be deleted and re-tagged. A version
-   published to VS Code Marketplace, Open VSX or JetBrains is burned permanently.
-2. **Credential blast radius.** The `release` job never sees a store token. The
-   marketplace jobs hold them inside a protected environment behind a required
-   reviewer.
-3. **Failure semantics.** The release build is atomic — it gates the tag push. Store
-   publishes hit three third-party APIs that fail for reasons outside this repo
-   (rate limits, expired PATs, moderation queues). A flaky upload must not invalidate
-   artifacts that are already correct.
-4. **Retry granularity.** A failed store publish is one re-dispatch of that channel,
-   with no risk of re-tagging.
+### Secrets
 
-Chaining them (a `workflow_call` job on the end of `Release`) was tried and reverted:
-it made one command carry two failure domains, and the version of publish.yml that
-ran became coupled to which ref you dispatched. Two predictable commands beat one
-clever one (D10).
-
-Secrets live on the `marketplace` environment:
+On the `marketplace` environment:
 
 | Secret | Used by | What it is |
 | --- | --- | --- |
@@ -161,67 +157,36 @@ above under repo **Settings → Environments → `marketplace`**.
 > and it still applies. The jobs *build* from the `ref` input, so the published
 > artifacts always carry the released version, not main's HEAD.
 
-## First submissions
+## Store registration
 
-Each store needs a one-time manual setup before the automation (or, for Zed/Sublime,
-each update) can run. Do these once, then hand control to the workflow above. For the
-step-by-step first-time walkthrough (with prerequisites and verify links), see
-[`marketplace-playbook.md`](marketplace-playbook.md); the terse per-store reference and
-exact secret names follow here.
+Every store needed one manual setup before automation could take over. All three
+automated stores are done; the two PR registries are not.
+[`marketplace-playbook.md`](marketplace-playbook.md) is the click-by-click walkthrough —
+this is the reference for what is fixed and where to look.
 
-### VS Code Marketplace
+| Store | Permanent id | Secret | Verify |
+| --- | --- | --- | --- |
+| VS Code | publisher `candela` · name `candela-themes` | `VSCE_PAT` | <https://marketplace.visualstudio.com/items?itemName=candela.candela-themes> |
+| Open VSX | namespace `candela` | `OVSX_PAT` | <https://open-vsx.org/extension/candela/candela-themes> |
+| JetBrains | plugin id `com.candela.themes` · numeric `33084` | `JETBRAINS_TOKEN` | <https://plugins.jetbrains.com/plugin/33084-candela-themes> |
+| Zed | extension id `candela-themes` | — (PR) | <https://github.com/zed-industries/extensions> |
+| Sublime | package `candela-themes` | — (PR) | <https://github.com/wbond/package_control_channel> |
 
-1. Create an Azure DevOps organization, then a **publisher** at
-   <https://marketplace.visualstudio.com/manage>. The publisher id is permanent and
-   must equal `publisher` in the generated `build/vscode/package.json` (`candela`).
-2. Create an Azure DevOps PAT (scope **Marketplace → Manage**, "all accessible
-   organizations"); store it as the `VSCE_PAT` environment secret.
-3. First publish: dispatch `Publish` with `vscode` checked (or run
-   `vsce publish` locally once). Verify the listing at
-   `https://marketplace.visualstudio.com/items?itemName=candela.candela-themes`.
-4. Gotcha: extension name/publisher are reserved permanently; versions can't be
-   reused. Classic Azure DevOps PATs retire **2026-12-01** — migrate to Entra ID
-   workload identity federation before then.
+Nothing in that column can be renamed later, and a published version number can never
+be reused or unpublished on any of the three stores.
 
-### Open VSX
+Per-store facts that outlive the setup:
 
-> Namespace `candela` claimed via
-> <https://github.com/EclipseFdn/open-vsx.org/issues/12041> — step 3 is done.
-
-1. Sign in at <https://open-vsx.org> with an Eclipse account and sign the publisher
-   agreement.
-2. Generate an access token (shown once) → `OVSX_PAT`.
-3. Reserve the namespace once: `npx ovsx create-namespace candela -p <token>`. The
-   namespace is the immutable id and must match the VS Code publisher.
-4. First publish: dispatch with `openvsx` checked (same `.vsix` as VS Code). New
-   uploads sit "Deactivated" for a few seconds while processing. Verify at
-   `https://open-vsx.org/extension/candela/candela-themes`.
-
-### JetBrains Marketplace
-
-> Live, first version (0.2.1) approved. Plugin page:
-> <https://plugins.jetbrains.com/plugin/33084-candela-themes> — edit/manage at
-> <https://plugins.jetbrains.com/plugin/33084-candela-themes/edit>. Numeric id
-> **33084**; the upload job identifies the plugin by `xmlId` (`com.candela.themes`)
-> read from the generated `plugin.xml`, so the number is informational only.
-
-1. The **first version must be uploaded through the web UI** at
-   <https://plugins.jetbrains.com/plugin/add> and is **manually moderated/reviewed**
-   before it goes live. Upload `dist/candela-themes-intellij-<version>.zip` from a
-   dry run.
-2. After approval, create a **permanent** token under your Marketplace profile →
-   **My Tokens** → `JETBRAINS_TOKEN`. That is the only JetBrains secret.
-3. Later versions: dispatch with `jetbrains` checked. Updates to an approved plugin
-   publish via the API without re-review. The plugin `id` (`com.candela.themes`) and
-   numeric id are permanent.
-
-> **A wrong plugin identifier is a bare `404`** from
-> `POST /api/updates/upload` — same shape as a bad endpoint or an unapproved plugin,
-> with nothing naming the id as the cause. That cost one debugging round on v0.2.4
-> (the secret held `33069`; the real plugin is `33084`), which is why the job now
-> derives `xmlId` from `plugin.xml` instead of carrying a hand-copied number. To
-> check an id by hand: `curl -s https://plugins.jetbrains.com/api/plugins/<id>`, or
-> look it up by name with `.../api/searchPlugins?search=candela&max=5`.
+- **VS Code** — classic Azure DevOps PATs retire **2026-12-01**; migrate `VSCE_PAT` to
+  Entra ID workload identity federation (`vsce publish --azure-credential`) before then.
+- **Open VSX** — a new upload shows as "Deactivated" for a few seconds while it
+  processes. Same `.vsix` as VS Code.
+- **JetBrains** — the plugin went live after a hand review of its first version, and
+  **each update is moderated too**: a successful upload returns `201` with
+  `"approve": false`, and the version appears on the listing once a moderator clears it.
+  Uploads are identified by `xmlId`, read from the generated `plugin.xml`.
+- **Zed / Sublime** — both install from committed git contents, so they consume the dist
+  repos below rather than this repo.
 
 ### Dedicated distribution repos
 
@@ -249,28 +214,20 @@ This one is a **repository** secret, not a `marketplace` environment secret — 
 `dist-repos` job runs outside that environment. Until it's set, the job logs a warning
 and skips (the release itself still succeeds).
 
-### Zed (submodule PR, version bump each release)
+### Zed and Sublime (the PR registries)
 
-No non-interactive publisher. The one-time listing is a PR to
-<https://github.com/zed-industries/extensions>:
+Neither has a publisher API, so each needs a human PR — first to get listed, and for
+Zed once per release after that. The walkthroughs are in
+[`marketplace-playbook.md`](marketplace-playbook.md); what a release owes them:
 
-1. Add **`candela-themes-zed`** as an **HTTPS** git submodule under
-   `extensions/candela-themes`, pinned at the release tag.
-2. Add a top-level `extensions.toml` entry with the `id` (`candela-themes`) and
-   `version`, run `pnpm sort-extensions`, open the PR. On merge, Zed's CI packages
-   and publishes.
-3. The `id` is permanent; the dist repo carries the required license. Each later
-   release: bump the submodule to the new tag + bump `version` in `extensions.toml`
-   in a new PR (the dist repo is already synced by CI).
+- **Zed** — one PR per release to <https://github.com/zed-industries/extensions>:
+  bump the `extensions/candela-themes` submodule to the new tag and `version` in
+  `extensions.toml`, then `pnpm sort-extensions`. The dist repo is already synced and
+  tagged by `dist-repos`, so this is a two-line change.
+- **Sublime** — nothing. Package Control polls tags on the dist repo, which
+  `dist-repos` creates every release. (Branch-based releases are deprecated; tags are
+  required.)
 
-### Sublime Package Control (one-time channel PR, then tags)
-
-No publisher; Package Control polls git tags on the dist repo, which CI tags every
-release, so the listing needs setting up only once:
-
-1. Fork <https://github.com/wbond/package_control_channel>, add a repository entry
-   under `repository/` pointing at `candela-themes-sublime` with `"tags": true`.
-2. Run the ChannelRepositoryTools tests locally, open the PR, await human review.
-3. After the listing is merged, every new `vX.Y.Z` tag on the dist repo is picked up
-   automatically — no further PRs. (Branch-based releases are deprecated; tags are
-   required.)
+> **Not yet listed, and `candela-theme` in Zed's registry is not ours** — it belongs to
+> an unrelated author. Our id is `candela-themes`, still unclaimed. Don't read that
+> entry as proof Candela is already there.
