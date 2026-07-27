@@ -148,7 +148,6 @@ Secrets live on the `marketplace` environment:
 | `VSCE_PAT` | VS Code | Azure DevOps PAT, scope **Marketplace → Manage**, all orgs |
 | `OVSX_PAT` | Open VSX | Open VSX access token |
 | `JETBRAINS_TOKEN` | JetBrains | Marketplace **permanent** token |
-| `JETBRAINS_PLUGIN_ID` | JetBrains | numeric plugin id assigned at first upload |
 
 The `marketplace` environment requires the sole maintainer's approval, permits
 self-review (one maintainer), and forbids administrative bypass. Add the secrets
@@ -200,20 +199,29 @@ exact secret names follow here.
 
 ### JetBrains Marketplace
 
-> Registered. Plugin page: <https://plugins.jetbrains.com/plugin/33069-candela-themes>
-> — edit/manage at <https://plugins.jetbrains.com/plugin/33069-candela-themes/edit>.
-> Numeric plugin id **33069** → `JETBRAINS_PLUGIN_ID`.
+> Live, first version (0.2.1) approved. Plugin page:
+> <https://plugins.jetbrains.com/plugin/33084-candela-themes> — edit/manage at
+> <https://plugins.jetbrains.com/plugin/33084-candela-themes/edit>. Numeric id
+> **33084**; the upload job identifies the plugin by `xmlId` (`com.candela.themes`)
+> read from the generated `plugin.xml`, so the number is informational only.
 
 1. The **first version must be uploaded through the web UI** at
    <https://plugins.jetbrains.com/plugin/add> and is **manually moderated/reviewed**
    before it goes live. Upload `dist/candela-themes-intellij-<version>.zip` from a
    dry run.
-2. After approval, note the numeric plugin id → `JETBRAINS_PLUGIN_ID`. Create a
-   **permanent** token under your Marketplace profile → **My Tokens** →
-   `JETBRAINS_TOKEN`.
+2. After approval, create a **permanent** token under your Marketplace profile →
+   **My Tokens** → `JETBRAINS_TOKEN`. That is the only JetBrains secret.
 3. Later versions: dispatch with `jetbrains` checked. Updates to an approved plugin
    publish via the API without re-review. The plugin `id` (`com.candela.themes`) and
    numeric id are permanent.
+
+> **A wrong plugin identifier is a bare `404`** from
+> `POST /api/updates/upload` — same shape as a bad endpoint or an unapproved plugin,
+> with nothing naming the id as the cause. That cost one debugging round on v0.2.4
+> (the secret held `33069`; the real plugin is `33084`), which is why the job now
+> derives `xmlId` from `plugin.xml` instead of carrying a hand-copied number. To
+> check an id by hand: `curl -s https://plugins.jetbrains.com/api/plugins/<id>`, or
+> look it up by name with `.../api/searchPlugins?search=candela&max=5`.
 
 ### Dedicated distribution repos
 

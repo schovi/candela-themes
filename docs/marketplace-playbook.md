@@ -144,10 +144,11 @@ take days.
 1. Sign in at <https://plugins.jetbrains.com> with a JetBrains account.
 2. Upload the first version through the web UI at <https://plugins.jetbrains.com/plugin/add>
    → upload `dist/candela-themes-intellij-<version>.zip`.
-3. Wait for approval, then grab the numeric plugin id from the listing URL and store it
-   as the `JETBRAINS_PLUGIN_ID` secret.
+3. Wait for approval. No plugin-id secret to set: the upload job reads `xmlId`
+   (`com.candela.themes`) from the generated `plugin.xml`.
 4. Create a permanent token: profile → **My Tokens** → generate. Store it as the
-   `JETBRAINS_TOKEN` secret in the `marketplace` environment.
+   `JETBRAINS_TOKEN` secret in the `marketplace` environment — the only one JetBrains
+   needs.
 5. Later versions — dispatch the workflow with `jetbrains` checked. Updates to an
    approved plugin publish via the API with no re-review.
 

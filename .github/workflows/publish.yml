@@ -152,17 +152,24 @@ jobs:
           gradle-version: '9.0.0'
       - run: npm ci
       - run: npm run package:intellij
+      # Identifies the plugin by xmlId, not by the numeric marketplace id. The API
+      # accepts either, and xmlId is generated from this repo's own plugin.xml, so it
+      # cannot drift the way a hand-copied number can — a wrong number is a bare 404
+      # with no hint that the id, not the token or the endpoint, was the problem.
       - name: Upload update to JetBrains Marketplace
         env:
           JETBRAINS_TOKEN: ${{ secrets.JETBRAINS_TOKEN }}
-          JETBRAINS_PLUGIN_ID: ${{ secrets.JETBRAINS_PLUGIN_ID }}
         run: |
-          if [ -z "$JETBRAINS_TOKEN" ] || [ -z "$JETBRAINS_PLUGIN_ID" ]; then
-            echo "::warning::JETBRAINS_TOKEN/JETBRAINS_PLUGIN_ID not set — skipping JetBrains publish."
+          if [ -z "$JETBRAINS_TOKEN" ]; then
+            echo "::warning::JETBRAINS_TOKEN not set — skipping JetBrains publish."
             exit 0
           fi
+          XML_ID=$(sed -n 's:.*<id>\(.*\)</id>.*:\1:p' \
+            build/intellij/src/main/resources/META-INF/plugin.xml | head -1)
+          test -n "$XML_ID"
+          echo "Uploading as xmlId=$XML_ID"
           curl -i --fail \
             -H "Authorization: Bearer $JETBRAINS_TOKEN" \
-            -F pluginId="$JETBRAINS_PLUGIN_ID" \
+            -F xmlId="$XML_ID" \
             -F file=@"$(ls dist/candela-themes-intellij-*.zip)" \
             https://plugins.jetbrains.com/api/updates/upload
