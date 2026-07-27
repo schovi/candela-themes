@@ -119,10 +119,12 @@ at that version, then pushes and publishes a GitHub Release with all artifacts p
 committed locally. Use the `release` skill (`/release`) — it decides whether a
 release is warranted and which bump to pick.
 
-Delivery is chained, not a second command: `Release` calls the `Publish` workflow at
-the new tag, which syncs the Zed/Sublime dist repos immediately and queues VS Code /
-Open VSX / JetBrains behind the protected `marketplace` environment — those three are
-irreversible, so a maintainer approves them in the UI (D10 in `docs/decisions.md`).
+Delivery is a **second, separate dispatch** — `Release` stops at the GitHub Release.
+Once the tag exists, `gh workflow run publish.yml -f ref=vX.Y.Z` syncs the
+Zed/Sublime dist repos immediately and queues VS Code / Open VSX / JetBrains behind
+the protected `marketplace` environment — those three are irreversible, so a
+maintainer approves them in the UI (D10 in `docs/decisions.md`). Pass the tag as the
+`ref` **input**, not `--ref`: `--ref` picks which version of the workflow file runs.
 Full runbook: `docs/release-runbook.md`.
 
 ### Adding a 17th theme or new format

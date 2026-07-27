@@ -4,14 +4,12 @@
 # pushes and publishes the GitHub Release. A failed build leaves no remote
 # commit or tag. Main-only.
 #
-# Delivery to every downstream channel (Zed/Sublime dist repos, VS Code, Open
-# VSX, JetBrains) then runs automatically as the `publish` job, which calls
-# publish.yml — so shipping a change reaches every channel by default instead of
-# depending on someone remembering a second dispatch. The irreversible
-# third-party publishes inside that workflow still sit behind the protected
-# `marketplace` environment, so this job never touches store credentials and a
-# maintainer approves each store push. Pass `publish=false` to cut a tag without
-# delivering it.
+# This workflow stops at the GitHub Release. Delivery to downstream channels
+# (Zed/Sublime dist repos, VS Code, Open VSX, JetBrains) is a separate,
+# explicitly dispatched workflow — publish.yml — run against the tag this one
+# created. Two commands, each with one job to do and one way to fail: a flaky
+# store upload can never muddy a correct release, and a re-publish never risks
+# re-tagging. See docs/release-runbook.md.
 name: Release
 
 on:
@@ -22,10 +20,6 @@ on:
         type: choice
         options: [patch, minor, major]
         default: patch
-      publish:
-        description: Deliver to dist repos + marketplaces after the GitHub Release
-        type: boolean
-        default: true
 
 permissions:
   contents: write
@@ -33,8 +27,6 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.bump.outputs.version }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -85,7 +77,6 @@ jobs:
           npm version "${{ inputs.bump }}" -m "release: v%s [skip ci]"
           VERSION=$(node -p "require('./package.json').version")
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       # The build is the gate: if any package fails, the job stops here and the
       # tag never reaches the remote.
@@ -112,18 +103,6 @@ jobs:
             dist/*.sublime-package \
             dist/SHA256SUMS.txt
 
-  # Deliver the tag everywhere. Called (not dispatched) because a workflow_dispatch
-  # fired with GITHUB_TOKEN does not start a new run — workflow_call is the only
-  # chain that avoids introducing a PAT. Passes the tag explicitly: a called
-  # workflow inherits the caller's ref (main), which is one commit behind the bump.
-  publish:
-    needs: release
-    if: ${{ inputs.publish }}
-    uses: ./.github/workflows/publish.yml
-    with:
-      ref: v${{ needs.release.outputs.version }}
-      dist_repos: true
-      vscode: true
-      openvsx: true
-      jetbrains: true
-    secrets: inherit
+      - name: Next step
+        run: |
+          echo "::notice::Released v${VERSION}. Deliver it with: gh workflow run publish.yml -f ref=v${VERSION}"

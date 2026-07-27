@@ -16,11 +16,13 @@ Channels, at a glance:
 | Sublime Package Control | tags on `candela-themes-sublime` dist repo | Yes, after one-time channel PR (tags drive it) |
 | Neovim / Helix / terminals | GitHub Releases (canonical) | Yes (the tag) |
 
-**One dispatch ships everywhere.** `Release` calls `Publish` as its final job, so
-cutting a release delivers to every channel above by default. There is no second
-command to remember. The two workflows stay separate files because they carry
-different risk (see [Why release and publish are separate jobs](#why-release-and-publish-are-separate-jobs)),
-not because delivery is optional.
+**Two dispatches, in order.** `Release` cuts the tag and the GitHub Release, and
+stops. `Publish` then delivers that tag to the channels above. They are separate
+commands on purpose — they differ in reversibility, failure modes and retry
+granularity (see [Why release and publish are separate](#why-release-and-publish-are-separate)) —
+so cutting a release is never blocked by a store outage, and re-publishing never
+risks re-tagging. The cost is remembering step two; the `release` skill reminds you,
+and so does a notice at the end of every `Release` run.
 
 ## Cut a release
 
@@ -44,9 +46,8 @@ job:
 5. pushes the bump commit + tag to `main` and creates the GitHub Release with generated
    notes and every artifact plus `SHA256SUMS.txt`.
 
-Then, unless you passed `-f publish=false`, it calls the `Publish` workflow at the
-new tag, which delivers to the dist repos immediately and to the three marketplaces
-once you approve them ([Delivery](#delivery-publish)).
+That is where `Release` ends. Delivering the tag to the dist repos and the three
+marketplaces is the second dispatch, [`Publish`](#delivery-publish).
 
 Everything is rebuilt in the runner — generated `build/` and `dist/` are never
 committed, so a release never depends on local state. After a release, `git pull` so
@@ -90,18 +91,21 @@ D6 in [`docs/decisions.md`](decisions.md)).
 ## Delivery (`Publish`)
 
 `.github/workflows/publish.yml` is the single place a version is handed to
-downstream channels. It runs two ways, with the same jobs either way:
+downstream channels. Always dispatched by hand, after the tag exists. Every channel
+input defaults to `true`:
 
-- **Called by `Release`** — the normal path. Every channel input defaults to `true`,
-  so a release ships everywhere without a second command.
-- **Dispatched manually** — to retry one channel after a failure, or to backfill a
-  store that got registered after the tag was cut. Dispatch it **against the tag**,
-  and uncheck what you don't want:
+```sh
+gh workflow run publish.yml -f ref=vX.Y.Z                       # every channel
+gh workflow run publish.yml -f ref=vX.Y.Z -f jetbrains=true \
+  -f vscode=false -f openvsx=false -f dist_repos=false          # retry one
+```
 
-  ```sh
-  gh workflow run publish.yml --ref vX.Y.Z -f jetbrains=true \
-    -f vscode=false -f openvsx=false -f dist_repos=false
-  ```
+> **Pass the tag as the `ref` input, never as `--ref`.** `--ref` selects which
+> *version of the workflow file* GitHub runs, so `--ref vX.Y.Z` runs whatever
+> publish.yml looked like at that tag — stale, or missing entirely if the file was
+> added or renamed later (that failure reads `Workflow does not have
+> 'workflow_dispatch' trigger`). Dispatching from the default branch with `-f ref=`
+> keeps the workflow definition and the published version independent.
 
 Jobs are split by **reversibility**, not by tool:
 
@@ -115,10 +119,10 @@ Jobs are split by **reversibility**, not by tool:
 A channel whose credential secret is missing logs a `::warning::` and exits 0 rather
 than failing. A store you haven't registered yet never turns a good release red.
 
-### Why release and publish are separate jobs
+### Why release and publish are separate
 
-They are chained, so nothing is forgotten, but not merged, because the halves differ
-in four ways that matter:
+Two dispatches rather than one chained pipeline, because the halves differ in four
+ways that matter:
 
 1. **Reversibility.** A GitHub Release can be deleted and re-tagged. A version
    published to VS Code Marketplace, Open VSX or JetBrains is burned permanently.
@@ -131,6 +135,11 @@ in four ways that matter:
    artifacts that are already correct.
 4. **Retry granularity.** A failed store publish is one re-dispatch of that channel,
    with no risk of re-tagging.
+
+Chaining them (a `workflow_call` job on the end of `Release`) was tried and reverted:
+it made one command carry two failure domains, and the version of publish.yml that
+ran became coupled to which ref you dispatched. Two predictable commands beat one
+clever one (D10).
 
 Secrets live on the `marketplace` environment:
 
@@ -145,13 +154,12 @@ The `marketplace` environment requires the sole maintainer's approval, permits
 self-review (one maintainer), and forbids administrative bypass. Add the secrets
 above under repo **Settings → Environments → `marketplace`**.
 
-> **Deployment policy must allow `main`, not just `v*`.** A called workflow inherits
-> the caller's ref, so when `Release` (main-only) calls `Publish`, `github.ref` is
-> `refs/heads/main` — a tags-only policy would block every automatic delivery. Add
-> `main` alongside `v*` in **Settings → Environments → `marketplace` → deployment
-> branches and tags**. The tag policy was never the real protection: the required
-> reviewer is, and it still applies. The jobs *build* from the tag regardless —
-> `Release` passes the tag it just pushed as the `ref` input, so the published
+> **Deployment policy must allow `main`, not just `v*`.** `Publish` is dispatched
+> from the default branch (the tag travels as the `ref` input), so `github.ref` is
+> `refs/heads/main` and a tags-only policy would block every delivery. Add `main`
+> alongside `v*` in **Settings → Environments → `marketplace` → deployment branches
+> and tags**. The tag policy was never the real protection: the required reviewer is,
+> and it still applies. The jobs *build* from the `ref` input, so the published
 > artifacts always carry the released version, not main's HEAD.
 
 ## First submissions

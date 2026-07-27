@@ -66,10 +66,10 @@ out of ordinary PR / branch / tag CI and makes each publish wait for your approv
 3. Add the secrets below as each store issues them (**Environment secrets**, not
    repo-wide). `DIST_PUSH_TOKEN` is the exception — that one is a *repository* secret,
    since the `dist-repos` job runs outside this environment.
-4. Set **Deployment branches and tags** to allow both `main` and `v*`. `Release` calls
-   `Publish`, and a called workflow inherits the caller's ref (`main`), so a tags-only
-   policy blocks every automatic delivery. Your approval is the gate that matters; the
-   artifacts are still built from the tag `Release` passes in.
+4. Set **Deployment branches and tags** to allow both `main` and `v*`. `Publish` is
+   dispatched from `main` with the tag as its `ref` **input**, so a tags-only policy
+   blocks every delivery. Your approval is the gate that matters; the artifacts are
+   still built from the tag you pass in.
 
 The `Publish` workflow's store jobs already declare `environment: marketplace` — you
 don't edit any YAML, just fill this in.
@@ -212,11 +212,11 @@ Once the secrets are in the `marketplace` environment and the first listings exi
 recurring release is short:
 
 1. Cut the release (dispatch the `Release` workflow — see the runbook). It builds the
-   GitHub Release and every artifact, then calls `Publish`, which syncs the
-   Zed/Sublime dist repos and queues the three store jobs.
-2. Approve the `marketplace` environment gate when GitHub asks. That's the whole store
-   step — no second dispatch. (Only re-dispatch `Publish` manually if one store failed
-   and you want to retry just that channel.)
+   GitHub Release and every artifact, and stops there.
+2. Deliver that tag: `gh workflow run publish.yml -f ref=vX.Y.Z`. It syncs the
+   Zed/Sublime dist repos immediately and queues the three store jobs. Approve the
+   `marketplace` environment gate when GitHub asks. To retry one store, re-dispatch
+   with the other channels `=false`.
 3. The one manual leftover: Zed's one-line `version` bump PR. Sublime needs nothing —
    it follows the new tag.
 

@@ -1,14 +1,17 @@
-# Deliver one released version to every downstream channel.
+# Deliver one already-released version to the downstream channels.
 #
-# Runs two ways:
+# Always dispatched by hand, after release.yml has cut the tag:
 #
-#   automatically — release.yml calls this workflow as its final job, so a
-#                   release ships everywhere by default. That is the point: one
-#                   dispatch delivers the change to every channel, instead of
-#                   leaving the stores silently lagging behind the tag.
-#   manually      — `gh workflow run publish.yml --ref vX.Y.Z -f jetbrains=true`
-#                   to retry a single channel that failed, or to backfill a store
-#                   registered after the tag was cut. Uncheck what you don't want.
+#   gh workflow run publish.yml -f ref=v0.2.4                 # every channel
+#   gh workflow run publish.yml -f ref=v0.2.4 -f jetbrains=true \
+#     -f dist_repos=false -f vscode=false -f openvsx=false    # retry one
+#
+# `ref` names the tag to build and publish; the run itself always dispatches
+# from the default branch. That is deliberate: `--ref vX.Y.Z` resolves the
+# *workflow file* at that tag, so any tag cut before a change to this file
+# would run a stale version of it (or, if the file was renamed, fail with
+# "workflow does not have workflow_dispatch trigger"). Passing the tag as an
+# input keeps the workflow definition and the artifact version independent.
 #
 # Channels are split across jobs by how reversible they are, not by tool:
 #
@@ -31,34 +34,12 @@
 name: Publish
 
 on:
-  workflow_call:
-    inputs:
-      # Callers run on a branch, but the artifacts must be built from the tag —
-      # otherwise a release would publish the pre-bump version. release.yml
-      # passes the tag it just pushed.
-      ref:
-        description: Git ref to build and publish from (defaults to this run's ref)
-        type: string
-        default: ''
-      dist_repos:
-        description: Sync the Zed + Sublime distribution repos
-        type: boolean
-        default: true
-      vscode:
-        description: Publish to VS Code Marketplace
-        type: boolean
-        default: true
-      openvsx:
-        description: Publish to Open VSX
-        type: boolean
-        default: true
-      jetbrains:
-        description: Publish to JetBrains Marketplace (plugin must already be approved)
-        type: boolean
-        default: true
-
   workflow_dispatch:
     inputs:
+      ref:
+        description: Release tag to build and publish (e.g. v0.2.4; blank = this run's ref)
+        type: string
+        default: ''
       dist_repos:
         description: Sync the Zed + Sublime distribution repos
         type: boolean

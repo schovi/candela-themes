@@ -5,11 +5,11 @@ description: >
   decide whether a release is warranted, choose the semver bump, dispatch the
   CI release workflow, watch it, and verify the published assets. Use when the
   user says "/release", "cut a release", "publish a new version", "ship a
-  version", or "release the themes". The release also chains delivery to every
-  channel (dist repos + editor marketplaces); the irreversible store publishes
-  wait on a maintainer approving the `marketplace` environment gate (see
-  docs/release-runbook.md). Project-specific; only meaningful in the
-  candela-themes repo.
+  version", or "release the themes". Delivery to every channel (dist repos +
+  editor marketplaces) is a second dispatch this skill also makes; the
+  irreversible store publishes wait on a maintainer approving the `marketplace`
+  environment gate (see docs/release-runbook.md). Project-specific; only
+  meaningful in the candela-themes repo.
 ---
 
 # Release (Candela Themes)
@@ -24,18 +24,16 @@ CI validates, creates an unpushed version commit and tag, builds every package a
 that version, then pushes and publishes the GitHub Release. A failed build leaves
 no remote commit or tag. Nothing is built or tagged on your machine.
 
-**Delivery is chained, not separate.** The `release` job is followed by a `publish`
-job that calls `.github/workflows/publish.yml` at the new tag. That workflow syncs
-the Zed + Sublime dist repos immediately, and queues VS Code / Open VSX / JetBrains
-behind the protected `marketplace` environment — those three are irreversible
-(a published version number can never be reused), so a maintainer must approve them
-in the GitHub UI. A store with no credential secret configured warns and skips
-instead of failing the run.
+**Delivery is a second dispatch.** `Release` stops at the GitHub Release.
+`.github/workflows/publish.yml` then delivers that tag: it syncs the Zed + Sublime
+dist repos immediately, and queues VS Code / Open VSX / JetBrains behind the
+protected `marketplace` environment — those three are irreversible (a published
+version number can never be reused), so a maintainer must approve them in the GitHub
+UI. A store with no credential secret configured warns and skips instead of failing.
 
-**Your job here** is the version decision and getting a green GitHub Release. You
-do **not** dispatch a second workflow: you tell the user the approval gate is
-waiting, and that Zed's registry still needs its manual submodule-bump PR
-(`docs/release-runbook.md`).
+**Your job here** is the version decision, a green GitHub Release, and then firing
+the publish dispatch (step 7) so the stores never lag the tag. Zed's registry still
+needs its manual submodule-bump PR (`docs/release-runbook.md`).
 
 ## Model (read first)
 
@@ -100,9 +98,7 @@ gh workflow run release.yml -f bump=<patch|minor|major> --ref main
 
 (Or the GitHub UI → Actions → Release → Run workflow → pick the bump, branch `main`.)
 
-Delivery to every channel is on by default. Add `-f publish=false` only when the
-user explicitly wants a tag without shipping it (a rehearsal, or a version they
-intend to supersede immediately).
+This dispatch only cuts the tag and the GitHub Release. Delivery is step 7.
 
 ## 6. Watch CI and verify
 
@@ -112,19 +108,11 @@ RUN=$(gh run list --workflow=release.yml --limit 1 --json databaseId -q '.[0].da
 gh run watch "$RUN" --exit-status      # capture ITS exit code directly
 ```
 
-`gh run watch` will sit on the `publish` job's marketplace gate until a human
-approves it — that pause is expected, not a hang. The GitHub Release itself is
-already complete at that point, so verify it (below) rather than waiting.
-
 Do **not** chain a trailing command after `gh run watch` that masks its exit status.
 
 - **On failure:** `gh run view "$RUN" --log-failed`, diagnose the root cause, fix,
   commit, push to `main`, then re-dispatch (step 5). No release commit or tag was
-  pushed, so there is nothing to unwind. **Unless the failure is in the `publish`
-  job** — by then the tag and Release are live and must not be re-cut. Fix the
-  cause and re-dispatch only the failed channel against the tag:
-  `gh workflow run publish.yml --ref vX.Y.Z -f <channel>=true` with the others
-  `=false`.
+  pushed, so there is nothing to unwind.
 - **On success:** confirm the Release is real and complete:
   ```sh
   V=$(node -p "require('./package.json').version")   # after: git pull, to see CI's bump
@@ -134,14 +122,31 @@ Do **not** chain a trailing command after `gh run watch` that masks its exit sta
   `.vsix`, the `.sublime-package`, the Zed archive, the all-formats zip, and
   `SHA256SUMS.txt`. Then `git pull` so local `main` picks up CI's version-bump commit.
 
-## 7. Report
+## 7. Deliver the tag (second dispatch)
+
+Only after the Release is verified green. The tag goes in as the **`ref` input**;
+never as `--ref`, which would run the copy of publish.yml that existed at that tag:
+
+```sh
+gh workflow run publish.yml -f ref="v$V"
+PUB=$(gh run list --workflow=publish.yml --limit 1 --json databaseId -q '.[0].databaseId')
+gh run view "$PUB" --json jobs -q '.jobs[] | "\(.name) \(.status) \(.conclusion // "")"'
+```
+
+`dist-repos` runs immediately. `vscode`, `openvsx` and `jetbrains` sit `waiting` on
+the `marketplace` environment gate until the maintainer approves in the UI — expected,
+not a hang. Don't `gh run watch` this one to completion; report the gate instead.
+
+Re-dispatch a single channel the same way, others `=false`:
+`gh workflow run publish.yml -f ref="v$V" -f jetbrains=true -f vscode=false -f openvsx=false -f dist_repos=false`
+
+## 8. Report
 
 - Release URL, the asset list, the version chosen and why, and what changed since the
   last tag.
-- State the delivery status: dist repos synced automatically; VS Code / Open VSX /
-  JetBrains are **waiting on the maintainer's approval** of the `marketplace`
-  environment gate (link the run). Name any channel that warn-skipped for a missing
-  secret.
+- State the delivery status: dist repos synced; VS Code / Open VSX / JetBrains are
+  **waiting on the maintainer's approval** of the `marketplace` environment gate
+  (link the publish run). Name any channel that warn-skipped for a missing secret.
 - Remaining manual step: the Zed submodule + `version` bump PR to
   `zed-industries/extensions` (`docs/release-runbook.md`). Sublime needs nothing.
 

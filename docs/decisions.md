@@ -207,3 +207,34 @@ Two consequences worth knowing:
 
 Every channel input now defaults to `true`, and each job warn-skips when its credential
 secret is absent, so a not-yet-registered store cannot turn a good release red.
+
+## D11 — Unchain delivery: `Release` and `Publish` are two dispatches, tag passed as an input (2026-07-27)
+
+**Supersedes the chaining half of D10.** The reversibility split (`dist-repos` with no
+gate; `vscode`/`openvsx`/`jetbrains` in the protected `marketplace` environment),
+the `publish.yml` name and the default-`true` channel inputs all stand. Only the
+`workflow_call` chain is removed.
+
+**Problem.** Chaining bought delivery-by-default and charged for it twice. One
+dispatch carried two failure domains, so reading a run meant untangling which half
+failed; and dispatching `Publish` by hand — the documented retry path — was
+`gh workflow run publish.yml --ref vX.Y.Z`, which resolves the *workflow file* at
+that tag. The first real retry attempt (backfilling JetBrains at v0.2.3, a tag cut
+before publish.yml existed under that name) failed with `Workflow does not have
+'workflow_dispatch' trigger`. The retry path was broken for exactly the tags most
+likely to need it.
+
+**Options.** (A) Keep the chain, fix the retry docs. (B) Unchain: `Release` stops at
+the GitHub Release, `Publish` is always dispatched, and the tag travels as a `ref`
+**input** rather than the dispatch ref.
+
+**Choice.** B. Two commands with one job each are more predictable than one command
+with two failure domains, and passing the tag as an input decouples *which version of
+the workflow runs* from *which version it publishes* — the coupling that produced the
+422. The cost D10 was trying to avoid (forgetting step two) is paid down cheaply
+instead: `Release` ends with a `::notice::` naming the exact publish command, and the
+`release` skill treats delivery as a required step of the loop, not an optional one.
+
+The `marketplace` deployment policy still needs `main` alongside `v*` (D10's second
+consequence), for the same reason in a different shape: `Publish` is now dispatched
+from the default branch, so `github.ref` is `refs/heads/main` either way.
