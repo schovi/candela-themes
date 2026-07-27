@@ -131,6 +131,20 @@ function checkCopy() {
   return failures;
 }
 
+// Generated store listings embed every screenshot by absolute raw.githubusercontent
+// URL, so a missing or misnamed file is a broken image on the VS Code / Open VSX page
+// that nothing local would notice — the listing renders fine, it just shows nothing.
+// The filename encodes theme order, so reordering themes silently invalidates it too.
+function checkScreenshots(themes) {
+  const dir = path.join(ROOT, 'docs/screenshots/examples');
+  return themes.flatMap((theme, index) => {
+    const name = `candela-${String(index + 1).padStart(2, '0')}-${theme.id}.png`;
+    return fs.existsSync(path.join(dir, name))
+      ? []
+      : [`screenshot: docs/screenshots/examples/${name} is missing — regenerate (see docs/screenshots/README.md)`];
+  });
+}
+
 const useColor = process.stdout.isTTY;
 const green = (s) => (useColor ? `\x1b[32m${s}\x1b[0m` : s);
 const red = (s) => (useColor ? `\x1b[31m${s}\x1b[0m` : s);
@@ -160,6 +174,11 @@ function main() {
   }
 
   for (const f of checkCopy()) {
+    console.log(`${red('FAIL')}  ${f}`);
+    hardFailures++;
+  }
+
+  for (const f of checkScreenshots(data.themes)) {
     console.log(`${red('FAIL')}  ${f}`);
     hardFailures++;
   }
