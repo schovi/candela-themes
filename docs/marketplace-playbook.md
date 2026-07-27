@@ -208,7 +208,8 @@ every release (see the runbook).
 
 1. Fork <https://github.com/wbond/package_control_channel>.
 2. Add a repository entry under `repository/` pointing at `candela-themes-sublime` with
-   `"tags": true`.
+   `"tags": true`. Name it **Candela Color Schemes** with a single `"color scheme"`
+   label — in Sublime, "theme" means a UI theme, so the reviewers reject it here.
 3. Run the **ChannelRepositoryTools** tests locally to validate the entry.
 4. Open the PR and wait for the human review.
 
