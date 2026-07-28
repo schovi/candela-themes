@@ -135,14 +135,20 @@ function checkCopy() {
 // URL, so a missing or misnamed file is a broken image on the VS Code / Open VSX page
 // that nothing local would notice — the listing renders fine, it just shows nothing.
 // The filename encodes theme order, so reordering themes silently invalidates it too.
+// The hand-captured full-window shots the Sublime readme embeds are checked too: those
+// are re-shot by hand, so a rename is exactly the kind of thing that slips through.
+const EMBEDDED_SHOTS = ['docs/screenshots/sublime/sublime-light.png', 'docs/screenshots/sublime/sublime-dark.png'];
 function checkScreenshots(themes) {
-  const dir = path.join(ROOT, 'docs/screenshots/examples');
-  return themes.flatMap((theme, index) => {
-    const name = `candela-${String(index + 1).padStart(2, '0')}-${theme.id}.png`;
-    return fs.existsSync(path.join(dir, name))
+  const missing = (file) =>
+    fs.existsSync(path.join(ROOT, file))
       ? []
-      : [`screenshot: docs/screenshots/examples/${name} is missing — regenerate (see docs/screenshots/README.md)`];
-  });
+      : [`screenshot: ${file} is missing — regenerate (see docs/screenshots/README.md)`];
+  return [
+    ...themes.flatMap((theme, index) =>
+      missing(`docs/screenshots/examples/candela-${String(index + 1).padStart(2, '0')}-${theme.id}.png`),
+    ),
+    ...EMBEDDED_SHOTS.flatMap(missing),
+  ];
 }
 
 const useColor = process.stdout.isTTY;
