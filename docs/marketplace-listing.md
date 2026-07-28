@@ -75,8 +75,12 @@ theme, where `NN` is the 1-based theme order. Regenerate with
 reference them by **absolute GitHub URL** so every marketplace renders the same set:
 
 ```
-https://github.com/schovi/candela-themes/raw/main/docs/screenshots/examples/candela-<NN>-<id>.png
+https://raw.githubusercontent.com/schovi/candela-themes/main/docs/screenshots/examples/candela-<NN>-<id>.png
 ```
+
+Use `raw.githubusercontent.com` directly, never `github.com/…/raw/…`: the latter 302s,
+and packagecontrol.io re-hosts readme images through its own downloader, dropping any
+`<img>` whose fetch throws instead of falling back to the remote URL.
 
 `lib/emitters.js` derives both the number and the caption from the themes array, so
 there is no hand-maintained pick list: the hero is `sepia-paper` and the gallery is
@@ -85,6 +89,14 @@ unshown theme is an uninstalled theme. Remote images cost the package nothing.
 
 `scripts/validate.js` fails if any theme lacks its expected file, so a reorder or a
 new theme can't ship a 404 into a store listing again.
+
+**Sublime also embeds two full-window shots** —
+`docs/screenshots/sublime/sublime-{light,dark}.png`, hand-captured in the real editor
+with the Adaptive UI theme on. The app-rendered gallery shows the editor pane only, so
+it can't show what Adaptive does to the sidebar, tabs and status bar, which is the whole
+point of the prompt the package ships. They sit right after that paragraph in
+`sublimeReadme()`, before the gallery. `validate.js` checks both exist
+(`EMBEDDED_SHOTS`). Capture flow: [`screenshots/README.md`](screenshots/README.md).
 
 JetBrains is the exception: its listing screenshots are uploaded through the plugin's
 web edit form, not read from `plugin.xml`. Upload the same PNGs by hand once.
