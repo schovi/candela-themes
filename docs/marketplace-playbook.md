@@ -198,6 +198,10 @@ Ongoing: each release, bump the submodule to the new tag and `version` in
 
 ## Sublime Package Control — manual listing, then tags
 
+**Done — [channel PR #9493](https://github.com/sublimehq/package_control_channel/pull/9493)
+is merged and <https://packagecontrol.io/packages/Candela%20Color%20Schemes> is live.**
+Steps 1–4 below are kept as the record of what the listing took; don't redo them.
+
 No publisher — Package Control polls your git tags. You register the package once, then
 new tags flow automatically.
 

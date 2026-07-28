@@ -14,7 +14,7 @@ Channels, at a glance:
 | Open VSX | live | `Publish` → `openvsx`, after you approve the gate |
 | JetBrains Marketplace | live | `Publish` → `jetbrains`, then JetBrains moderates the update |
 | Zed extension registry | **not yet** | dist repo auto-synced; then a submodule + `version` PR |
-| Sublime Package Control | **not yet** | dist repo auto-tagged; tags drive it once the channel PR lands |
+| Sublime Package Control | live | `Publish` → `dist-repos` tags the dist repo; the crawler polls tags on its own schedule |
 
 **Two dispatches, in order.** `Release` cuts the tag and stops; `Publish` delivers that
 tag. The whole loop:
@@ -170,7 +170,7 @@ this is the reference for what is fixed and where to look.
 | Open VSX | namespace `candela` | `OVSX_PAT` | <https://open-vsx.org/extension/candela/candela-themes> |
 | JetBrains | plugin id `com.candela.themes` · numeric `33084` | `JETBRAINS_TOKEN` | <https://plugins.jetbrains.com/plugin/33084-candela-themes> |
 | Zed | extension id `candela-themes` | — (PR) | <https://github.com/zed-industries/extensions> |
-| Sublime | package `candela-themes` | — (PR) | <https://github.com/wbond/package_control_channel> |
+| Sublime | package `Candela Color Schemes` | — (listed) | <https://packagecontrol.io/packages/Candela%20Color%20Schemes> |
 
 Nothing in that column can be renamed later, and a published version number can never
 be reused or unpublished on any of the three stores.
@@ -216,18 +216,23 @@ and skips (the release itself still succeeds).
 
 ### Zed and Sublime (the PR registries)
 
-Neither has a publisher API, so each needs a human PR — first to get listed, and for
-Zed once per release after that. The walkthroughs are in
+Neither has a publisher API, so each needs a human PR to get listed, and Zed one per
+release after that. Sublime's listing PR is merged
+([sublimehq/package_control_channel#9493](https://github.com/sublimehq/package_control_channel/pull/9493)),
+so nothing is owed there again. The walkthroughs are in
 [`marketplace-playbook.md`](marketplace-playbook.md); what a release owes them:
 
 - **Zed** — one PR per release to <https://github.com/zed-industries/extensions>:
   bump the `extensions/candela-themes` submodule to the new tag and `version` in
   `extensions.toml`, then `pnpm sort-extensions`. The dist repo is already synced and
   tagged by `dist-repos`, so this is a two-line change.
-- **Sublime** — nothing. Package Control polls tags on the dist repo, which
+- **Sublime** — nothing. The channel entry is `{"details": "…/candela-themes-sublime",
+  "releases": [{"tags": true}]}`, so Package Control polls tags on the dist repo, which
   `dist-repos` creates every release. (Branch-based releases are deprecated; tags are
-  required.)
+  required.) The crawler runs on its own schedule, so a fresh tag shows the previous
+  version on packagecontrol.io for a while — including its readme. That is lag, not a
+  failed publish; don't re-dispatch.
 
-> **Not yet listed, and `candela-theme` in Zed's registry is not ours** — it belongs to
-> an unrelated author. Our id is `candela-themes`, still unclaimed. Don't read that
+> **Zed is not yet listed, and `candela-theme` in its registry is not ours** — it belongs
+> to an unrelated author. Our id is `candela-themes`, still unclaimed. Don't read that
 > entry as proof Candela is already there.
