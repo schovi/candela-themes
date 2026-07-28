@@ -28,6 +28,13 @@ so even a surface that cuts mid-string cuts after a whole sentence.
 | `TAGLINE` | 60 | `candela.ink` H1, README tagline | no external limit; longer stops working as a brand line |
 | `SUMMARY` | 100 | Zed `extension.toml`, JetBrains card, GitHub repo description, `og:description` | JetBrains card truncated the old 190-char description at char 102 (task 045) |
 | `DESCRIPTION` | 350 | VS Code `package.json`, bundled READMEs, JetBrains detail page, `<meta name="description">` | GitHub's repo description field is a hard 350 |
+| `SUBLIME_DESCRIPTION` | 350 | `build/sublime/README.md`, the `candela-themes-sublime` repo description | same GitHub 350 |
+
+`SUBLIME_DESCRIPTION` is `DESCRIPTION` with "themes" swapped for "color schemes":
+Sublime reserves "theme" for UI themes, and Package Control review asked us to keep the
+word out of the package's README title and repo description
+([channel PR #9493](https://github.com/sublimehq/package_control_channel/pull/9493)).
+No other surface uses it.
 
 ---
 
@@ -54,6 +61,7 @@ social post), print it rather than retyping:
 ```sh
 node -p "require('./lib/copy.js').SUMMARY"
 node -p "require('./lib/copy.js').DESCRIPTION"
+node -p "require('./lib/copy.js').SUBLIME_DESCRIPTION"  # candela-themes-sublime only
 ```
 
 ---
