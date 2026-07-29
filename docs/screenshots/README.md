@@ -24,6 +24,23 @@ npm run screenshots -- --out=docs/screenshots/examples
 from `themes/candela-themes.json`, and writes one PNG per theme.
 Filenames must stay stable — the root README references them by relative path.
 
+## JetBrains listing frames
+
+`jetbrains/` holds the same app-rendered panes sized for the JetBrains plugin form,
+which wants uniform frames rather than tall cards: exactly **1200x760**, no
+name/description/swatch legend, all four sample panes filling the frame. One per
+theme, same `candela-<NN>-<id>.png` naming. Uploaded by hand — nothing generated
+embeds them, so they are safe to re-shoot at any size.
+
+```sh
+node scripts/screenshots.mjs --width=1200 --height=760 --scale=1 --meta=0 \
+  --panes=terminal,typescript,markdown,git --out=docs/screenshots/jetbrains
+```
+
+`--scale=1` makes the PNG literally 1200x760; `--scale=2` yields a 2400x1520 retina
+frame of the same layout if the form accepts it. `--height` switches the capture from
+"full card at natural height" to a fixed clipped frame, which is what pins the size.
+
 ## Real-editor shots (manual)
 
 `intellij/`, `sublime/`, `vscode/` and `zed/` hold shots taken in the actual editor, whole
