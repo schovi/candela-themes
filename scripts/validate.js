@@ -142,6 +142,8 @@ const EMBEDDED_SHOTS = [
   'docs/screenshots/sublime/sublime-dark.png',
   'docs/screenshots/zed/zed-light.png',
   'docs/screenshots/zed/zed-dark.png',
+  'docs/screenshots/vscode/vscode-light.png',
+  'docs/screenshots/vscode/vscode-dark.png',
 ];
 function checkScreenshots(themes) {
   const missing = (file) =>

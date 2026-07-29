@@ -26,11 +26,12 @@ Filenames must stay stable — the root README references them by relative path.
 
 ## Real-editor shots (manual)
 
-`intellij/`, `sublime/` and `zed/` hold shots taken in the actual editor, whole window and
-chrome included — the app-rendered cards above show an editor pane only, so they can't
-show what a theme does to a sidebar or a status bar. `sublime/sublime-{light,dark}.png`
-and `zed/zed-{light,dark}.png` lead the generated Sublime and Zed readmes (see
-[`../marketplace-listing.md`](../marketplace-listing.md)); the IntelliJ pair is uploaded
+`intellij/`, `sublime/`, `vscode/` and `zed/` hold shots taken in the actual editor, whole
+window and chrome included — the app-rendered cards above show an editor pane only, so they
+can't show what a theme does to a sidebar or a status bar. Directory names are the tool key
+`lib/emitters.js` uses, not the process name. `sublime/sublime-{light,dark}.png`,
+`vscode/vscode-{light,dark}.png` and `zed/zed-{light,dark}.png` lead their generated readmes
+(see [`../marketplace-listing.md`](../marketplace-listing.md)); the IntelliJ pair is uploaded
 by hand through the JetBrains plugin form.
 
 These are hand-captured, so pin the window geometry first or two shots never line up.
@@ -55,8 +56,10 @@ The window never moves, so the frames are pixel-aligned.
 Notes:
 
 - The process name is the binary, not the app name — `sublime_text`, `Code`,
-  `idea`. List candidates with
+  `idea`, `zed`. List candidates with
   `osascript -e 'tell application "System Events" to get name of every process'`.
+- A zoomed window silently ignores `set size`. Un-maximize first, then read the size
+  back (`get size of first window whose subrole is "AXStandardWindow"`) before capturing.
 - `window 1` is unreliable: Sublime's autocomplete and tooltips are windows too, and
   they sort first. `subrole is "AXStandardWindow"` picks the real editor window; it
   works for any Cocoa app.

@@ -90,14 +90,15 @@ unshown theme is an uninstalled theme. Remote images cost the package nothing.
 `scripts/validate.js` fails if any theme lacks its expected file, so a reorder or a
 new theme can't ship a 404 into a store listing again.
 
-**Sublime and Zed lead with two full-window shots each** —
-`docs/screenshots/sublime/sublime-{light,dark}.png` (captured with the Adaptive UI theme
-on) and `docs/screenshots/zed/zed-{light,dark}.png`. The app-rendered gallery shows the
-editor pane only, so it can't show what a theme does to the sidebar, tabs and status bar,
-which is exactly what those two surfaces recolor. Both readmes open with the pair instead
-of the shared `sepia-paper` hero, which would otherwise repeat verbatim in the gallery
-below. `validate.js` checks all four exist (`EMBEDDED_SHOTS`). Capture flow:
-[`screenshots/README.md`](screenshots/README.md).
+**VS Code, Sublime and Zed each lead with two full-window shots** —
+`docs/screenshots/{vscode/vscode,sublime/sublime,zed/zed}-{light,dark}.png`, the Sublime pair
+captured with the Adaptive UI theme on. The app-rendered gallery shows the editor pane only,
+so it can't show what a theme does to the sidebar, tabs and status bar, which is exactly what
+those surfaces recolor. All three readmes open with their own pair instead of the shared
+`sepia-paper` hero, which would otherwise repeat verbatim in the gallery below; nvim, the one
+readme with no real-editor shots, still uses the hero. Open VSX ships the same `.vsix`, so it
+inherits the VS Code readme. `validate.js` checks all six exist (`EMBEDDED_SHOTS`). Capture
+flow: [`screenshots/README.md`](screenshots/README.md).
 
 JetBrains is the exception: its listing screenshots are uploaded through the plugin's
 web edit form, not read from `plugin.xml`. Upload the same PNGs by hand once.
