@@ -75,7 +75,7 @@ function checkCopy() {
     failures.push('copy: DESCRIPTION must start with SUMMARY so truncation lands after a full sentence');
   }
 
-  for (const name of ['TAGLINE', 'SUMMARY', 'DESCRIPTION']) {
+  for (const name of ['TAGLINE', 'SUMMARY', 'DESCRIPTION', 'CUSTOMIZE']) {
     if (copy.THEME_COUNT_PATTERN.test(copy[name])) {
       failures.push(`copy: ${name} hard-codes a theme count — say "a family", not a number`);
     }
