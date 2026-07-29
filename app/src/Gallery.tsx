@@ -78,14 +78,22 @@ export function Gallery() {
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Search themes"
         />
-        <label className="filter-select">
+        <div className="filter-select">
           Mode
-          <select value={mode} onChange={(e) => setMode(e.target.value as typeof mode)}>
-            <option value="all">All</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
-        </label>
+          <div className="pg-segmented" role="group" aria-label="Filter by mode">
+            {(['all', 'light', 'dark'] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                className={mode === value ? 'is-on' : ''}
+                aria-pressed={mode === value}
+                onClick={() => setMode(value)}
+              >
+                {value === 'all' ? 'All' : value === 'light' ? 'Light' : 'Dark'}
+              </button>
+            ))}
+          </div>
+        </div>
         <span className="filter-count">
           {visible.length} of {themes.length} themes
         </span>

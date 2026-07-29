@@ -979,14 +979,6 @@ button.studio-start-card:hover, .studio-upload-card:hover { border-color: var(--
   font-size: 13px;
   color: var(--site-ink2);
 }
-.filter-select select {
-  padding: 8px 10px;
-  border: 1px solid var(--site-border);
-  border-radius: 8px;
-  background: var(--site-surface);
-  font-size: 14px;
-  color: var(--site-ink);
-}
 .filter-count { margin-left: auto; font-size: 13px; color: var(--site-faint); }
 .tag-filters {
   flex-basis: 100%;
