@@ -688,6 +688,138 @@
         "warning": "#e9bc4c",
         "ok": "#5fc9a5"
       }
+    },
+    {
+      "id": "arclight",
+      "name": "21 · Arclight",
+      "tone": "dark / acuity-first",
+      "tags": ["dark", "acuity-first", "high-contrast"],
+      "mode": "dark",
+      "description": "For dark eyes where sharpness is the limiter, not glare — a near-black ground under accents pushed past AA toward AAA, so every token reads at a glance. The dark counterpart to Contrast Max. Code in Overpass Mono, prose in Lora.",
+      "fonts": {
+        "code": "Overpass Mono",
+        "prose": "Lora"
+      },
+      "colors": {
+        "bg": "#0e0f11",
+        "surface": "#171a1d",
+        "border": "#3d4349",
+        "ink": "#eef1f4",
+        "ink2": "#a7b0b8",
+        "faint": "#9aa3ab",
+        "selection": "#33414f",
+        "cursor": "#ffd166",
+        "lineHighlight": "#16191c",
+        "kw": "#ffb0d8",
+        "str": "#8ce8a8",
+        "fn": "#8fc0ff",
+        "num": "#ffc07a",
+        "type": "#d2b0ff",
+        "builtin": "#7fe0e8",
+        "punct": "#eef1f4",
+        "error": "#f2857e",
+        "warning": "#f2d05a",
+        "ok": "#6fe0c0"
+      }
+    },
+    {
+      "id": "amber-mono",
+      "name": "22 · Amber Mono",
+      "tone": "dark / monochrome+1",
+      "tags": ["dark", "monochrome", "warm"],
+      "mode": "dark",
+      "description": "Almost monochrome — everything lives in warm grays and a single amber does all the semantic lifting, like a filament terminal. The dark counterpart to Graphite Mono. Code in IBM Plex Mono, prose in IBM Plex Sans.",
+      "fonts": {
+        "code": "IBM Plex Mono",
+        "prose": "IBM Plex Sans"
+      },
+      "colors": {
+        "bg": "#1b1917",
+        "surface": "#232120",
+        "border": "#454240",
+        "ink": "#dcd8d3",
+        "ink2": "#948f89",
+        "faint": "#918c86",
+        "selection": "#3a3633",
+        "cursor": "#f0a83c",
+        "lineHighlight": "#211f1d",
+        "kw": "#e8a94e",
+        "str": "#f0c987",
+        "fn": "#b8b2ab",
+        "num": "#a8a29b",
+        "type": "#c8c2ba",
+        "builtin": "#e8a94e",
+        "punct": "#dcd8d3",
+        "error": "#d1786a",
+        "warning": "#c9b06a",
+        "ok": "#8dc4b0"
+      }
+    },
+    {
+      "id": "hearth",
+      "name": "23 · Hearth",
+      "tone": "dark / warm low-blue",
+      "tags": ["dark", "warm", "low-blue"],
+      "mode": "dark",
+      "description": "An evening theme for the dark half — short-wavelength blue stripped out of every accent, leaving amber, clay and one soft green on a lit-room ground. The dark counterpart to Tungsten. Code in JetBrains Mono, prose in Source Serif 4.",
+      "fonts": {
+        "code": "JetBrains Mono",
+        "prose": "Source Serif 4"
+      },
+      "colors": {
+        "bg": "#241c17",
+        "surface": "#2c231c",
+        "border": "#4e3f31",
+        "ink": "#e8d6bc",
+        "ink2": "#a89279",
+        "faint": "#a08b70",
+        "selection": "#453527",
+        "cursor": "#f0a13c",
+        "lineHighlight": "#2e241c",
+        "kw": "#f0a05a",
+        "str": "#c6c05e",
+        "fn": "#e8c88c",
+        "num": "#dd7f5e",
+        "type": "#cf9a86",
+        "builtin": "#a8c47a",
+        "punct": "#e8d6bc",
+        "error": "#f2705f",
+        "warning": "#dbae4a",
+        "ok": "#8ac9a0"
+      }
+    },
+    {
+      "id": "azure-mono",
+      "name": "24 · Azure Mono",
+      "tone": "dark / monochrome+1",
+      "tags": ["dark", "monochrome", "cool"],
+      "mode": "dark",
+      "description": "Amber Mono's cool twin, and the closer translation of Graphite Mono — cool grays with a single azure carrying every syntax role. Code in IBM Plex Mono, prose in IBM Plex Sans.",
+      "fonts": {
+        "code": "IBM Plex Mono",
+        "prose": "IBM Plex Sans"
+      },
+      "colors": {
+        "bg": "#181a1c",
+        "surface": "#202224",
+        "border": "#424547",
+        "ink": "#d6dade",
+        "ink2": "#8e9296",
+        "faint": "#8b8f93",
+        "selection": "#353a3e",
+        "cursor": "#e8b45c",
+        "lineHighlight": "#1e2022",
+        "kw": "#78b4e8",
+        "str": "#a8d0ee",
+        "fn": "#b0b6bb",
+        "num": "#a0a6ab",
+        "type": "#c4cacf",
+        "builtin": "#78b4e8",
+        "punct": "#d6dade",
+        "error": "#d8806f",
+        "warning": "#cbb26c",
+        "ok": "#8ac4b0"
+      }
     }
   ],
   "ansiMapping": {

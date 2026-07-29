@@ -238,3 +238,37 @@ instead: `Release` ends with a `::notice::` naming the exact publish command, an
 The `marketplace` deployment policy still needs `main` alongside `v*` (D10's second
 consequence), for the same reason in a different shape: `Publish` is now dispatched
 from the default branch, so `github.ref` is `refs/heads/main` either way.
+
+## D12 — Ultra-low chroma has no dark counterpart; the other three experiments do (2026-07-29)
+
+**Problem.** The light half carries four design experiments (`graphite-mono`,
+`tungsten`, `eink-slate`, `contrast-max`) and the dark half carried none. Adding
+dark readings by taste risked shipping palettes that pass `lib/rules.js` and are
+still unusable, since the validator cannot judge whether tokens are *tellable
+apart*.
+
+**Options.** (A) Author dark counterparts for all four categories. (B) Explore
+first with throwaway candidates, validate and render each, ship only what
+survives.
+
+**Choice.** B, and it changed the answer. Eight candidates were authored, two per
+category, each run through `checkTheme` and rendered in the explorer
+([`dark-palette-exploration.md`](dark-palette-exploration.md) has the token
+blocks and per-candidate verdicts). Three categories produced shippable palettes —
+`arclight` (acuity-first), `amber-mono` + `azure-mono` (near-monochrome), `hearth`
+(low-blue evening). **Ultra-low chroma produced none, and the category is dropped
+for dark.** Both candidates passed every hard rule and both rendered as
+unhighlighted plain text.
+
+**Why it cannot work, so nobody retries it blind.** Every informational token must
+clear AA against `bg`. On a light ground that pushes accents *down* into a wide
+range (near-black through mid-gray) where lightness is free to vary. On a dark
+ground it pushes them *up* above roughly `#999`, and if chroma is also near zero by
+definition of the category, lightness is the only channel left to separate seven
+syntax tokens inside that narrow band. There is not enough room. Revisit only if
+the invariant binding informational tokens to `bg` ever changes.
+
+**Consequence.** The accent-hue warning count rises from 6 to 9: `amber-mono` and
+`azure-mono` warn at 1 hue and `hearth` at 3, exactly as their light counterparts
+`graphite-mono` (1) and `tungsten` (3) already do. Warn-only by design — a
+single-accent theme cannot reach 6 distinct hues and should not try.

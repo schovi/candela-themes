@@ -1,6 +1,6 @@
 # Candela Themes
 
-A set of 20 color themes (14 light and 6 dark) for terminals and editors, tuned for eye-strain comfort.
+A set of 24 color themes (14 light and 10 dark) for terminals and editors, tuned for eye-strain comfort.
 `themes/candela-themes.json` is the single source of truth (all palettes, tokens, ANSI
 mapping). User-facing docs (rationale, install, how themes are generated) live in the root
 [`README.md`](README.md); the vision-science rationale behind the invariants lives in

@@ -55,8 +55,9 @@ The vision-science rationale, including where common advice gets it wrong, is in
 ## The themes
 
 Themes 01–10 are the main palettes, from calm neutrals to stronger pastels.
-11–14 explore one design idea each. 15–20 are dark companions tuned to the same
-contrast rules.
+11–14 explore one design idea each. 15–24 are dark, tuned to the same contrast
+rules: 15–20 carry the heritage of palettes developers already know, and 21–24
+take three of the design experiments onto a dark ground.
 
 | # | Name | Tone | Code font | Prose font |
 | --- | --- | --- | --- | --- |
@@ -80,6 +81,10 @@ contrast rules.
 | 18 | Blue Hour | *Dark* (indigo, Tokyo Night heritage) | IBM Plex Mono | IBM Plex Sans |
 | 19 | Ember | *Dark* (warm retro, Gruvbox heritage) | Source Code Pro | Newsreader |
 | 20 | Moss & Magenta | *Dark* (vivid, Monokai heritage) | Space Mono | Work Sans |
+| 21 | Arclight | *Dark* (acuity first) | Overpass Mono | Lora |
+| 22 | Amber Mono | *Dark* (one accent, warm) | IBM Plex Mono | IBM Plex Sans |
+| 23 | Hearth | *Dark* (low blue light, evening) | JetBrains Mono | Source Serif 4 |
+| 24 | Azure Mono | *Dark* (one accent, cool) | IBM Plex Mono | IBM Plex Sans |
 
 What each experiment explores:
 
@@ -88,9 +93,16 @@ What each experiment explores:
 - **E-Ink Slate** — nearly grayscale syntax, like a Kindle.
 - **Contrast Max** — deep accents and near-white paper for maximum legibility.
 
-The dark companions, each one in the lineage of a palette developers already
-know — recognizable heritage, retuned to Candela's contrast rules rather than
-copied:
+Three of those four have a dark counterpart: **Arclight** for Contrast Max,
+**Amber Mono** and **Azure Mono** for Graphite Mono, **Hearth** for Tungsten.
+E-Ink Slate has none, and deliberately so — on a dark ground every token has to
+be lighter than the background to stay legible, which crowds near-grayscale
+syntax into a band too narrow to tell tokens apart. The evidence is in
+[`docs/dark-palette-exploration.md`](docs/dark-palette-exploration.md).
+
+The dark companions 15–20, each one in the lineage of a palette developers
+already know — recognizable heritage, retuned to Candela's contrast rules rather
+than copied:
 
 - **Nocturne** — Atom's classic One Dark, the palette a generation of developers
   grew up on, with accents lifted just enough to clear AA on the dark ground.
@@ -103,6 +115,16 @@ copied:
 - **Ember** — amber and clay on warm brown-black, carrying Gruvbox's retro heat.
 - **Moss & Magenta** — lime green against magenta on olive-black, Monokai's
   contrast pairing pulled back from neon.
+
+And the dark experiments, 21–24:
+
+- **Arclight** — near-black under accents pushed past AA toward AAA, for when
+  sharpness is the limiter rather than glare.
+- **Amber Mono** — warm grays with a single amber doing all the semantic
+  lifting, like a filament terminal.
+- **Hearth** — an evening dark: no short-wavelength blue anywhere, just amber,
+  clay and one soft green on a lit-room ground.
+- **Azure Mono** — Amber Mono's cool twin, one azure accent over cool grays.
 
 ## Gallery
 
@@ -120,6 +142,8 @@ Preview every theme across terminal, TypeScript, Markdown, and git panes.
 | **15 · Nocturne**<br>![Nocturne](docs/screenshots/examples/candela-15-nocturne.png) | **16 · Borealis**<br>![Borealis](docs/screenshots/examples/candela-16-borealis.png) |
 | **17 · Nightshade**<br>![Nightshade](docs/screenshots/examples/candela-17-nightshade.png) | **18 · Blue Hour**<br>![Blue Hour](docs/screenshots/examples/candela-18-blue-hour.png) |
 | **19 · Ember**<br>![Ember](docs/screenshots/examples/candela-19-ember.png) | **20 · Moss & Magenta**<br>![Moss & Magenta](docs/screenshots/examples/candela-20-moss-magenta.png) |
+| **21 · Arclight**<br>![Arclight](docs/screenshots/examples/candela-21-arclight.png) | **22 · Amber Mono**<br>![Amber Mono](docs/screenshots/examples/candela-22-amber-mono.png) |
+| **23 · Hearth**<br>![Hearth](docs/screenshots/examples/candela-23-hearth.png) | **24 · Azure Mono**<br>![Azure Mono](docs/screenshots/examples/candela-24-azure-mono.png) |
 
 ## Install
 

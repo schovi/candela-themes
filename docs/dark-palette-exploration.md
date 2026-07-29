@@ -2,15 +2,24 @@
 
 The light half of the set carries four deliberate experiments — near-monochrome
 (`graphite-mono`), low-blue evening (`tungsten`), ultra-low chroma (`eink-slate`),
-acuity-first (`contrast-max`). The dark half carries none of them. This doc explores what
-each of those four ideas becomes on a dark ground: eight candidate palettes, all originals,
-each validated and rendered.
+acuity-first (`contrast-max`). This doc explores what each of those four ideas becomes on a
+dark ground: eight candidate palettes, all originals, each validated and rendered.
 
-Nothing here is shipped. `themes/candela-themes.json` is untouched by this exploration —
-the ranked recommendation at the end is the input to a follow-up task that decides what
-lands. Token roles and the invariants every candidate has to clear live in
-[`../AGENTS.md`](../AGENTS.md); the vision science behind them lives in
-[`vision-research.md`](vision-research.md).
+**Outcome.** All four recommended candidates shipped; the rest stand as findings.
+
+| Candidate | Shipped as |
+| --- | --- |
+| B1 · arclight | `arclight` — 21 · Arclight |
+| D1 · mono-amber | `amber-mono` — 22 · Amber Mono |
+| A1 · candlelit | `hearth` — 23 · Hearth, after the retune its section calls for |
+| D2 · mono-azure | `azure-mono` — 24 · Azure Mono |
+
+B2 and A2 did not ship, and the ultra-low-chroma category was dropped for dark — the
+sections below hold the evidence for all three calls. `themes/candela-themes.json` is the
+source of truth for what the shipped four actually contain; the token blocks here are the
+candidates as validated, so `hearth` differs from A1 by design. Token roles and the
+invariants every candidate has to clear live in [`../AGENTS.md`](../AGENTS.md); the vision
+science behind them lives in [`vision-research.md`](vision-research.md).
 
 ## How each candidate was checked
 
