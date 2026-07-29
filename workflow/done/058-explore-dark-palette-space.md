@@ -1,6 +1,6 @@
 # 058 — Explore the dark palette space and propose candidates
 
-priority: 20
+done: 2026-07-29
 
 ## What & why
 
@@ -64,4 +64,15 @@ reason to touch `lib/rules.js`.
 Split from 057 (heritage-derived darks) on the user's ask: explore the space rather than
 author two originals blind. No `depends:` — 058 touches no file 057 touches, so they can run
 in either order or in parallel. The follow-up that ships winners into `themes[]` gets groomed
-once this doc exists.
+once this doc exists. Ran alongside 057 in one session; 057 committed first.
+
+Headline finding: **ultra-low chroma has no dark counterpart.** Both C candidates pass every
+hard rule and both render unreadable — the AA-against-`bg` floor confines every token to a
+narrow bright band, and near-zero chroma leaves no second channel to separate them. Doc
+recommends dropping the category, with the evidence.
+
+Rendering used a temporary scratch append to `themes/candela-themes.json` plus
+`npm run app:screenshots --out=<scratchpad>`, then `git checkout` on the JSON — the committed
+file is byte-identical to what 057 landed. The doc's published token blocks were re-parsed out
+of the markdown and re-run through `checkTheme` afterwards, so the hexes in the doc are the
+hexes that were validated.
