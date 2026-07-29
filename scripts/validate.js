@@ -137,7 +137,12 @@ function checkCopy() {
 // The filename encodes theme order, so reordering themes silently invalidates it too.
 // The hand-captured full-window shots the Sublime readme embeds are checked too: those
 // are re-shot by hand, so a rename is exactly the kind of thing that slips through.
-const EMBEDDED_SHOTS = ['docs/screenshots/sublime/sublime-light.png', 'docs/screenshots/sublime/sublime-dark.png'];
+const EMBEDDED_SHOTS = [
+  'docs/screenshots/sublime/sublime-light.png',
+  'docs/screenshots/sublime/sublime-dark.png',
+  'docs/screenshots/zed/zed-light.png',
+  'docs/screenshots/zed/zed-dark.png',
+];
 function checkScreenshots(themes) {
   const missing = (file) =>
     fs.existsSync(path.join(ROOT, file))

@@ -25,17 +25,8 @@ const TOKEN = process.env.DIST_PUSH_TOKEN || '';
 const TARGETS = {
   zed: {
     repo: 'candela-themes-zed',
-    srcDir: path.join(ROOT, 'build', 'zed'),
-    readme: [
-      '# Candela Themes — Zed',
-      '',
-      'Generated Zed extension for the Candela theme family.',
-      '**Do not edit by hand** — source of truth is',
-      `https://github.com/${OWNER}/candela-themes; this repo is republished on every release.`,
-      '',
-      'Install from Zed: `zed: extensions` → search "Candela".',
-      '',
-    ].join('\n'),
+    srcDir: path.join(ROOT, 'build', 'zed'), // ships its own README.md
+    readme: null,
   },
   sublime: {
     repo: 'candela-themes-sublime',

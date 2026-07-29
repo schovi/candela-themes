@@ -26,10 +26,10 @@ Filenames must stay stable — the root README references them by relative path.
 
 ## Real-editor shots (manual)
 
-`intellij/` and `sublime/` hold shots taken in the actual editor, whole window and
+`intellij/`, `sublime/` and `zed/` hold shots taken in the actual editor, whole window and
 chrome included — the app-rendered cards above show an editor pane only, so they can't
 show what a theme does to a sidebar or a status bar. `sublime/sublime-{light,dark}.png`
-are embedded in the generated Sublime readme (see
+and `zed/zed-{light,dark}.png` lead the generated Sublime and Zed readmes (see
 [`../marketplace-listing.md`](../marketplace-listing.md)); the IntelliJ pair is uploaded
 by hand through the JetBrains plugin form.
 
