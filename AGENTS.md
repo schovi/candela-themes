@@ -1,6 +1,6 @@
 # Candela Themes
 
-A set of 16 color themes (14 light and 2 dark) for terminals and editors, tuned for eye-strain comfort.
+A set of 20 color themes (14 light and 6 dark) for terminals and editors, tuned for eye-strain comfort.
 `themes/candela-themes.json` is the single source of truth (all palettes, tokens, ANSI
 mapping). User-facing docs (rationale, install, how themes are generated) live in the root
 [`README.md`](README.md); the vision-science rationale behind the invariants lives in
@@ -128,7 +128,7 @@ the `ref` **input**, not `--ref`: `--ref` picks which version of the workflow fi
 JetBrains moderates every update, so a green job means uploaded, not live.
 Full runbook: `docs/release-runbook.md`.
 
-### Adding a 17th theme or new format
+### Adding another theme or a new format
 
 - *New theme*: add one entry to `themes[]` with every token filled in (nothing implicit) —
   `id`, `name`, `tone`, `tags` (non-empty; the gallery's tag filter), `mode` (`light`/`dark`), `fonts`, and the full `colors` block. `build/` regenerates for all

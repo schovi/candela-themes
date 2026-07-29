@@ -1,6 +1,6 @@
 # 057 — Four more dark themes, derived from the popular classics
 
-priority: 10
+done: 2026-07-29
 
 ## What & why
 
@@ -85,3 +85,45 @@ theme, never the rule. No release dispatch; that's a separate `/release` decisio
 Precedent for the heritage-credit pattern: `nocturne` ("derived from Atom's classic One
 Dark"), task 049. Decided in groom: 4 themes, popularity-ranked but hue-diverse, Candela
 names with heritage credit in the description, full doc + screenshot pipeline in this task.
+
+**Popularity ranking** (VS Code Marketplace installs, queried 2026-07-29 via the gallery
+`extensionquery` API, color themes only — icon themes and non-theme extensions dropped):
+
+| Installs | Theme |
+| --- | --- |
+| 19.6M | GitHub Theme (ships light + dark) |
+| 12.5M | One Dark Pro |
+| 10.7M | **Dracula** |
+| 7.3M | Atom One Dark |
+| 4.2M | Ayu |
+| 4.1M | **Monokai Pro** (paid) |
+| 3.5M | Night Owl |
+| 2.9M | One Monokai |
+| 2.8M | **Tokyo Night** |
+| 2.6M | Palenight |
+| 1.3M | Catppuccin |
+| 1.3M | Nord |
+| 1.0M | **Gruvbox** |
+
+Vim/Neovim sanity check (GitHub stars, same date): `morhetz/gruvbox` 15.6k,
+`folke/tokyonight.nvim` 8.1k, `catppuccin/nvim` 7.5k, `sainnhe/gruvbox-material` 2.6k,
+`ellisonleao/gruvbox.nvim` 2.6k, `nordtheme/vim` 2.6k, `navarasu/onedark.nvim` 2.0k,
+`dracula/vim` 1.4k, `tanvirtin/monokai.nvim` 0.4k.
+
+**No swaps** — all four defaults survive the ranking. Dracula is the top dark-only theme
+once One Dark is excluded (already `nocturne`). Monokai's marketplace number understates it:
+Monokai ships bundled with VS Code, so the 4.1M Pro + 2.9M One Monokai installs are people
+who paid for or re-skinned a palette they already had. Gruvbox is last on installs but first
+on the Vim/Neovim side by a wide margin (15.6k + 2.6k + 2.6k across three ports), which is
+the sanity check the spec asked for. Tokyo Night is second on both signals.
+
+**Palettes.** All four passed `checkTheme` on the first authoring pass except `blue-hour`,
+which needed two nudges: `type`/`builtin` moved off `fn`/`num`'s hue buckets (5 → 6 distinct
+hues) and `error`/`ok` pushed apart in luminance (grayscale separation 1.29 → clear). Final
+state adds zero warnings — `node scripts/validate.js` still reports exactly the 6 pre-existing
+accent-hue warnings from `main`.
+
+**Other count drift.** Swept every tracked doc for a theme count: only `AGENTS.md:3` (fixed)
+and the `AGENTS.md` heading "Adding a 17th theme" (rewritten count-free) carried one.
+`docs/marketplace-listing.md` quotes "14 light, 2 dark" as the example of what not to write —
+left alone by design. `build/*/README.md` counts are generated from `themes.length`.

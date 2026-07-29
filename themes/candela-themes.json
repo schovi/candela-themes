@@ -556,6 +556,138 @@
         "warning": "#f2a63c",
         "ok": "#c3e98b"
       }
+    },
+    {
+      "id": "nightshade",
+      "name": "17 · Nightshade",
+      "tone": "dark / purple",
+      "tags": ["dark", "purple"],
+      "mode": "dark",
+      "description": "Violet and orchid over a blue-black ground, in the lineage of Dracula — the same purple night, desaturated until the accents stop fringing. Code in Fira Code, prose in Hanken Grotesk.",
+      "fonts": {
+        "code": "Fira Code",
+        "prose": "Hanken Grotesk"
+      },
+      "colors": {
+        "bg": "#282a36",
+        "surface": "#2f3140",
+        "border": "#4d5164",
+        "ink": "#cfd0e4",
+        "ink2": "#7f85a3",
+        "faint": "#8b90ad",
+        "selection": "#454a63",
+        "cursor": "#ffb454",
+        "lineHighlight": "#34364a",
+        "kw": "#e78ac0",
+        "str": "#cfd48a",
+        "fn": "#6ec48c",
+        "num": "#b49bf2",
+        "type": "#79c3e3",
+        "builtin": "#f0a06a",
+        "punct": "#cfd0e4",
+        "error": "#ff6b7d",
+        "warning": "#f0c05c",
+        "ok": "#4cc7a8"
+      }
+    },
+    {
+      "id": "blue-hour",
+      "name": "18 · Blue Hour",
+      "tone": "dark / indigo",
+      "tags": ["dark", "indigo", "low-chroma"],
+      "mode": "dark",
+      "description": "The deep indigo of the hour after sunset, following Tokyo Night's low-chroma dusk — quiet accents that never shout across the page. Code in IBM Plex Mono, prose in IBM Plex Sans.",
+      "fonts": {
+        "code": "IBM Plex Mono",
+        "prose": "IBM Plex Sans"
+      },
+      "colors": {
+        "bg": "#1a1b26",
+        "surface": "#20222f",
+        "border": "#3b4261",
+        "ink": "#c3cbe8",
+        "ink2": "#7d87ad",
+        "faint": "#8890b4",
+        "selection": "#33395a",
+        "cursor": "#ff9e64",
+        "lineHighlight": "#24263a",
+        "kw": "#bda6f0",
+        "str": "#a4c98c",
+        "fn": "#7fa0f0",
+        "num": "#f0a878",
+        "type": "#7fd3d8",
+        "builtin": "#dcc471",
+        "punct": "#c3cbe8",
+        "error": "#ef6a83",
+        "warning": "#e8b25f",
+        "ok": "#6fd0bb"
+      }
+    },
+    {
+      "id": "ember",
+      "name": "19 · Ember",
+      "tone": "dark / warm retro",
+      "tags": ["dark", "warm", "retro"],
+      "mode": "dark",
+      "description": "Amber and clay on warm brown-black, carrying Gruvbox's retro heat — the one dark theme here that feels lit rather than cooled. Code in Source Code Pro, prose in Newsreader.",
+      "fonts": {
+        "code": "Source Code Pro",
+        "prose": "Newsreader"
+      },
+      "colors": {
+        "bg": "#292421",
+        "surface": "#322b27",
+        "border": "#574f45",
+        "ink": "#e4d5b6",
+        "ink2": "#a2937c",
+        "faint": "#a1907a",
+        "selection": "#4a3f34",
+        "cursor": "#f08a3c",
+        "lineHighlight": "#332c27",
+        "kw": "#ef8a72",
+        "str": "#b6c56b",
+        "fn": "#93b3d0",
+        "num": "#d99bb0",
+        "type": "#f0c05f",
+        "builtin": "#7cc3b4",
+        "punct": "#e4d5b6",
+        "error": "#f4705e",
+        "warning": "#e8a33e",
+        "ok": "#7ec8a8"
+      }
+    },
+    {
+      "id": "moss-magenta",
+      "name": "20 · Moss & Magenta",
+      "tone": "dark / vivid",
+      "tags": ["dark", "vivid", "high-contrast"],
+      "mode": "dark",
+      "description": "Lime green against magenta on olive-black, the Monokai contrast pairing pulled back from neon to something you can read all day. Code in Space Mono, prose in Work Sans.",
+      "fonts": {
+        "code": "Space Mono",
+        "prose": "Work Sans"
+      },
+      "colors": {
+        "bg": "#262720",
+        "surface": "#2e2f27",
+        "border": "#565749",
+        "ink": "#e0e0d4",
+        "ink2": "#97988a",
+        "faint": "#9d9e8f",
+        "selection": "#46483a",
+        "cursor": "#f08a2e",
+        "lineHighlight": "#2f3128",
+        "kw": "#f0709e",
+        "str": "#d9d087",
+        "fn": "#a9d364",
+        "num": "#b79ef0",
+        "type": "#79cbe0",
+        "builtin": "#f0a352",
+        "punct": "#e0e0d4",
+        "error": "#ff6a70",
+        "warning": "#e9bc4c",
+        "ok": "#5fc9a5"
+      }
     }
   ],
   "ansiMapping": {

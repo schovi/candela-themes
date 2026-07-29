@@ -55,7 +55,7 @@ The vision-science rationale, including where common advice gets it wrong, is in
 ## The themes
 
 Themes 01–10 are the main palettes, from calm neutrals to stronger pastels.
-11–14 explore one design idea each. 15–16 are dark companions tuned to the same
+11–14 explore one design idea each. 15–20 are dark companions tuned to the same
 contrast rules.
 
 | # | Name | Tone | Code font | Prose font |
@@ -76,6 +76,10 @@ contrast rules.
 | 14 | Contrast Max | *Acuity first* (maximal legibility) | Overpass Mono | Lora |
 | 15 | Nocturne | *Dark* (One Dark heritage) | JetBrains Mono | Public Sans |
 | 16 | Borealis | *Dark* (pastel) | DM Mono | DM Sans |
+| 17 | Nightshade | *Dark* (purple, Dracula heritage) | Fira Code | Hanken Grotesk |
+| 18 | Blue Hour | *Dark* (indigo, Tokyo Night heritage) | IBM Plex Mono | IBM Plex Sans |
+| 19 | Ember | *Dark* (warm retro, Gruvbox heritage) | Source Code Pro | Newsreader |
+| 20 | Moss & Magenta | *Dark* (vivid, Monokai heritage) | Space Mono | Work Sans |
 
 What each experiment explores:
 
@@ -84,12 +88,21 @@ What each experiment explores:
 - **E-Ink Slate** — nearly grayscale syntax, like a Kindle.
 - **Contrast Max** — deep accents and near-white paper for maximum legibility.
 
-The two dark companions:
+The dark companions, each one in the lineage of a palette developers already
+know — recognizable heritage, retuned to Candela's contrast rules rather than
+copied:
 
 - **Nocturne** — Atom's classic One Dark, the palette a generation of developers
   grew up on, with accents lifted just enough to clear AA on the dark ground.
 - **Borealis** — near-black charcoal under soft candy accents (teal, lilac,
   coral), like the northern lights the set is named for.
+- **Nightshade** — violet and orchid over a blue-black ground, in Dracula's
+  lineage, desaturated until the accents stop fringing.
+- **Blue Hour** — the deep indigo of the hour after sunset, following Tokyo
+  Night's low-chroma dusk.
+- **Ember** — amber and clay on warm brown-black, carrying Gruvbox's retro heat.
+- **Moss & Magenta** — lime green against magenta on olive-black, Monokai's
+  contrast pairing pulled back from neon.
 
 ## Gallery
 
@@ -105,6 +118,8 @@ Preview every theme across terminal, TypeScript, Markdown, and git panes.
 | **11 · Graphite Mono**<br>![Graphite Mono](docs/screenshots/examples/candela-11-graphite-mono.png) | **12 · Tungsten**<br>![Tungsten](docs/screenshots/examples/candela-12-tungsten.png) |
 | **13 · E-Ink Slate**<br>![E-Ink Slate](docs/screenshots/examples/candela-13-eink-slate.png) | **14 · Contrast Max**<br>![Contrast Max](docs/screenshots/examples/candela-14-contrast-max.png) |
 | **15 · Nocturne**<br>![Nocturne](docs/screenshots/examples/candela-15-nocturne.png) | **16 · Borealis**<br>![Borealis](docs/screenshots/examples/candela-16-borealis.png) |
+| **17 · Nightshade**<br>![Nightshade](docs/screenshots/examples/candela-17-nightshade.png) | **18 · Blue Hour**<br>![Blue Hour](docs/screenshots/examples/candela-18-blue-hour.png) |
+| **19 · Ember**<br>![Ember](docs/screenshots/examples/candela-19-ember.png) | **20 · Moss & Magenta**<br>![Moss & Magenta](docs/screenshots/examples/candela-20-moss-magenta.png) |
 
 ## Install
 
