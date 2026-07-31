@@ -1,6 +1,6 @@
 # 065 — Harbor: a warm-cream / deep-blue theme pair
 
-priority: 15
+done: 2026-07-31
 
 tags: palettes
 
@@ -101,9 +101,49 @@ the rule. No release dispatch; that's a separate `/release` decision.
 
 - Origin: a Slack "Surprise me" custom theme — `#1264a3` navigation, `#fff0eb` selected,
   `#e296b9` presence, `#e8a991` notifications. Kept here so the heritage is traceable the
-  way `nocturne`'s One Dark lineage is.
-- Dark ground deliberately left open at groom time: the user wants to explore variants and
-  test them during implementation. That exploration is part of this task, not a follow-up.
+  way `nocturne`'s One Dark lineage is. During implementation the user clarified the real
+  reference: Slack's *window gradient* + *darken sidebars*, which fades harbor blue at the
+  top into burnt rust at the bottom ("an upside-down sunset"), with a salmon highlight on a
+  near-white page. The flat four hexes were never the target.
+- **Shipped intent: one harbor at either end of the day.** Named `25 · Harbor Dawn` and
+  `26 · Harbor Dusk` rather than the spec's Harbor / Harbor Night — the pair is easier to
+  reason about that way and the user chose it during implementation. Ids stay `harbor` /
+  `harbor-night`, so build paths, gallery URLs and screenshot filenames are unaffected.
+  - **Dusk** (dark) is authored from two anchors in HSL: watery blue (hue 199) as the ground
+    and a dark sunset orange (hue 24) leading over it, with `selection #573729` carrying the
+    rust the sky fades into. Blue + orange is also `AGENTS.md`'s colorblind-safe pairing.
+  - **Dawn** (light) is the mirror, and deliberately *not* the same palette lightened. Its
+    warm anchor is **gold** (hue 36), not dusk's orange — the optical difference between
+    sunrise and sunset light — and its structural move is a **deep harbor blue `ink`**
+    (`#17364f`, saturation 0.55). Every other light theme's `ink` is near-neutral; the next
+    most colored is `lagoon` at 0.23, and eleven of fourteen sit under 0.20. `punct` is cool
+    too, so the night lingers in the quiet roles while gold leads the loud ones.
+- **Why the first light attempt was scrapped.** v1 was the blue on `kw` over a pale peach
+  page. It validated clean but read as generic, and the measurement said why: its accent hue
+  inventory (199, 88, 24, 340, 268, 176) is within a few degrees of `apricot`, `sepia-paper`
+  and `solarized-lite`. Only the blue/orange role assignment differed, so a pale warm ground
+  plus that hue set reproduced `apricot`'s recipe (mean CIELAB ΔE 17.4 to `apricot`, 15.2 to
+  `ink-coral` — the two nearest of all fourteen). Fixing it needed a structural change, not
+  retuning: hence gold-led accents and colored ink. Honest caveat for whoever revisits this:
+  on the flat all-tokens-equal metric Dawn scores *nearer* `apricot` (12.3) than v1 did,
+  because the paler ground pulls the average in. The divergence is concentrated in `ink` and
+  `punct`, which is where the eye actually spends its time — area-weighted, the nearest
+  neighbour is `sepia-paper` at 14.9 with everything else bunched 15–24, no standout twin.
+- **Dark ground candidates** (all three validated clean — zero failures, zero warnings,
+  6 accent hues each — and rendered in the explorer):
+  - **A · navy `#14263c`** — peach `kw` on a true navy. Clearly none of the three shipped
+    near-neighbours, and the closest to the seed. Preferred over B and C.
+  - **B · blue-gray `#1f2a33`** — desaturated slate, blue `kw`. Rejected: reads as a fourth
+    `nocturne` (`#282c34`), exactly the failure mode the spec warned about.
+  - **C · warm charcoal `#201d1c`** — neutral warm ground, blue + peach accents. Rejected:
+    highest accent contrast of the three, but its ground sits in `ember` / `hearth` /
+    `amber-mono` territory, so the warm-dark slot is already crowded.
+  - **Shipped: A's territory, re-derived from the two anchor hues** as `bg #132939` — a
+    deeper, cyan-leaning water rather than A's flat navy, once the brief became "watery
+    sunset blue" rather than "Slack's sidebar". `selection #573729` puts the gradient's rust
+    bottom into the UI, so a deleted diff line reads rust-on-water.
+- Both shipped themes pass with margin: every AA token ≥ 4.86:1 on `bg` (light) and ≥ 5.39:1
+  (dark), `ink` on `surface` ~12:1 / ~9.9:1, `error`/`ok` grayscale separation 1.49 / 1.59.
 - If the 25-after-24 ordering looks wrong in the gallery's "All" view, the cheap fix is
   sorting light-then-dark in `app/src/Gallery.tsx` (it renders in raw JSON array order
   today, no sort) — a separate task, out of this boundary.

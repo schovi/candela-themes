@@ -57,7 +57,8 @@ The vision-science rationale, including where common advice gets it wrong, is in
 Themes 01–10 are the main palettes, from calm neutrals to stronger pastels.
 11–14 explore one design idea each. 15–24 are dark, tuned to the same contrast
 rules: 15–20 carry the heritage of palettes developers already know, and 21–24
-take three of the design experiments onto a dark ground.
+take three of the design experiments onto a dark ground. 25–26 are one harbor at
+dawn and at dusk, a light/dark pair sharing a hue.
 
 | # | Name | Tone | Code font | Prose font |
 | --- | --- | --- | --- | --- |
@@ -85,6 +86,8 @@ take three of the design experiments onto a dark ground.
 | 22 | Amber Mono | *Dark* (one accent, warm) | IBM Plex Mono | IBM Plex Sans |
 | 23 | Hearth | *Dark* (low blue light, evening) | JetBrains Mono | Source Serif 4 |
 | 24 | Azure Mono | *Dark* (one accent, cool) | IBM Plex Mono | IBM Plex Sans |
+| 25 | Harbor Dawn | Warm (gold-led) | Spline Sans Mono | Work Sans |
+| 26 | Harbor Dusk | *Dark* (watery blue) | Spline Sans Mono | Work Sans |
 
 What each experiment explores:
 
@@ -126,6 +129,15 @@ And the dark experiments, 21–24:
   clay and one soft green on a lit-room ground.
 - **Azure Mono** — Amber Mono's cool twin, one azure accent over cool grays.
 
+And the pair 25–26, one harbor at either end of the day. Both carry the same
+watery blue, so they read as one theme in two lights rather than two themes:
+
+- **Harbor Dawn** — first light: gold arriving over a page that has barely any
+  color yet, and the night still in the ink, which is a deep harbor blue rather
+  than the near-neutral every other light theme uses.
+- **Harbor Dusk** — last light: that same blue deepened into the ground, with a
+  dark sunset orange leading over it and the rust it fades into on the selection.
+
 ## Gallery
 
 Preview every theme across terminal, TypeScript, Markdown, and git panes.
@@ -144,6 +156,7 @@ Preview every theme across terminal, TypeScript, Markdown, and git panes.
 | **19 · Ember**<br>![Ember](docs/screenshots/examples/candela-19-ember.png) | **20 · Moss & Magenta**<br>![Moss & Magenta](docs/screenshots/examples/candela-20-moss-magenta.png) |
 | **21 · Arclight**<br>![Arclight](docs/screenshots/examples/candela-21-arclight.png) | **22 · Amber Mono**<br>![Amber Mono](docs/screenshots/examples/candela-22-amber-mono.png) |
 | **23 · Hearth**<br>![Hearth](docs/screenshots/examples/candela-23-hearth.png) | **24 · Azure Mono**<br>![Azure Mono](docs/screenshots/examples/candela-24-azure-mono.png) |
+| **25 · Harbor Dawn**<br>![Harbor Dawn](docs/screenshots/examples/candela-25-harbor.png) | **26 · Harbor Dusk**<br>![Harbor Dusk](docs/screenshots/examples/candela-26-harbor-night.png) |
 
 ## Install
 
