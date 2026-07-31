@@ -15,6 +15,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/schovi/candela-themes/releases/latest"><img src="https://img.shields.io/github/v/release/schovi/candela-themes?style=flat-square&color=3a7bc8" alt="Latest release"></a>
   <a href="https://github.com/schovi/candela-themes/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/schovi/candela-themes/ci.yml?branch=main&style=flat-square" alt="Build"></a>
   <a href="https://candela.ink"><img src="https://img.shields.io/badge/explorer-candela.ink-3a7bc8?style=flat-square" alt="Theme explorer"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License"></a>
@@ -28,6 +29,18 @@
   <strong><a href="https://candela.ink">Browse every theme live at candela.ink</a></strong><br>
   Or explore every theme in the <a href="#gallery">gallery below</a>.
 </p>
+
+<!-- Release announcement: drop this block once 1.0.0 is a few versions old. The
+     release badge above carries the version permanently; this exists only to warn
+     people upgrading across the rename. -->
+> [!NOTE]
+> **Candela is 1.0.** Theme names and ids are a stable contract from here on.
+> Getting there meant renaming them once: names lost their `01 · ` prefix, and six
+> ids changed. An updated editor will not find its old theme name and falls back to
+> the default — pick it again, one time. Terminal, Neovim and Helix users have a
+> one-line config edit.
+>
+> **[What changed, with the full id mapping →](https://github.com/schovi/candela-themes/releases/tag/v1.0.0)**
 
 ## Why Candela feels calmer
 
