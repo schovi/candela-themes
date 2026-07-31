@@ -31,7 +31,8 @@
   "themes": [
     {
       "id": "sepia-paper",
-      "name": "01 · Sepia Paper",
+      "category": "tone",
+      "name": "Sepia Paper",
       "tone": "warm",
       "tags": [
         "warm"
@@ -66,7 +67,8 @@
     },
     {
       "id": "slate-mist",
-      "name": "02 · Slate Mist",
+      "category": "tone",
+      "name": "Slate Mist",
       "tone": "cool",
       "tags": [
         "cool"
@@ -101,7 +103,8 @@
     },
     {
       "id": "sage",
-      "name": "03 · Sage",
+      "category": "tone",
+      "name": "Sage",
       "tone": "neutral",
       "tags": [
         "neutral"
@@ -136,7 +139,8 @@
     },
     {
       "id": "solarized-lite",
-      "name": "04 · Solarized Lite",
+      "category": "heritage",
+      "name": "Solarized Lite",
       "tone": "warm",
       "tags": [
         "warm"
@@ -171,7 +175,8 @@
     },
     {
       "id": "blossom",
-      "name": "05 · Blossom",
+      "category": "tone",
+      "name": "Blossom",
       "tone": "pastel-warm",
       "tags": [
         "pastel",
@@ -207,7 +212,8 @@
     },
     {
       "id": "lagoon",
-      "name": "06 · Lagoon",
+      "category": "tone",
+      "name": "Lagoon",
       "tone": "cool",
       "tags": [
         "cool"
@@ -242,7 +248,8 @@
     },
     {
       "id": "meadow",
-      "name": "07 · Meadow",
+      "category": "tone",
+      "name": "Meadow",
       "tone": "fresh",
       "tags": [
         "fresh"
@@ -277,7 +284,8 @@
     },
     {
       "id": "apricot",
-      "name": "08 · Apricot",
+      "category": "tone",
+      "name": "Apricot",
       "tone": "warm",
       "tags": [
         "warm"
@@ -312,7 +320,8 @@
     },
     {
       "id": "periwinkle",
-      "name": "09 · Periwinkle",
+      "category": "tone",
+      "name": "Periwinkle",
       "tone": "pastel-cool",
       "tags": [
         "pastel",
@@ -348,7 +357,8 @@
     },
     {
       "id": "ink-coral",
-      "name": "10 · Ink & Coral",
+      "category": "tone",
+      "name": "Ink & Coral",
       "tone": "high-contrast",
       "tags": [
         "high-contrast"
@@ -382,79 +392,9 @@
       }
     },
     {
-      "id": "graphite-mono",
-      "name": "11 · Graphite Mono",
-      "tone": "monochrome+1",
-      "tags": [
-        "monochrome"
-      ],
-      "mode": "light",
-      "description": "Almost monochrome — everything lives in grays, and a single blue does all the semantic lifting. Fewer competing hues means fewer color-fringe artifacts for astigmatic eyes. Code in IBM Plex Mono, prose in IBM Plex Sans.",
-      "fonts": {
-        "code": "IBM Plex Mono",
-        "prose": "IBM Plex Sans"
-      },
-      "colors": {
-        "bg": "#eef0f1",
-        "surface": "#f8f9fa",
-        "border": "#dcdfe1",
-        "ink": "#23272b",
-        "ink2": "#4b5157",
-        "faint": "#666c72",
-        "selection": "#dde1e4",
-        "cursor": "#23272b",
-        "lineHighlight": "#e9ecee",
-        "kw": "#2f4a63",
-        "str": "#3a6ea5",
-        "fn": "#3a4650",
-        "num": "#55606a",
-        "type": "#2f3a44",
-        "builtin": "#3a6ea5",
-        "punct": "#666c73",
-        "error": "#864137",
-        "warning": "#73602f",
-        "ok": "#357376"
-      }
-    },
-    {
-      "id": "tungsten",
-      "name": "12 · Tungsten",
-      "tone": "warm / low-blue",
-      "tags": [
-        "warm",
-        "low-blue"
-      ],
-      "mode": "light",
-      "description": "An evening theme — short-wavelength blue is stripped out and every accent shifted warm, so the only cool note is a soft green. Warm like a tungsten bulb. Code in JetBrains Mono, prose in Source Serif 4.",
-      "fonts": {
-        "code": "JetBrains Mono",
-        "prose": "Source Serif 4"
-      },
-      "colors": {
-        "bg": "#f4ecd9",
-        "surface": "#faf3e1",
-        "border": "#e6d9bd",
-        "ink": "#34302a",
-        "ink2": "#5f5749",
-        "faint": "#746851",
-        "selection": "#ecdfbf",
-        "cursor": "#34302a",
-        "lineHighlight": "#f0e8d1",
-        "kw": "#a5531e",
-        "str": "#656f2b",
-        "fn": "#84651e",
-        "num": "#a0532f",
-        "type": "#8a5a3c",
-        "builtin": "#4b734e",
-        "punct": "#6e6552",
-        "error": "#7c452b",
-        "warning": "#7b5a2a",
-        "ok": "#297555"
-      }
-    },
-    {
       "id": "eink-slate",
-      "name": "13 · E-Ink Slate",
+      "category": "experiment",
+      "name": "E-Ink Slate",
       "tone": "neutral / ultra-low chroma",
       "tags": [
         "neutral",
@@ -489,8 +429,163 @@
       }
     },
     {
-      "id": "contrast-max",
-      "name": "14 · Contrast Max",
+      "id": "graphite-mono",
+      "category": "experiment",
+      "pair": "azure-mono",
+      "name": "Graphite Mono",
+      "tone": "monochrome+1",
+      "tags": [
+        "monochrome"
+      ],
+      "mode": "light",
+      "description": "Almost monochrome — everything lives in grays, and a single blue does all the semantic lifting. Fewer competing hues means fewer color-fringe artifacts for astigmatic eyes. Code in IBM Plex Mono, prose in IBM Plex Sans.",
+      "fonts": {
+        "code": "IBM Plex Mono",
+        "prose": "IBM Plex Sans"
+      },
+      "colors": {
+        "bg": "#eef0f1",
+        "surface": "#f8f9fa",
+        "border": "#dcdfe1",
+        "ink": "#23272b",
+        "ink2": "#4b5157",
+        "faint": "#666c72",
+        "selection": "#dde1e4",
+        "cursor": "#23272b",
+        "lineHighlight": "#e9ecee",
+        "kw": "#2f4a63",
+        "str": "#3a6ea5",
+        "fn": "#3a4650",
+        "num": "#55606a",
+        "type": "#2f3a44",
+        "builtin": "#3a6ea5",
+        "punct": "#666c73",
+        "error": "#864137",
+        "warning": "#73602f",
+        "ok": "#357376"
+      }
+    },
+    {
+      "id": "azure-mono",
+      "category": "experiment",
+      "pair": "graphite-mono",
+      "name": "Azure Mono",
+      "tone": "dark / monochrome+1",
+      "tags": [
+        "dark",
+        "monochrome",
+        "cool"
+      ],
+      "mode": "dark",
+      "description": "Amber Mono's cool twin, and the closer translation of Graphite Mono — cool grays with a single azure carrying every syntax role. Code in IBM Plex Mono, prose in IBM Plex Sans.",
+      "fonts": {
+        "code": "IBM Plex Mono",
+        "prose": "IBM Plex Sans"
+      },
+      "colors": {
+        "bg": "#181a1c",
+        "surface": "#202224",
+        "border": "#424547",
+        "ink": "#d6dade",
+        "ink2": "#8e9296",
+        "faint": "#8b8f93",
+        "selection": "#353a3e",
+        "cursor": "#e8b45c",
+        "lineHighlight": "#1e2022",
+        "kw": "#78b4e8",
+        "str": "#a8d0ee",
+        "fn": "#b0b6bb",
+        "num": "#a0a6ab",
+        "type": "#c4cacf",
+        "builtin": "#78b4e8",
+        "punct": "#d6dade",
+        "error": "#d8806f",
+        "warning": "#cbb26c",
+        "ok": "#8ac4b0"
+      }
+    },
+    {
+      "id": "hearth-dawn",
+      "category": "experiment",
+      "pair": "hearth-dusk",
+      "name": "Hearth Dawn",
+      "tone": "warm / low-blue",
+      "tags": [
+        "warm",
+        "low-blue"
+      ],
+      "mode": "light",
+      "description": "An evening theme — short-wavelength blue is stripped out and every accent shifted warm, so the only cool note is a soft green. Warm like a tungsten bulb. Code in JetBrains Mono, prose in Source Serif 4.",
+      "fonts": {
+        "code": "JetBrains Mono",
+        "prose": "Source Serif 4"
+      },
+      "colors": {
+        "bg": "#f4ecd9",
+        "surface": "#faf3e1",
+        "border": "#e6d9bd",
+        "ink": "#34302a",
+        "ink2": "#5f5749",
+        "faint": "#746851",
+        "selection": "#ecdfbf",
+        "cursor": "#34302a",
+        "lineHighlight": "#f0e8d1",
+        "kw": "#a5531e",
+        "str": "#656f2b",
+        "fn": "#84651e",
+        "num": "#a0532f",
+        "type": "#8a5a3c",
+        "builtin": "#4b734e",
+        "punct": "#6e6552",
+        "error": "#7c452b",
+        "warning": "#7b5a2a",
+        "ok": "#297555"
+      }
+    },
+    {
+      "id": "hearth-dusk",
+      "category": "experiment",
+      "pair": "hearth-dawn",
+      "name": "Hearth Dusk",
+      "tone": "dark / warm low-blue",
+      "tags": [
+        "dark",
+        "warm",
+        "low-blue"
+      ],
+      "mode": "dark",
+      "description": "An evening theme for the dark half — short-wavelength blue stripped out of every accent, leaving amber, clay and one soft green on a lit-room ground. The dark half of the Hearth pair. Code in JetBrains Mono, prose in Source Serif 4.",
+      "fonts": {
+        "code": "JetBrains Mono",
+        "prose": "Source Serif 4"
+      },
+      "colors": {
+        "bg": "#241c17",
+        "surface": "#2c231c",
+        "border": "#4e3f31",
+        "ink": "#e8d6bc",
+        "ink2": "#a89279",
+        "faint": "#a08b70",
+        "selection": "#453527",
+        "cursor": "#f0a13c",
+        "lineHighlight": "#2e241c",
+        "kw": "#f0a05a",
+        "str": "#c6c05e",
+        "fn": "#e8c88c",
+        "num": "#dd7f5e",
+        "type": "#cf9a86",
+        "builtin": "#a8c47a",
+        "punct": "#e8d6bc",
+        "error": "#f2705f",
+        "warning": "#dbae4a",
+        "ok": "#8ac9a0"
+      }
+    },
+    {
+      "id": "arclight-dawn",
+      "category": "experiment",
+      "pair": "arclight-dusk",
+      "name": "Arclight Dawn",
       "tone": "acuity-first / high-contrast",
       "tags": [
         "acuity-first",
@@ -512,21 +607,61 @@
         "selection": "#dde1e4",
         "cursor": "#191c20",
         "lineHighlight": "#eaecee",
-        "kw": "#7a1f6b",
+        "kw": "#7a1f4d",
         "str": "#1f6b3a",
         "fn": "#0c2650",
-        "num": "#8a3a12",
+        "num": "#8a5112",
         "type": "#5a2f8a",
         "builtin": "#0f5f6b",
         "punct": "#565d64",
         "error": "#9a3627",
-        "warning": "#855d21",
+        "warning": "#7b661e",
         "ok": "#247b57"
       }
     },
     {
+      "id": "arclight-dusk",
+      "category": "experiment",
+      "pair": "arclight-dawn",
+      "name": "Arclight Dusk",
+      "tone": "dark / acuity-first",
+      "tags": [
+        "dark",
+        "acuity-first",
+        "high-contrast"
+      ],
+      "mode": "dark",
+      "description": "For dark eyes where sharpness is the limiter, not glare — a near-black ground under accents pushed past AA toward AAA, so every token reads at a glance. The dark half of the Arclight pair. Code in Overpass Mono, prose in Lora.",
+      "fonts": {
+        "code": "Overpass Mono",
+        "prose": "Lora"
+      },
+      "colors": {
+        "bg": "#0e0f11",
+        "surface": "#171a1d",
+        "border": "#3d4349",
+        "ink": "#eef1f4",
+        "ink2": "#a7b0b8",
+        "faint": "#9aa3ab",
+        "selection": "#33414f",
+        "cursor": "#eef1f4",
+        "lineHighlight": "#16191c",
+        "kw": "#ffb0d8",
+        "str": "#8ce8a8",
+        "fn": "#8fc0ff",
+        "num": "#ffc07a",
+        "type": "#d2b0ff",
+        "builtin": "#7fe0e8",
+        "punct": "#eef1f4",
+        "error": "#f2857e",
+        "warning": "#f2d05a",
+        "ok": "#6fe0c0"
+      }
+    },
+    {
       "id": "nocturne",
-      "name": "15 · Nocturne",
+      "category": "heritage",
+      "name": "Nocturne",
       "tone": "dark / cool",
       "tags": [
         "dark",
@@ -562,7 +697,8 @@
     },
     {
       "id": "borealis",
-      "name": "16 · Borealis",
+      "category": "tone",
+      "name": "Borealis",
       "tone": "dark / pastel",
       "tags": [
         "dark",
@@ -598,7 +734,8 @@
     },
     {
       "id": "nightshade",
-      "name": "17 · Nightshade",
+      "category": "heritage",
+      "name": "Nightshade",
       "tone": "dark / purple",
       "tags": [
         "dark",
@@ -634,7 +771,8 @@
     },
     {
       "id": "blue-hour",
-      "name": "18 · Blue Hour",
+      "category": "heritage",
+      "name": "Blue Hour",
       "tone": "dark / indigo",
       "tags": [
         "dark",
@@ -671,7 +809,8 @@
     },
     {
       "id": "ember",
-      "name": "19 · Ember",
+      "category": "heritage",
+      "name": "Ember",
       "tone": "dark / warm retro",
       "tags": [
         "dark",
@@ -708,7 +847,8 @@
     },
     {
       "id": "moss-magenta",
-      "name": "20 · Moss & Magenta",
+      "category": "heritage",
+      "name": "Moss & Magenta",
       "tone": "dark / vivid",
       "tags": [
         "dark",
@@ -744,45 +884,9 @@
       }
     },
     {
-      "id": "arclight",
-      "name": "21 · Arclight",
-      "tone": "dark / acuity-first",
-      "tags": [
-        "dark",
-        "acuity-first",
-        "high-contrast"
-      ],
-      "mode": "dark",
-      "description": "For dark eyes where sharpness is the limiter, not glare — a near-black ground under accents pushed past AA toward AAA, so every token reads at a glance. The dark counterpart to Contrast Max. Code in Overpass Mono, prose in Lora.",
-      "fonts": {
-        "code": "Overpass Mono",
-        "prose": "Lora"
-      },
-      "colors": {
-        "bg": "#0e0f11",
-        "surface": "#171a1d",
-        "border": "#3d4349",
-        "ink": "#eef1f4",
-        "ink2": "#a7b0b8",
-        "faint": "#9aa3ab",
-        "selection": "#33414f",
-        "cursor": "#ffd166",
-        "lineHighlight": "#16191c",
-        "kw": "#ffb0d8",
-        "str": "#8ce8a8",
-        "fn": "#8fc0ff",
-        "num": "#ffc07a",
-        "type": "#d2b0ff",
-        "builtin": "#7fe0e8",
-        "punct": "#eef1f4",
-        "error": "#f2857e",
-        "warning": "#f2d05a",
-        "ok": "#6fe0c0"
-      }
-    },
-    {
       "id": "amber-mono",
-      "name": "22 · Amber Mono",
+      "category": "experiment",
+      "name": "Amber Mono",
       "tone": "dark / monochrome+1",
       "tags": [
         "dark",
@@ -790,7 +894,7 @@
         "warm"
       ],
       "mode": "dark",
-      "description": "Almost monochrome — everything lives in warm grays and a single amber does all the semantic lifting, like a filament terminal. The dark counterpart to Graphite Mono. Code in IBM Plex Mono, prose in IBM Plex Sans.",
+      "description": "Almost monochrome — everything lives in warm grays and a single amber does all the semantic lifting, like a filament terminal. The warm dark reading of Graphite Mono's near-monochrome idea; Azure Mono is the closer one. Code in IBM Plex Mono, prose in IBM Plex Sans.",
       "fonts": {
         "code": "IBM Plex Mono",
         "prose": "IBM Plex Sans"
@@ -818,82 +922,10 @@
       }
     },
     {
-      "id": "hearth",
-      "name": "23 · Hearth",
-      "tone": "dark / warm low-blue",
-      "tags": [
-        "dark",
-        "warm",
-        "low-blue"
-      ],
-      "mode": "dark",
-      "description": "An evening theme for the dark half — short-wavelength blue stripped out of every accent, leaving amber, clay and one soft green on a lit-room ground. The dark counterpart to Tungsten. Code in JetBrains Mono, prose in Source Serif 4.",
-      "fonts": {
-        "code": "JetBrains Mono",
-        "prose": "Source Serif 4"
-      },
-      "colors": {
-        "bg": "#241c17",
-        "surface": "#2c231c",
-        "border": "#4e3f31",
-        "ink": "#e8d6bc",
-        "ink2": "#a89279",
-        "faint": "#a08b70",
-        "selection": "#453527",
-        "cursor": "#f0a13c",
-        "lineHighlight": "#2e241c",
-        "kw": "#f0a05a",
-        "str": "#c6c05e",
-        "fn": "#e8c88c",
-        "num": "#dd7f5e",
-        "type": "#cf9a86",
-        "builtin": "#a8c47a",
-        "punct": "#e8d6bc",
-        "error": "#f2705f",
-        "warning": "#dbae4a",
-        "ok": "#8ac9a0"
-      }
-    },
-    {
-      "id": "azure-mono",
-      "name": "24 · Azure Mono",
-      "tone": "dark / monochrome+1",
-      "tags": [
-        "dark",
-        "monochrome",
-        "cool"
-      ],
-      "mode": "dark",
-      "description": "Amber Mono's cool twin, and the closer translation of Graphite Mono — cool grays with a single azure carrying every syntax role. Code in IBM Plex Mono, prose in IBM Plex Sans.",
-      "fonts": {
-        "code": "IBM Plex Mono",
-        "prose": "IBM Plex Sans"
-      },
-      "colors": {
-        "bg": "#181a1c",
-        "surface": "#202224",
-        "border": "#424547",
-        "ink": "#d6dade",
-        "ink2": "#8e9296",
-        "faint": "#8b8f93",
-        "selection": "#353a3e",
-        "cursor": "#e8b45c",
-        "lineHighlight": "#1e2022",
-        "kw": "#78b4e8",
-        "str": "#a8d0ee",
-        "fn": "#b0b6bb",
-        "num": "#a0a6ab",
-        "type": "#c4cacf",
-        "builtin": "#78b4e8",
-        "punct": "#d6dade",
-        "error": "#d8806f",
-        "warning": "#cbb26c",
-        "ok": "#8ac4b0"
-      }
-    },
-    {
-      "id": "harbor",
-      "name": "25 · Harbor Dawn",
+      "id": "harbor-dawn",
+      "category": "tone",
+      "pair": "harbor-dusk",
+      "name": "Harbor Dawn",
       "tone": "warm / gold-led",
       "tags": [
         "warm",
@@ -928,8 +960,10 @@
       }
     },
     {
-      "id": "harbor-night",
-      "name": "26 · Harbor Dusk",
+      "id": "harbor-dusk",
+      "category": "tone",
+      "pair": "harbor-dawn",
+      "name": "Harbor Dusk",
       "tone": "dark / warm-blue",
       "tags": [
         "dark",

@@ -269,6 +269,8 @@ export function deriveTheme(choices: GuidedChoices): Theme {
   const theme: Theme = {
     id: slugify(choices.name),
     name: choices.name,
+    // A user's draft belongs to no shipped family until someone decides otherwise.
+    category: 'solo',
     tone: choices.tone,
     tags: [choices.tone],
     mode: modeForBg(colors.bg),

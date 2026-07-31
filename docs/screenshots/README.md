@@ -1,8 +1,8 @@
 # Screenshots
 
 Gallery images for the root `README.md` live in `examples/`, one per theme:
-`candela-<NN>-<id>.png` where `NN` is the 1-based theme order (e.g.
-`candela-01-sepia-paper.png`). Each is one theme rendered by the explorer app
+`candela-<id>.png` (e.g. `candela-sepia-paper.png`). Ids are stable, so adding or
+reordering themes never renames an existing shot. Each is one theme rendered by the explorer app
 (`app/`) across the four default panes — terminal, TypeScript (with an inline
 problem), Markdown, and git. The PNGs are committed.
 
@@ -16,7 +16,7 @@ once its fonts load):
 cd app
 npm install                     # first time
 npx playwright install chromium # first time
-# writes docs/screenshots/examples/candela-<NN>-<id>.png for all themes
+# writes docs/screenshots/examples/candela-<id>.png for all themes
 npm run screenshots -- --out=docs/screenshots/examples
 ```
 
@@ -29,7 +29,7 @@ Filenames must stay stable — the root README references them by relative path.
 `jetbrains/` holds the same app-rendered panes sized for the JetBrains plugin form,
 which wants uniform frames rather than tall cards: exactly **1200x760**, no
 name/description/swatch legend, all four sample panes filling the frame. One per
-theme, same `candela-<NN>-<id>.png` naming. Uploaded by hand — nothing generated
+theme, same `candela-<id>.png` naming. Uploaded by hand — nothing generated
 embeds them, so they are safe to re-shoot at any size.
 
 ```sh

@@ -2,6 +2,11 @@ import { useState } from 'react';
 import { SiteShell } from './SiteShell';
 import { brand } from './branding';
 import { themes, themeVars, type Theme } from './themes';
+
+// Source order already places a pair's two halves next to each other (D14), so
+// filtering keeps them adjacent without re-sorting here.
+const pairedThemes = themes.filter((t) => t.pair);
+const standaloneThemes = themes.filter((t) => !t.pair);
 import { SamplePanes } from './samples/Panes';
 
 const REPO = 'https://github.com/schovi/candela-themes';
@@ -124,9 +129,24 @@ export function Home() {
       </section>
 
       <section className="theme-index">
-        <h2 className="home-h2">Every theme</h2>
+        <h2 className="home-h2">Light and dark pairs</h2>
+        <p className="home-body home-group-note">
+          Designed as a set, so moving between day and night keeps every color in the
+          same role.
+        </p>
+        <div className="home-grid home-grid-pairs">
+          {pairedThemes.map((t) => (
+            <ThemeIndexCard key={t.id} theme={t} />
+          ))}
+        </div>
+
+        <h2 className="home-h2 home-h2-second">Standalone themes</h2>
+        <p className="home-body home-group-note">
+          Complete in one mode. A palette does not need a twin to be finished — most of
+          these were never meant to have one.
+        </p>
         <div className="home-grid">
-          {themes.map((t) => (
+          {standaloneThemes.map((t) => (
             <ThemeIndexCard key={t.id} theme={t} />
           ))}
         </div>

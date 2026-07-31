@@ -194,11 +194,17 @@ html.is-hydrating #root { pointer-events: none; }
 
 .theme-index { padding-top: 52px; padding-bottom: 72px; }
 .home-outro { margin-top: 26px; max-width: 720px; }
+.home-group-note { margin: -8px 0 20px; max-width: 620px; }
+.home-h2-second { margin-top: 52px; }
 .home-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 18px;
 }
+/* Exactly two columns, so every row is one pair — the light half beside its dark
+   half. An auto-fill track count would straddle pairs across row boundaries. */
+.home-grid-pairs { grid-template-columns: repeat(2, minmax(280px, 1fr)); }
+@media (max-width: 700px) { .home-grid-pairs { grid-template-columns: 1fr; } }
 /* Each card is painted entirely in its own theme — the grid is a quilt of the
    actual palettes, not white cards with a color strip. */
 .home-card {
@@ -254,6 +260,20 @@ html.is-hydrating #root { pointer-events: none; }
   margin-bottom: 6px;
 }
 .card-head h2 { margin: 0; }
+.kind-chip {
+  font-size: 13px;
+  padding: 4px 11px;
+  border-radius: 14px;
+  border: 1px solid var(--builtin);
+  color: var(--builtin);
+  text-transform: lowercase;
+}
+.gallery-kind-blurb {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.75;
+}
 .tone-chip {
   font-size: 13px;
   padding: 4px 11px;

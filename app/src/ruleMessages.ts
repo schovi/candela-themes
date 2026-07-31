@@ -19,6 +19,8 @@ export function explainRuleMessage(message: string): string | null {
   if (missingToken) return `Restore the ${missingToken[1]} color (${controlGroupForToken(missingToken[1])}).`;
   if (message.includes('is not one of light/dark')) return 'Use Start over and choose a built-in theme or a valid saved draft (Starting point).';
   if (message.startsWith('mode ')) return 'Move Background darkness to the other side of the midpoint (Simple), or adjust bg lightness (UI).';
+  // Drafts are always created with category 'solo', so this only fires on a corrupted save.
+  if (message.startsWith('category ')) return 'Use Start over and choose a built-in theme or a valid saved draft (Starting point).';
   if (message.startsWith('tags must ')) return 'Use Start over and choose a built-in theme or a valid saved draft (Starting point).';
   if (message.startsWith('bg is pure ')) return 'Move the bg color away from pure white (UI).';
   if (message.startsWith('surface is pure ')) return 'Move the surface color away from pure white (UI).';

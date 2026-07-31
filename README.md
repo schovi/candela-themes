@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/examples/candela-01-sepia-paper.png" alt="Candela 01 · Sepia Paper across terminal, TypeScript, Markdown, and git previews">
+  <img src="docs/screenshots/examples/candela-sepia-paper.png" alt="Candela Sepia Paper across terminal, TypeScript, Markdown, and git previews">
 </p>
 
 <p align="center">
@@ -54,50 +54,63 @@ The vision-science rationale, including where common advice gets it wrong, is in
 
 ## The themes
 
-Themes 01–10 are the main palettes, from calm neutrals to stronger pastels.
-11–14 explore one design idea each. 15–24 are dark, tuned to the same contrast
-rules: 15–20 carry the heritage of palettes developers already know, and 21–24
-take three of the design experiments onto a dark ground. 25–26 are one harbor at
-dawn and at dusk, a light/dark pair sharing a hue.
+Themes are grouped by kind, and a light/dark pair always sits together. 01–10 are
+the main palettes, from calm neutrals to stronger pastels. 11–17 explore one design
+idea each: E-Ink Slate stands alone, then three pairs run back to back so the light
+and dark reading of the same idea sit side by side. 18–24 are dark: mostly the heritage of palettes developers already
+know. 25–26 are one harbor at dawn and at dusk.
 
-| # | Name | Tone | Code font | Prose font |
-| --- | --- | --- | --- | --- |
-| 01 | Sepia Paper | Warm | JetBrains Mono | Source Serif 4 |
-| 02 | Slate Mist | Cool | IBM Plex Mono | IBM Plex Sans |
-| 03 | Sage | Neutral (low-vision) | Fira Code | Atkinson Hyperlegible |
-| 04 | Solarized Lite | Warm classic | Source Code Pro | Newsreader |
-| 05 | Blossom | Pastel rose | DM Mono | DM Sans |
-| 06 | Lagoon | Cool aqua | Space Mono | Work Sans |
-| 07 | Meadow | Fresh green | Spline Sans Mono | Spline Sans |
-| 08 | Apricot | Warm peach | Red Hat Mono | Hanken Grotesk |
-| 09 | Periwinkle | Pastel indigo | Roboto Mono | Public Sans |
-| 10 | Ink & Coral | High-contrast | Overpass Mono | Lora |
-| 11 | Graphite Mono | *One accent* (near-monochrome) | IBM Plex Mono | IBM Plex Sans |
-| 12 | Tungsten | *Low blue light* (evening) | JetBrains Mono | Source Serif 4 |
-| 13 | E-Ink Slate | *Reflective paper* (ultra-low chroma) | Fira Code | Atkinson Hyperlegible |
-| 14 | Contrast Max | *Acuity first* (maximal legibility) | Overpass Mono | Lora |
-| 15 | Nocturne | *Dark* (One Dark heritage) | JetBrains Mono | Public Sans |
-| 16 | Borealis | *Dark* (pastel) | DM Mono | DM Sans |
-| 17 | Nightshade | *Dark* (purple, Dracula heritage) | Fira Code | Hanken Grotesk |
-| 18 | Blue Hour | *Dark* (indigo, Tokyo Night heritage) | IBM Plex Mono | IBM Plex Sans |
-| 19 | Ember | *Dark* (warm retro, Gruvbox heritage) | Source Code Pro | Newsreader |
-| 20 | Moss & Magenta | *Dark* (vivid, Monokai heritage) | Space Mono | Work Sans |
-| 21 | Arclight | *Dark* (acuity first) | Overpass Mono | Lora |
-| 22 | Amber Mono | *Dark* (one accent, warm) | IBM Plex Mono | IBM Plex Sans |
-| 23 | Hearth | *Dark* (low blue light, evening) | JetBrains Mono | Source Serif 4 |
-| 24 | Azure Mono | *Dark* (one accent, cool) | IBM Plex Mono | IBM Plex Sans |
-| 25 | Harbor Dawn | Warm (gold-led) | Spline Sans Mono | Work Sans |
-| 26 | Harbor Dusk | *Dark* (watery blue) | Spline Sans Mono | Work Sans |
+Every theme carries one **kind**, the gallery's main filter:
+
+- **tone** (12) — the mood of the page: warm, cool, pastel, fresh.
+- **heritage** (6) — palettes you already know, retuned to Candela's contrast floors.
+- **experiment** (8) — one comfort idea pushed hard: near-monochrome, low blue light,
+  maximum acuity.
+
+Separately, eight themes carry a `pair`: a light/dark set designed together
+(Arclight, Hearth, Harbor, and Graphite/Azure Mono). The other eighteen have no
+counterpart, and that is not a gap — see [D14](docs/decisions.md).
+
+| # | Name | Kind | Tone | Code font | Prose font |
+| --- | --- | --- | --- | --- | --- |
+| 01 | Sepia Paper | tone | Warm | JetBrains Mono | Source Serif 4 |
+| 02 | Slate Mist | tone | Cool | IBM Plex Mono | IBM Plex Sans |
+| 03 | Sage | tone | Neutral (low-vision) | Fira Code | Atkinson Hyperlegible |
+| 04 | Solarized Lite | heritage | Warm classic | Source Code Pro | Newsreader |
+| 05 | Blossom | tone | Pastel rose | DM Mono | DM Sans |
+| 06 | Lagoon | tone | Cool aqua | Space Mono | Work Sans |
+| 07 | Meadow | tone | Fresh green | Spline Sans Mono | Spline Sans |
+| 08 | Apricot | tone | Warm peach | Red Hat Mono | Hanken Grotesk |
+| 09 | Periwinkle | tone | Pastel indigo | Roboto Mono | Public Sans |
+| 10 | Ink & Coral | tone | High-contrast | Overpass Mono | Lora |
+| 11 | E-Ink Slate | experiment | *Reflective paper* (ultra-low chroma) | Fira Code | Atkinson Hyperlegible |
+| 12 | Graphite Mono | experiment | *One accent* (near-monochrome) | IBM Plex Mono | IBM Plex Sans |
+| 13 | Azure Mono | experiment | *Dark* (one accent, cool) | IBM Plex Mono | IBM Plex Sans |
+| 14 | Hearth Dawn | experiment | *Low blue light* (evening) | JetBrains Mono | Source Serif 4 |
+| 15 | Hearth Dusk | experiment | *Dark* (low blue light, evening) | JetBrains Mono | Source Serif 4 |
+| 16 | Arclight Dawn | experiment | *Acuity first* (maximal legibility) | Overpass Mono | Lora |
+| 17 | Arclight Dusk | experiment | *Dark* (acuity first) | Overpass Mono | Lora |
+| 18 | Nocturne | heritage | *Dark* (One Dark heritage) | JetBrains Mono | Public Sans |
+| 19 | Borealis | tone | *Dark* (pastel) | DM Mono | DM Sans |
+| 20 | Nightshade | heritage | *Dark* (purple, Dracula heritage) | Fira Code | Hanken Grotesk |
+| 21 | Blue Hour | heritage | *Dark* (indigo, Tokyo Night heritage) | IBM Plex Mono | IBM Plex Sans |
+| 22 | Ember | heritage | *Dark* (warm retro, Gruvbox heritage) | Source Code Pro | Newsreader |
+| 23 | Moss & Magenta | heritage | *Dark* (vivid, Monokai heritage) | Space Mono | Work Sans |
+| 24 | Amber Mono | experiment | *Dark* (one accent, warm) | IBM Plex Mono | IBM Plex Sans |
+| 25 | Harbor Dawn | tone | Warm (gold-led) | Spline Sans Mono | Work Sans |
+| 26 | Harbor Dusk | tone | *Dark* (watery blue) | Spline Sans Mono | Work Sans |
 
 What each experiment explores:
 
 - **Graphite Mono** — near-monochrome syntax with one blue accent.
-- **Tungsten** — a warm palette for evening use.
+- **Hearth Dawn** — a warm palette for evening use.
 - **E-Ink Slate** — nearly grayscale syntax, like a Kindle.
-- **Contrast Max** — deep accents and near-white paper for maximum legibility.
+- **Arclight Dawn** — deep accents and near-white paper for maximum legibility.
 
-Three of those four have a dark counterpart: **Arclight** for Contrast Max,
-**Amber Mono** and **Azure Mono** for Graphite Mono, **Hearth** for Tungsten.
+Three of those four have a dark counterpart: **Arclight Dusk** for Arclight Dawn,
+**Azure Mono** for Graphite Mono, **Hearth Dusk** for Hearth Dawn. Near-monochrome
+got two dark readings — **Amber Mono** (warm) and **Azure Mono** (cool) — and the
+`pair` key links Graphite Mono to Azure Mono, the closer translation of the two.
 E-Ink Slate has none, and deliberately so — on a dark ground every token has to
 be lighter than the background to stay legible, which crowds near-grayscale
 syntax into a band too narrow to tell tokens apart. The evidence is in
@@ -144,19 +157,19 @@ Preview every theme across terminal, TypeScript, Markdown, and git panes.
 
 | | |
 | --- | --- |
-| **01 · Sepia Paper**<br>![Sepia Paper](docs/screenshots/examples/candela-01-sepia-paper.png) | **02 · Slate Mist**<br>![Slate Mist](docs/screenshots/examples/candela-02-slate-mist.png) |
-| **03 · Sage**<br>![Sage](docs/screenshots/examples/candela-03-sage.png) | **04 · Solarized Lite**<br>![Solarized Lite](docs/screenshots/examples/candela-04-solarized-lite.png) |
-| **05 · Blossom**<br>![Blossom](docs/screenshots/examples/candela-05-blossom.png) | **06 · Lagoon**<br>![Lagoon](docs/screenshots/examples/candela-06-lagoon.png) |
-| **07 · Meadow**<br>![Meadow](docs/screenshots/examples/candela-07-meadow.png) | **08 · Apricot**<br>![Apricot](docs/screenshots/examples/candela-08-apricot.png) |
-| **09 · Periwinkle**<br>![Periwinkle](docs/screenshots/examples/candela-09-periwinkle.png) | **10 · Ink & Coral**<br>![Ink & Coral](docs/screenshots/examples/candela-10-ink-coral.png) |
-| **11 · Graphite Mono**<br>![Graphite Mono](docs/screenshots/examples/candela-11-graphite-mono.png) | **12 · Tungsten**<br>![Tungsten](docs/screenshots/examples/candela-12-tungsten.png) |
-| **13 · E-Ink Slate**<br>![E-Ink Slate](docs/screenshots/examples/candela-13-eink-slate.png) | **14 · Contrast Max**<br>![Contrast Max](docs/screenshots/examples/candela-14-contrast-max.png) |
-| **15 · Nocturne**<br>![Nocturne](docs/screenshots/examples/candela-15-nocturne.png) | **16 · Borealis**<br>![Borealis](docs/screenshots/examples/candela-16-borealis.png) |
-| **17 · Nightshade**<br>![Nightshade](docs/screenshots/examples/candela-17-nightshade.png) | **18 · Blue Hour**<br>![Blue Hour](docs/screenshots/examples/candela-18-blue-hour.png) |
-| **19 · Ember**<br>![Ember](docs/screenshots/examples/candela-19-ember.png) | **20 · Moss & Magenta**<br>![Moss & Magenta](docs/screenshots/examples/candela-20-moss-magenta.png) |
-| **21 · Arclight**<br>![Arclight](docs/screenshots/examples/candela-21-arclight.png) | **22 · Amber Mono**<br>![Amber Mono](docs/screenshots/examples/candela-22-amber-mono.png) |
-| **23 · Hearth**<br>![Hearth](docs/screenshots/examples/candela-23-hearth.png) | **24 · Azure Mono**<br>![Azure Mono](docs/screenshots/examples/candela-24-azure-mono.png) |
-| **25 · Harbor Dawn**<br>![Harbor Dawn](docs/screenshots/examples/candela-25-harbor.png) | **26 · Harbor Dusk**<br>![Harbor Dusk](docs/screenshots/examples/candela-26-harbor-night.png) |
+| **Sepia Paper**<br>![Sepia Paper](docs/screenshots/examples/candela-sepia-paper.png) | **Slate Mist**<br>![Slate Mist](docs/screenshots/examples/candela-slate-mist.png) |
+| **Sage**<br>![Sage](docs/screenshots/examples/candela-sage.png) | **Solarized Lite**<br>![Solarized Lite](docs/screenshots/examples/candela-solarized-lite.png) |
+| **Blossom**<br>![Blossom](docs/screenshots/examples/candela-blossom.png) | **Lagoon**<br>![Lagoon](docs/screenshots/examples/candela-lagoon.png) |
+| **Meadow**<br>![Meadow](docs/screenshots/examples/candela-meadow.png) | **Apricot**<br>![Apricot](docs/screenshots/examples/candela-apricot.png) |
+| **Periwinkle**<br>![Periwinkle](docs/screenshots/examples/candela-periwinkle.png) | **Ink & Coral**<br>![Ink & Coral](docs/screenshots/examples/candela-ink-coral.png) |
+| **E-Ink Slate**<br>![E-Ink Slate](docs/screenshots/examples/candela-eink-slate.png) | **Graphite Mono**<br>![Graphite Mono](docs/screenshots/examples/candela-graphite-mono.png) |
+| **Azure Mono**<br>![Azure Mono](docs/screenshots/examples/candela-azure-mono.png) | **Hearth Dawn**<br>![Hearth Dawn](docs/screenshots/examples/candela-hearth-dawn.png) |
+| **Hearth Dusk**<br>![Hearth Dusk](docs/screenshots/examples/candela-hearth-dusk.png) | **Arclight Dawn**<br>![Arclight Dawn](docs/screenshots/examples/candela-arclight-dawn.png) |
+| **Arclight Dusk**<br>![Arclight Dusk](docs/screenshots/examples/candela-arclight-dusk.png) | **Nocturne**<br>![Nocturne](docs/screenshots/examples/candela-nocturne.png) |
+| **Borealis**<br>![Borealis](docs/screenshots/examples/candela-borealis.png) | **Nightshade**<br>![Nightshade](docs/screenshots/examples/candela-nightshade.png) |
+| **Blue Hour**<br>![Blue Hour](docs/screenshots/examples/candela-blue-hour.png) | **Ember**<br>![Ember](docs/screenshots/examples/candela-ember.png) |
+| **Moss & Magenta**<br>![Moss & Magenta](docs/screenshots/examples/candela-moss-magenta.png) | **Amber Mono**<br>![Amber Mono](docs/screenshots/examples/candela-amber-mono.png) |
+| **Harbor Dawn**<br>![Harbor Dawn](docs/screenshots/examples/candela-harbor-dawn.png) | **Harbor Dusk**<br>![Harbor Dusk](docs/screenshots/examples/candela-harbor-dusk.png) |
 
 ## Install
 
@@ -185,7 +198,9 @@ generated, not committed.
 
 Theme ids: `sepia-paper`, `slate-mist`, `sage`, `solarized-lite`, `blossom`,
 `lagoon`, `meadow`, `apricot`, `periwinkle`, `ink-coral`, `graphite-mono`,
-`tungsten`, `eink-slate`, `contrast-max`, `nocturne`, `borealis`.
+`hearth-dawn`, `eink-slate`, `arclight-dawn`, `nocturne`, `borealis`,
+`nightshade`, `blue-hour`, `ember`, `moss-magenta`, `arclight-dusk`, `amber-
+mono`, `hearth-dusk`, `azure-mono`, `harbor-dawn`, `harbor-dusk`.
 
 ### iTerm2
 
@@ -210,7 +225,7 @@ The extension, containing every theme, lives at `build/vscode/`.
 - **From source:** copy `build/vscode/` into `~/.vscode/extensions/candela-themes/`
   and reload, or open the folder in VS Code and press **F5**.
 
-Then **Preferences: Color Theme** and pick any *Candela NN · …* entry.
+Then **Preferences: Color Theme** and pick any *Candela …* entry.
 
 ### IntelliJ / JetBrains IDEs
 
@@ -290,7 +305,7 @@ needs:
   "themes": [
     {
       "id": "sepia-paper",
-      "name": "01 · Sepia Paper",
+      "name": "Sepia Paper",
       "tone": "warm",
       "tags": ["warm"],
       "mode": "light",

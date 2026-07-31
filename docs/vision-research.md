@@ -24,7 +24,7 @@ dark mode; light themes are a preference for a population, not a universal presc
 polarity studies show reading performance *rises* with contrast, and low-vision users
 read best at maximal contrast. Choosing ~7–15:1 dark-gray-on-off-white is a legitimate
 comfort preference — but frame it as taste, never as "21:1 hurts". That is also why
-Contrast Max exists.
+Arclight Dawn exists.
 Sources: [WCAG 1.4.6 Understanding](https://www.w3.org/WAI/WCAG21/Understanding/contrast-enhanced.html),
 [UX Movement (the lore, with its own caveats)](https://uxmovement.com/content/why-you-should-never-use-pure-black-for-text-or-backgrounds/).
 
@@ -38,7 +38,7 @@ Sources: [W3C WCAG 3 visual contrast how-to](https://www.w3.org/WAI/GL/WCAG3/202
 **Low-blue palettes help sleep, not eye strain.** Evening short-wavelength light
 suppresses melatonin (small effect at screen intensities); the 2023 Cochrane review and
 the American Academy of Ophthalmology find blue light does *not* cause digital eye
-strain — reduced blinking and accommodation do. Tungsten's pitch is sleep hygiene.
+strain — reduced blinking and accommodation do. Hearth Dawn's pitch is sleep hygiene.
 Sources: [AAO](https://www.aao.org/eye-health/tips-prevention/are-computer-glasses-worth-it),
 [Cochrane review](https://pubmed.ncbi.nlm.nih.gov/42349548/).
 

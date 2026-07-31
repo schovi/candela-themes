@@ -14,7 +14,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { expectedTokens, checkTheme, checkAnsiMapping } = require('../lib/rules');
+const { expectedTokens, checkTheme, checkAnsiMapping, checkPairs } = require('../lib/rules');
 const copy = require('../lib/copy.js');
 
 const ROOT = path.join(__dirname, '..');
@@ -151,9 +151,7 @@ function checkScreenshots(themes) {
       ? []
       : [`screenshot: ${file} is missing — regenerate (see docs/screenshots/README.md)`];
   return [
-    ...themes.flatMap((theme, index) =>
-      missing(`docs/screenshots/examples/candela-${String(index + 1).padStart(2, '0')}-${theme.id}.png`),
-    ),
+    ...themes.flatMap((theme) => missing(`docs/screenshots/examples/candela-${theme.id}.png`)),
     ...EMBEDDED_SHOTS.flatMap(missing),
   ];
 }
@@ -179,6 +177,11 @@ function main() {
       console.log(`warn  ${theme.id}: ${w}`);
       warningCount++;
     }
+  }
+
+  for (const f of checkPairs(data.themes)) {
+    console.log(`${red('FAIL')}  ${f}`);
+    hardFailures++;
   }
 
   for (const f of checkAnsiMapping(data.ansiMapping, expected)) {

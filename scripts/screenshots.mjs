@@ -5,7 +5,7 @@
 //
 // Starts the explorer's Vite dev server, opens each theme in screenshot mode
 // (?theme=<id>&shot=1 — one chrome-free card that signals readiness once fonts
-// load), and writes docs/screenshots/candela-<NN>-<id>.png (NN = 1-based theme
+// load), and writes docs/screenshots/candela-<id>.png (ids are stable; theme
 // order). Playwright is a devDep of
 // app/, so we resolve it from there rather than the repo root.
 
@@ -90,8 +90,7 @@ try {
       { timeout: 15_000 },
     ).then((h) => h.jsonValue());
     if (state !== '1') throw new Error(`theme '${id}' did not render (shotReady=${state})`);
-    const num = String(index + 1).padStart(2, '0');
-    const file = path.join(OUT_DIR, `candela-${num}-${id}.png`);
+    const file = path.join(OUT_DIR, `candela-${id}.png`);
     if (HEIGHT !== null) {
       await page.screenshot({ path: file, clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT } });
     } else {

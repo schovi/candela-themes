@@ -81,7 +81,9 @@ re-deriving the numbers.
 
 `scripts/validate.js` (via `lib/rules.js`, Node, no deps) hard-gates the above: no pure-white
 `bg`/`surface`, `surface` lighter than `bg`, no pure-black `ink`, `ink`/`surface` ≥ 7:1 (AAA),
-every AA floor, diagnostic hex-uniqueness, a valid `mode` (`light`/`dark`), every token present
+every AA floor, diagnostic hex-uniqueness, a valid `mode` (`light`/`dark`), a valid
+`category`, symmetric and
+opposite-mode `pair` links, every token present
 in all themes, and ANSI mappings that reference real tokens. It exits non-zero and names the failing theme + token.
 Warn-only judgement calls (never gate): the accent-hue count (6–8) and the error/ok grayscale +
 protan/deutan separation. It reads the JSON read-only — it reports, humans decide.
@@ -131,7 +133,15 @@ Full runbook: `docs/release-runbook.md`.
 ### Adding another theme or a new format
 
 - *New theme*: add one entry to `themes[]` with every token filled in (nothing implicit) —
-  `id`, `name`, `tone`, `tags` (non-empty; the gallery's tag filter), `mode` (`light`/`dark`), `fonts`, and the full `colors` block. `build/` regenerates for all
+  `id`, `name` (no ordinal — ordering is presentation, see D14), `tone`, `tags` (non-empty;
+  the gallery's tag filter), `mode` (`light`/`dark`), `fonts`, and the full `colors` block.
+  `category` is required and is one of `tone` / `heritage` / `experiment` / `solo` — the
+  gallery's main filter, one kind per theme (`solo` is the escape hatch for a theme
+  belonging to no family; the gallery derives chips from the values actually present, so an
+  unused category never renders). Optional `pair`: the id of its light/dark counterpart,
+  which must point back and be the opposite mode. Nothing generates from `pair` — it records
+  the relationship so names don't have to, and "solo" in the UI is derived from its absence,
+  never stored twice. `build/` regenerates for all
   formats automatically; add the theme to README's theme table (and the gallery) by hand.
 - *New tool format*: add a pure emitter and install manual in `lib/emitters.js` (hex helpers in `lib/colors.js`);
   terminal formats derive from the top-level `ansiMapping` block.

@@ -9,9 +9,13 @@ export type ColorToken =
   | 'kw' | 'str' | 'fn' | 'num' | 'type' | 'builtin' | 'punct'
   | 'error' | 'warning' | 'ok';
 
+export type ThemeCategory = 'tone' | 'heritage' | 'experiment' | 'solo';
+
 export interface Theme {
   id: string;
   name: string;
+  category: ThemeCategory;
+  pair?: string;
   tone: string;
   tags: string[];
   mode: 'light' | 'dark';
@@ -30,6 +34,18 @@ const themeData = data as { themes: Theme[]; ansiMapping: AnsiMapping };
 export const themes: Theme[] = themeData.themes;
 export const ansiMapping = themeData.ansiMapping;
 export const themesById = new Map(themes.map((t) => [t.id, t]));
+
+// Category chips are derived from the values actually present, so a category with
+// no themes in it never renders an empty filter.
+export const CATEGORY_ORDER: ThemeCategory[] = ['tone', 'heritage', 'experiment', 'solo'];
+export const usedCategories = CATEGORY_ORDER.filter((c) => themes.some((t) => t.category === c));
+
+export const CATEGORY_BLURB: Record<ThemeCategory, string> = {
+  tone: 'The mood of the page: warm, cool, pastel, fresh.',
+  heritage: 'Palettes you already know, retuned to Candela’s contrast floors.',
+  experiment: 'One comfort idea pushed hard — near-monochrome, low blue light, maximum acuity.',
+  solo: 'Belongs to no family, and does not need to.',
+};
 
 // Light/dark comes from the explicit, validated `mode` field on each theme.
 export const isDarkTheme = (theme: Theme) => theme.mode === 'dark';

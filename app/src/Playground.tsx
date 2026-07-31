@@ -22,6 +22,7 @@ import { explainRuleMessage, jumpTokenForMessage } from './ruleMessages';
 const BLANK_TEMPLATE: Theme = {
   id: 'my-theme',
   name: 'My Theme',
+  category: 'solo',
   tone: 'custom',
   tags: ['custom'],
   mode: 'light',

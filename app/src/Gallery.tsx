@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { themes } from './themes';
+import { themes, usedCategories, CATEGORY_BLURB, type ThemeCategory } from './themes';
 import { ThemeCard } from './ThemeCard';
 import { DEFAULT_PANES, type PaneKey } from './samples/Panes';
 import { PanePicker } from './PanePicker';
@@ -7,7 +7,7 @@ import { PanePicker } from './PanePicker';
 const ALL_TAGS = [...new Set(themes.flatMap((t) => t.tags))].sort();
 
 function matchesQuery(theme: (typeof themes)[number], query: string) {
-  const haystack = [theme.name, theme.tone, ...theme.tags, theme.fonts.code, theme.fonts.prose]
+  const haystack = [theme.name, theme.tone, theme.category, ...theme.tags, theme.fonts.code, theme.fonts.prose]
     .join(' ')
     .toLowerCase();
   return haystack.includes(query);
@@ -37,6 +37,10 @@ function useAnchorFlash() {
 export function Gallery() {
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState<'all' | 'light' | 'dark'>('all');
+  const [category, setCategory] = useState<'all' | ThemeCategory>('all');
+  // Derived from `pair`, never stored — a second copy would drift the first time
+  // a theme gains or loses a counterpart.
+  const [pairedOnly, setPairedOnly] = useState(false);
   const [tags, setTags] = useState<Set<string>>(() => new Set());
   const [panes, setPanes] = useState<Set<PaneKey>>(() => new Set(DEFAULT_PANES));
   useAnchorFlash();
@@ -54,10 +58,12 @@ export function Gallery() {
       themes.filter(
         (t) =>
           (mode === 'all' || t.mode === mode) &&
+          (category === 'all' || t.category === category) &&
+          (!pairedOnly || Boolean(t.pair)) &&
           (tags.size === 0 || [...tags].every((tag) => t.tags.includes(tag))) &&
           (normalizedQuery === '' || matchesQuery(t, normalizedQuery)),
       ),
-    [normalizedQuery, mode, tags],
+    [normalizedQuery, mode, category, pairedOnly, tags],
   );
 
   return (
@@ -65,7 +71,7 @@ export function Gallery() {
       <header className="gallery-head">
         <h1>All {themes.length} themes</h1>
         <p>
-          Previewed across a terminal and real code. Filter by mode, tone, or tag; every
+          Previewed across a terminal and real code. Filter by kind, mode, or tag; every
           card's <strong>Customize</strong> opens it in the Editor.
         </p>
       </header>
@@ -94,6 +100,32 @@ export function Gallery() {
             ))}
           </div>
         </div>
+        <div className="filter-select">
+          Kind
+          <div className="pg-segmented" role="group" aria-label="Filter by kind">
+            {(['all', ...usedCategories] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                className={category === value ? 'is-on' : ''}
+                aria-pressed={category === value}
+                title={value === 'all' ? 'Every kind of theme' : CATEGORY_BLURB[value]}
+                onClick={() => setCategory(value)}
+              >
+                {value === 'all' ? 'All' : value}
+              </button>
+            ))}
+          </div>
+        </div>
+        <button
+          type="button"
+          className={`tag-chip${pairedOnly ? ' is-on' : ''}`}
+          aria-pressed={pairedOnly}
+          title="Themes designed as a light/dark set. Most themes ship in one mode only, and that is not a gap."
+          onClick={() => setPairedOnly((on) => !on)}
+        >
+          comes in light and dark
+        </button>
         <span className="filter-count">
           {visible.length} of {themes.length} themes
         </span>
@@ -116,12 +148,13 @@ export function Gallery() {
           )}
         </div>
         <PanePicker panes={panes} onChange={setPanes} />
+        {category !== 'all' && <p className="gallery-kind-blurb">{CATEGORY_BLURB[category]}</p>}
       </div>
 
       {visible.length === 0 ? (
         <p className="gallery-empty">
           No themes match these filters.{' '}
-          <button type="button" className="gallery-empty-clear" onClick={() => { setQuery(''); setMode('all'); setTags(new Set()); }}>
+          <button type="button" className="gallery-empty-clear" onClick={() => { setQuery(''); setMode('all'); setCategory('all'); setPairedOnly(false); setTags(new Set()); }}>
             Clear them
           </button>{' '}
           to see all {themes.length}.

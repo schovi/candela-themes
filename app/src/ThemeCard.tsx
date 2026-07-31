@@ -9,6 +9,7 @@ export function ThemeCard({ theme, panes, customizeHref, highlightToken, preview
         {showMeta && <>
           <div className="card-head">
             <h2 style={{ font: "600 30px/1 var(--prose-font), serif", color: 'var(--ink)' }}>{theme.name}</h2>
+            <span className="kind-chip">{theme.category}</span>
             <span className="tone-chip">{theme.tone}</span>
             {customizeHref && (
               <a className="card-customize" href={customizeHref}>Customize</a>

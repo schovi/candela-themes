@@ -300,3 +300,103 @@ every other. Note also that a mean per-token ΔE across the palette is the *wron
 similarity metric — it weights `border` the same as `ink`, and by that measure Dawn
 scores nearer `apricot` (12.3) than the version it replaced (17.4). Weight by the
 share of pixels a token actually paints before concluding two themes are alike.
+
+## D14 — Pairing lives in a `pair` key, not in names; names carry no ordering (2026-07-31)
+
+**Problem.** Theme names carried a display ordinal (`01 · Sepia Paper`) that also
+encoded light/dark grouping: lights 01–14, darks 15–24. Harbor arrived as a
+light/dark pair and had to take 25/26, so the grouping broke on the first pair that
+was not appended one mode at a time. Every future pair breaks it again. Renumbering
+to repair it renames shipped themes, and `name` is the selection key users have
+stored in `workbench.colorTheme`, Zed `settings.json`, and JetBrains schemes.
+
+**Options.** (A) Renumber on every pair, paying a rename each time. (B) Bake the
+mode into the name (`Candela Dark Nocturne`). (C) Drop the ordinals and record the
+light/dark relationship as data.
+
+**Choice.** C. Names are now bare (`Candela Sepia Paper`); ordering is a
+presentation concern the gallery and README own. Paired themes carry
+`"pair": "<other-id>"`, and `checkPairs()` in `lib/rules.js` hard-gates that the
+target exists, points back, and is the opposite mode. Screenshots dropped their
+`<NN>-` prefix too (`candela-<id>.png`), so adding or reordering a theme never
+renames an existing file — `shotUrl()` lost the `findIndex` it needed to compute one.
+
+Four ids and names were realigned in the same break, since ids are a *second*
+user-facing selection key (nvim `colorscheme`, Helix `theme =`, terminal config
+paths) and diverging them from names permanently is worse than one more rename at
+low install counts: `contrast-max`/`arclight` → `arclight-dawn`/`arclight-dusk`,
+`tungsten`/`hearth` → `hearth-dawn`/`hearth-dusk`, and `harbor`/`harbor-night` →
+`harbor-dawn`/`harbor-dusk`.
+
+**The Mono exception, deliberate.** `graphite-mono` pairs to `azure-mono`, not to
+`amber-mono`, and neither takes a Dawn/Dusk name. D12 shipped *two* dark readings of
+the near-monochrome experiment; Azure is the closer translation (mean syntax hue
+delta 4.3° vs Amber's 56.7°), so it gets the `pair` key. A Dawn/Dusk naming
+convention cannot express a family of three, which is exactly why the relationship
+belongs in data and not in names.
+
+**Consequence, and the trap in it.** A `pair` is a shared *design goal*, not a
+guaranteed visual resemblance, and the distinction is invisible in the data. Harbor
+and Hearth read as pairs on sight; **Arclight does not, and that is correct.** All
+three are matched on every metric — Arclight beats Harbor on mean syntax hue delta
+(2.7° vs 6.1°), chroma ratio (0.99 vs 0.92) and ΔE accent↔ink. What separates them
+is the ground: Harbor's backgrounds carry Lab chroma 3.8 and 13.2, Hearth's 10.2 and
+5.7, Arclight's **0.6 and 1.2**. A pair is recognized by a tinted ground and a
+signature hue; acuity-first mandates a neutral ground and spends the full six-hue
+wheel, so it has no signature to share. Do not tint Arclight's backgrounds to make
+the pairing legible — that trades the theme's stated purpose for a cosmetic cue, and
+the relationship is already recorded where it belongs.
+
+**Unpaired is the default, not a gap.** Eighteen of twenty-six themes carry no
+`pair` and should not acquire one. Measured across every unpaired light/dark
+combination, only two are even mutual-nearest — `apricot`/`borealis` at 16.7° with a
+1.1× margin (noise; `ember` sits at 18.2°) and `periwinkle`/`blue-hour` at 30.1°,
+four times the distance of any real pair. The four shipped pairs run 4.3–7.3° at
+2.3–11× margins. Nothing else is close, and forcing one would mean retuning a
+working theme to match a partner it was never designed against.
+
+The unpaired split three ways, and each is complete as it stands. **Heritage**
+(`solarized-lite`, `nocturne`, `nightshade`, `blue-hour`, `ember`, `moss-magenta`)
+is single-mode by definition — a light Dracula is not a thing. **Tone studies**
+(`sepia-paper`, `slate-mist`, `sage`, `blossom`, `lagoon`, `meadow`, `apricot`,
+`periwinkle`, `ink-coral`) explore one ground; their "dark version" would just be a
+different theme. **Deliberate solos** are `eink-slate` (D12 proves no dark reading
+exists), `amber-mono` and `borealis`. Do not add a `kind` or `family` key to encode
+this — `tags` already carry tone, and the absence of `pair` already says standalone.
+
+## D15 — One `category` axis for kind; "solo" in the UI is derived from `pair`, never stored (2026-07-31)
+
+**Problem.** D14 gave paired themes a `pair` key, which left the other eighteen with
+no shared vocabulary. Twenty-six themes with only `tone` and `tags` to distinguish
+them cannot be browsed by intent — "show me the accessibility experiments" and "show
+me the ones that look like a theme I already use" were both unanswerable.
+
+**Options.** (A) One axis holding all four UI groups: pairs / tones / heritage /
+solos. (B) Two axes: a `category` for kind, with pairing left to the existing `pair`
+key. (C) No field; keep leaning on `tags`.
+
+**Choice.** B for the data, A for the UI. `pair` is a *relationship* and `category`
+is a *kind*, and collapsing them loses information in both directions: on one axis
+`harbor-dawn` becomes "pair" and stops being a warm tone study, `arclight-dawn`
+stops being the acuity-first experiment, while `solarized-lite` (heritage, unpaired)
+and `amber-mono` (experiment, unpaired) fit no slot at all. So `category` is
+required on every theme and is one of `tone` (12) / `heritage` (6) / `experiment`
+(8) / `solo`, gated by `CATEGORIES` in `lib/rules.js` beside the `mode` check. The
+gallery still presents four groups — the fourth, "has a counterpart", is a filter
+over `Boolean(theme.pair)`.
+
+**Why `solo` exists but is unused by shipped themes.** It is the escape hatch for a
+theme belonging to no family, so a future palette is never forced into a wrong
+bucket to satisfy the validator. All twenty-six shipped themes classify cleanly
+today, so nothing carries it — but the editor's blank template and every derived
+draft do, since a user's draft belongs to no shipped family. The gallery builds its
+chips from the categories actually present (`usedCategories`), so an empty category
+never renders a filter that returns nothing.
+
+**Consequence, and the trap in it.** Do not add a `solo: true` field, and do not
+store "unpaired" anywhere. It is `!theme.pair`, and a second copy drifts the first
+time a theme gains a counterpart — the same rot `checkPairs()` was added to prevent.
+The one judgement call in the classification is `ink-coral`: it shares the
+`high-contrast` tag with `arclight-dawn` but is filed as `tone`, because it is a
+punchy palette rather than an acuity study. If that flips, flip only the category —
+its tags are correct either way.
