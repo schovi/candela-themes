@@ -272,3 +272,31 @@ the invariant binding informational tokens to `bg` ever changes.
 `azure-mono` warn at 1 hue and `hearth` at 3, exactly as their light counterparts
 `graphite-mono` (1) and `tungsten` (3) already do. Warn-only by design — a
 single-accent theme cannot reach 6 distinct hues and should not try.
+
+## D13 — A light theme may carry colored `ink`; hue inventory, not ground tint, is what makes a palette generic (2026-07-31)
+
+**Problem.** Harbor Dawn's first version (task 065) passed every hard rule and still
+read as a near-duplicate of the shipped warm lights. Measurement found why: its
+accent hue inventory (199, 88, 24, 340, 268, 176) sat within a few degrees of
+`apricot`, `sepia-paper` and `solarized-lite`. All three use blue ~205, olive ~75,
+orange ~22, rose ~337, purple ~267, teal ~172. Only the blue/orange *role
+assignment* differed, so a warm ground plus that inventory reproduces `apricot`'s
+recipe no matter how the ground is tinted. Fourteen light themes have consumed most
+of the ground-hue space, so ground tint alone can no longer differentiate one.
+
+**Options.** (A) Retune the ground and accent lightness until it feels different.
+(B) Change the palette's structure: move the load-bearing hue off the crowded warm
+band and give a token a value no other theme uses.
+
+**Choice.** B, in two moves. The warm anchor became **gold (hue 36)** rather than a
+second orange, and **`ink` became a deep harbor blue** — `#17364f`, saturation
+0.55, where the other fourteen light themes run 0.05–0.23. `punct` went cool with
+it, so the "night" sits in the quiet roles while gold leads the loud ones.
+
+**Consequence, and the trap in it.** Colored `ink` is now precedent, not a mistake:
+do not neutralize Harbor Dawn's ink to match the other lights. It is the token
+carrying most of the theme's identity, and it clears AAA on `surface` (12.2:1) like
+every other. Note also that a mean per-token ΔE across the palette is the *wrong*
+similarity metric — it weights `border` the same as `ink`, and by that measure Dawn
+scores nearer `apricot` (12.3) than the version it replaced (17.4). Weight by the
+share of pixels a token actually paints before concluding two themes are alike.

@@ -149,3 +149,10 @@ the rule. No release dispatch; that's a separate `/release` decision.
   today, no sort) — a separate task, out of this boundary.
 - Related: task 064 emits Slack custom themes from Candela palettes, closing the loop in the
   other direction.
+- Screenshots: `docs/screenshots/examples/` (gallery cards, referenced by the root README)
+  and `docs/screenshots/jetbrains/` (1200x760 listing frames, uploaded by hand) both hold
+  committed PNGs for the pair. The colored-`ink` precedent is logged as D13.
+- Left alone deliberately: `docs/dark-palette-exploration.md` and D12 are dated records of
+  the 21–24 exploration, still accurate. `docs/marketplace-listing.md` forbids theme counts
+  by design. `workflow/ready/062-xcode-colorscheme-format.md:74` says "24 theme files" and is
+  now stale, but it belongs to another task and is outside this boundary.
