@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Candela — Page not found</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="/favicon.ico" sizes="48x48" />
+  <!-- Static and JS-free on purpose: its existence is what makes Cloudflare Pages
+       answer an unknown path with a 404 instead of falling back to index.html at
+       200. Without it a stale cached shell fetches HTML where its hashed JS chunk
+       used to be, the module dies on the MIME check, and the page renders but
+       never hydrates. Hashed asset names rule out linking the built CSS, so the
+       few styles here are inline copies of the site tokens in src/styles.css. -->
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 40px;
+      background: #f2ecdf;
+      color: #322f28;
+      font-family: system-ui, -apple-system, sans-serif;
+      text-align: center;
+    }
+    h1 { margin: 0; font-family: Georgia, serif; font-size: 32px; font-weight: 600; }
+    p { margin: 0; color: #5f584b; max-width: 34em; line-height: 1.6; }
+    nav { display: flex; flex-wrap: wrap; gap: 20px; }
+    a { color: #30577d; }
+  </style>
+</head>
+<body>
+  <h1>Page not found</h1>
+  <p>That address isn't part of Candela. The gallery and the theme editor are below.</p>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/themes">Gallery</a>
+    <a href="/editor">Theme Editor</a>
+    <a href="https://github.com/schovi/candela-themes">GitHub</a>
+  </nav>
+</body>
+</html>
