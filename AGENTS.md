@@ -147,7 +147,8 @@ Full runbook: `docs/release-runbook.md`.
   the relationship so names don't have to, and "solo" in the UI is derived from its absence,
   never stored twice. `build/` regenerates for all
   formats automatically; add the theme to README's theme table (and the gallery) by hand.
-- *New tool format*: add a pure emitter and install manual in `lib/emitters.js` (hex helpers in `lib/colors.js`);
+- *New tool format*: add a pure emitter module under `lib/emitters/` and wire it into `lib/emitters/index.js`
+  (`FORMAT_EMITTERS`, `INSTALL_STEPS`, `emitFullFamily`; hex helpers in `lib/colors.js`);
   terminal formats derive from the top-level `ansiMapping` block.
 
 ## Work tracking

@@ -341,11 +341,14 @@ npm run build   # or: node scripts/generate.js
 
 It wipes and rewrites `build/`, emitting one file per theme per tool at
 `build/<tool>/<theme-id>.<ext>`. Output is deterministic (re-running gives
-byte-identical files). Hex helpers live in `lib/colors.js`; pure per-format emitters
-and their install manuals live in `lib/emitters.js`. The Node generator is only the
-filesystem shell, while the browser editor calls the same emitters for downloads.
+byte-identical files). Hex helpers live in `lib/colors.js`; the emitters live in
+`lib/emitters/`, one module per tool (`terminals.js`, `vscode.js`, `intellij.js`,
+`zed.js`, `sublime.js`, `nvim.js`, `helix.js`) over a shared `shared.js`, with
+`index.js` exposing the two entry points and the install manuals. The Node generator
+is only the filesystem shell, while the browser editor calls the same emitters for
+downloads.
 
-`lib/emitters.js` is the source of truth for each generated layout and token mapping.
+`lib/emitters/` is the source of truth for each generated layout and token mapping.
 
 ## Contributing / extending
 

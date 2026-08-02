@@ -47,7 +47,7 @@ Mechanics you don't need to re-derive live in `docs/release-runbook.md`.
 - Last release: `git describe --tags --abbrev=0 --match 'v*.*.*'` (or "none yet").
 - What changed since: `git log --stat <lastTag>..origin/main`.
 - Does anything affect **shipped output**? Shipped = `themes/candela-themes.json`,
-  `lib/emitters.js`, `lib/colors.js`, `lib/rules.js`, `scripts/` (generator +
+  `lib/emitters/`, `lib/colors.js`, `lib/rules.js`, `scripts/` (generator +
   packaging), `package.json` metadata, `assets/icon/`, `LICENSE`.
 - **Not** shipped on their own = `workflow/` task tracking, `docs/` (unless bundled
   into a package), `app/` explorer internals (the site deploys separately via Pages).

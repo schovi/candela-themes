@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         New themes are added to `themes/candela-themes.json`; new tool/formats are added
-        to `lib/emitters.js`. Describe what you want and why.
+        to `lib/emitters/`. Describe what you want and why.
   - type: dropdown
     id: request-type
     attributes:

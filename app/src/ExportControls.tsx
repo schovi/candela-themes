@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { strToU8, zipSync } from 'fflate';
-import { FORMAT_EMITTERS, installReadme } from '../../lib/emitters.js';
+import { FORMAT_EMITTERS, installReadme } from '../../lib/emitters/index.js';
 import { ansiMapping, type Theme } from './themes';
 import { slugify } from './derive';
 

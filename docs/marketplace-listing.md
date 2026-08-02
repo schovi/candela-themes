@@ -82,7 +82,7 @@ Use `raw.githubusercontent.com` directly, never `github.com/…/raw/…`: the la
 and packagecontrol.io re-hosts readme images through its own downloader, dropping any
 `<img>` whose fetch throws instead of falling back to the remote URL.
 
-`lib/emitters.js` derives both the number and the caption from the themes array, so
+`lib/emitters/readmes.js` derives both the number and the caption from the themes array, so
 there is no hand-maintained pick list: the hero is `sepia-paper` and the gallery is
 **every theme, in source order**. A listing is where someone chooses a theme, and an
 unshown theme is an uninstalled theme. Remote images cost the package nothing.
@@ -108,7 +108,7 @@ web edit form, not read from `plugin.xml`. Upload the same PNGs by hand once.
 ## Per-marketplace notes
 
 - **VS Code / Open VSX** — description is the bundled `README.md`
-  (`lib/emitters.js` → `vscodeReadme()`); the short field is `package.json`
+  (`lib/emitters/readmes.js` → `vscodeReadme()`); the short field is `package.json`
   `description`, which carries `DESCRIPTION`. Markdown + remote images render.
 - **JetBrains** — `plugin.xml` `<description>` (CDATA, HTML not Markdown) carries
   `DESCRIPTION`; the web form's short description takes `SUMMARY`, which is what

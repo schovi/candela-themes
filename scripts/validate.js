@@ -181,7 +181,7 @@ const REQUIRED_SCOPES = {
 };
 
 function checkScopeCoverage(themes, ansiMapping) {
-  const { emitFullFamily } = require('../lib/emitters');
+  const { emitFullFamily } = require('../lib/emitters/index.js');
   const byPath = new Map(emitFullFamily(themes, ansiMapping, '', '').files.map((f) => [f.path, f.content]));
   const failures = [];
   for (const [file, scopes] of Object.entries(REQUIRED_SCOPES)) {

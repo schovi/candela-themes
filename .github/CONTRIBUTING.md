@@ -11,7 +11,7 @@ Colors are authored in exactly one place: [`themes/candela-themes.json`](../them
 (palettes, tokens, ANSI mapping). Everything under `build/` (per-tool theme files) and
 `dist/` (packaged artifacts) is **generated** — never hand-edit it, and never commit it.
 Both directories are gitignored. If a change only shows up in `build/`, it belongs in the
-JSON or in `lib/emitters.js`, not in the generated output.
+JSON or in `lib/emitters/`, not in the generated output.
 
 ## Setup
 

@@ -19,7 +19,7 @@ accepts the legacy 8-colour string behind a "Paste your legacy theme colors" lin
 
 ## Spec
 
-New emitter `emitSlackTheme` in `lib/emitters.js`, one file per theme:
+New emitter `emitSlackTheme` in `lib/emitters/` (its own module), one file per theme:
 `build/slack/candela-<id>.txt`, containing the theme name, the four-colour string, and
 the two toggle recommendations.
 
@@ -47,7 +47,7 @@ Packaging: drop-in, so a `bundles[]` entry in `scripts/package-bundles.js`
 (`tool: 'slack'`, `extension: '.txt'`).
 
 **Implementation boundary**
-- Owns: `lib/emitters.js` (emitter + `FORMAT_EMITTERS` and `INSTALL_STEPS` entries),
+- Owns: `lib/emitters/` (new module + `FORMAT_EMITTERS`/`INSTALL_STEPS` entries in `index.js`),
   `scripts/generate.js` (the `FORMAT_EMITTERS.length` assert + a log line), `scripts/package-bundles.js`,
   `app/src/ExportControls.tsx`, `README.md` (a `### Slack` section under `## Install`).
 - Excluded: the legacy 8-colour string — emit the current 4-colour form only.

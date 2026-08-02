@@ -46,7 +46,7 @@ frame of the same layout if the form accepts it. `--height` switches the capture
 `intellij/`, `sublime/`, `vscode/` and `zed/` hold shots taken in the actual editor, whole
 window and chrome included — the app-rendered cards above show an editor pane only, so they
 can't show what a theme does to a sidebar or a status bar. Directory names are the tool key
-`lib/emitters.js` uses, not the process name. `sublime/sublime-{light,dark}.png`,
+`lib/emitters/` uses, not the process name. `sublime/sublime-{light,dark}.png`,
 `vscode/vscode-{light,dark}.png` and `zed/zed-{light,dark}.png` lead their generated readmes
 (see [`../marketplace-listing.md`](../marketplace-listing.md)); the IntelliJ pair is uploaded
 by hand through the JetBrains plugin form.

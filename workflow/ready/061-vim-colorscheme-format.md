@@ -12,7 +12,7 @@ A `.vim` colorscheme is a small, mechanical sibling of the existing Neovim emitt
 
 ## Spec
 
-New emitter `emitVimTheme` in `lib/emitters.js`, one file per theme:
+New emitter `emitVimTheme` in `lib/emitters/` (its own module), one file per theme:
 `build/vim/candela-<id>.vim`.
 
 ```vim
@@ -27,7 +27,7 @@ let g:terminal_ansi_colors = ['#…', …]
 ```
 
 Reuse the group→token table the Neovim emitter already carries (`NVIM_SYNTAX` plus the
-explicit UI groups in `emitNvimTheme`, `lib/emitters.js:~1020-1058`) — the highlight
+explicit UI groups in `emitNvimTheme`, `lib/emitters/nvim.js`) — the highlight
 group names are identical between Vim and Neovim, only the call syntax differs. Extract
 the shared table rather than duplicating it.
 
@@ -45,7 +45,7 @@ Packaging: drop-in, so a `bundles[]` entry in `scripts/package-bundles.js`
 (`tool: 'vim'`, `extension: '.vim'`).
 
 **Implementation boundary**
-- Owns: `lib/emitters.js` (emitter + shared-table extraction + `FORMAT_EMITTERS` and
+- Owns: `lib/emitters/` (new module + shared-table extraction + `FORMAT_EMITTERS` and
   `INSTALL_STEPS` entries), `lib/colors.js` (xterm-256 nearest-index helper),
   `scripts/generate.js` (count assert + log line), `scripts/package-bundles.js`,
   `app/src/ExportControls.tsx`, `README.md` (`### Vim` section under `## Install`).

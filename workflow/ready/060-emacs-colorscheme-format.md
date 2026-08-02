@@ -12,7 +12,7 @@ remaining editor with a real user base.
 
 ## Spec
 
-New emitter `emitEmacsTheme` in `lib/emitters.js`, one file per theme:
+New emitter `emitEmacsTheme` in `lib/emitters/` (its own module), one file per theme:
 `build/emacs/candela-<id>-theme.el`.
 
 ```elisp
@@ -27,7 +27,7 @@ New emitter `emitEmacsTheme` in `lib/emitters.js`, one file per theme:
 ```
 
 Face map — follow the same token roles the Neovim emitter uses
-(`NVIM_SYNTAX`, `lib/emitters.js:~1000`), translated to Emacs faces:
+(`NVIM_SYNTAX`, `lib/emitters/nvim.js`), translated to Emacs faces:
 
 | Face | Token |
 | --- | --- |
@@ -64,7 +64,7 @@ Packaging: drop-in files, so add a `bundles[]` entry in `scripts/package-bundles
 and writes `dist/candela-themes-emacs-<version>.tar.gz` with a `README.txt`.
 
 **Implementation boundary**
-- Owns: `lib/emitters.js` (emitter + `FORMAT_EMITTERS` entry + `INSTALL_STEPS` entry),
+- Owns: `lib/emitters/` (new module + `FORMAT_EMITTERS`/`INSTALL_STEPS` entries in `index.js`),
   `scripts/generate.js` (the `FORMAT_EMITTERS.length` assert and a log line),
   `scripts/package-bundles.js` (one `bundles[]` entry),
   `app/src/ExportControls.tsx` (`FORMAT_DESCRIPTIONS` entry),

@@ -12,7 +12,7 @@ coverage for every Apple-platform developer.
 
 ## Spec
 
-New emitter `emitXcodeTheme` in `lib/emitters.js`, one file per theme:
+New emitter `emitXcodeTheme` in `lib/emitters/` (its own module), one file per theme:
 `build/xcode/Candela <Name>.xccolortheme` (Xcode shows the filename in the theme
 picker, so the display name has to live there).
 
@@ -58,7 +58,7 @@ Packaging: drop-in, so a `bundles[]` entry in `scripts/package-bundles.js`
 (`tool: 'xcode'`, `extension: '.xccolortheme'`).
 
 **Implementation boundary**
-- Owns: `lib/emitters.js` (emitter + `FORMAT_EMITTERS` and `INSTALL_STEPS` entries),
+- Owns: `lib/emitters/` (new module + `FORMAT_EMITTERS`/`INSTALL_STEPS` entries in `index.js`),
   `scripts/generate.js` (the `FORMAT_EMITTERS.length` assert + a log line), `scripts/package-bundles.js`,
   `app/src/ExportControls.tsx`, `README.md` (`### Xcode` section under `## Install`).
 - Load-bearing: `package-bundles.js` filters by extension and asserts one file per

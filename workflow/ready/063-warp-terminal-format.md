@@ -14,8 +14,8 @@ the list.
 
 ## Spec
 
-New emitter `emitWarp` in `lib/emitters.js`, following the existing terminal emitters
-(`emitGhostty`, `lib/emitters.js:152` is the closest shape). One file per theme:
+New emitter `emitWarp` in `lib/emitters/terminals.js`, following the existing terminal emitters
+(`emitGhostty` in `lib/emitters/terminals.js` is the closest shape). One file per theme:
 `build/warp/candela-<id>.yaml`.
 
 ```yaml
@@ -36,18 +36,17 @@ same as every other terminal emitter — indices 0-7 normal, 8-15 bright, in War
 alphabetical key order (black, blue, cyan, green, magenta, red, white, yellow), which
 is *not* ANSI index order. Map by name, not position.
 
-Warp is a terminal format, so it needs entries in **both** lists in `lib/emitters.js`:
-`FORMATS` (line 163, drives `emitFullFamily`'s per-theme build output) and
-`FORMAT_EMITTERS` (line 1256, drives the app's export picker) via the `terminalFiles`
-helper. `scripts/generate.js` hardcodes `themes.length * 6` for its terminal count log
+Warp is a terminal format, so it needs one entry in `TERMINAL_FORMATS`
+(`lib/emitters/terminals.js`) — the single registry both `emitFullFamily` and the app's
+export picker derive from. `scripts/generate.js` hardcodes `themes.length * 6` for its terminal count log
 and asserts an exact `FORMAT_EMITTERS.length` — bump both (7 terminals, one more format).
 
 Packaging: drop-in, so a `bundles[]` entry in `scripts/package-bundles.js`
 (`tool: 'warp'`, `extension: '.yaml'`).
 
 **Implementation boundary**
-- Owns: `lib/emitters.js` (`emitWarp` + `FORMATS` entry + `FORMAT_EMITTERS` entry +
-  `INSTALL_STEPS` entry), `scripts/generate.js` (terminal count + the `FORMAT_EMITTERS.length`
+- Owns: `lib/emitters/terminals.js` (`emitWarp` + `TERMINAL_FORMATS` entry) and
+  `lib/emitters/index.js` (`INSTALL_STEPS` entry), `scripts/generate.js` (terminal count + the `FORMAT_EMITTERS.length`
   assert + a log line), `scripts/package-bundles.js`, `app/src/ExportControls.tsx`, `README.md`
   (extend the existing `### Other terminals` section rather than adding a new one).
 - Excluded: submitting to `warpdotdev/themes`; groom separately.

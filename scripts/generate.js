@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { emitFullFamily, FORMAT_EMITTERS } = require('../lib/emitters');
+const { emitFullFamily, FORMAT_EMITTERS } = require('../lib/emitters/index.js');
 
 const ROOT = path.join(__dirname, '..');
 const SOURCE = path.join(ROOT, 'themes/candela-themes.json');

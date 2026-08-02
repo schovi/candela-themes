@@ -18,7 +18,7 @@ follow-up once the strips exist.
 ## Spec
 
 **Emitter.** New pure module `lib/swatch.js`: `swatchSvg(theme, options?) -> string`, same
-shape as the emitters in `lib/emitters.js` (string in, string out, no I/O, no deps). It reads
+shape as the emitters in `lib/emitters/` (string in, string out, no I/O, no deps). It reads
 only the theme's own `colors`, `name`, `tone`. Content matches `TinyPreview` +
 `ThemeIndexCard` in `app/src/Home.tsx`, which is the visual contract to copy:
 
@@ -62,7 +62,7 @@ scripts, `app/vite.config.ts`, `docs/swatches/` (generated SVGs + PNGs + README)
 root `AGENTS.md` (the generation/commands section) and `docs/style.md` conventions for the new
 doc. Verify whether `README.md` needs a one-line pointer to the strips; skip with a reason if
 the existing screenshot section already covers it. Excluded: rewriting the README theme table,
-touching `themes/candela-themes.json`, `scripts/screenshots.mjs`, `lib/emitters.js`, any
+touching `themes/candela-themes.json`, `scripts/screenshots.mjs`, `lib/emitters/`, any
 packaging or release path, and any new npm dependency.
 
 ## Acceptance criteria

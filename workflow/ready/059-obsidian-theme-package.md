@@ -18,7 +18,7 @@ when Style Settings isn't installed.
 
 ## Spec
 
-New emitter `emitObsidianTheme` in `lib/emitters.js`, producing a `build/obsidian/`
+New emitter `emitObsidianTheme` in `lib/emitters/` (its own module), producing a `build/obsidian/`
 theme folder (family-level, not per-theme — mirror how `emitIntellijPluginXml` /
 `vscodePackage` emit shared files inside `emitFullFamily`):
 
@@ -77,7 +77,7 @@ Packaging: new `scripts/package-obsidian.js` + `package:obsidian` npm script wri
 to the `package` script chain.
 
 **Implementation boundary**
-- Owns: `lib/emitters.js` (emitter + `FORMAT_EMITTERS` entry + `INSTALL_STEPS` entry),
+- Owns: `lib/emitters/` (new module + `FORMAT_EMITTERS`/`INSTALL_STEPS` entries in `index.js`),
   `scripts/generate.js` (the `FORMAT_EMITTERS.length` assert plus a log line),
   `scripts/package-obsidian.js` (new), `package.json` scripts,
   `app/src/ExportControls.tsx` (`FORMAT_DESCRIPTIONS` entry), `README.md` (a
