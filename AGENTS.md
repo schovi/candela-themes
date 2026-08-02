@@ -85,6 +85,10 @@ every AA floor, diagnostic hex-uniqueness, a valid `mode` (`light`/`dark`), a va
 `category`, symmetric and
 opposite-mode `pair` links, every token present
 in all themes, and ANSI mappings that reference real tokens. It exits non-zero and names the failing theme + token.
+It also gates **scope coverage**: every editor emitter must map the prose (`markup.*`), markup-tag
+and object-key scope families, because a palette can pass every contrast rule and still render
+Markdown, YAML or JSON as flat `ink` — which is how Markdown shipped unhighlighted through 1.0.
+The app's preview panes are hand-colored, so only the generated files can catch it.
 Warn-only judgement calls (never gate): the accent-hue count (6–8) and the error/ok grayscale +
 protan/deutan separation. It reads the JSON read-only — it reports, humans decide.
 

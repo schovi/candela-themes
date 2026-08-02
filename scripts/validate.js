@@ -156,6 +156,49 @@ function checkScreenshots(themes) {
   ];
 }
 
+// Scope coverage per editor format. A palette can pass every contrast invariant and
+// still render a whole language as flat `ink` if the emitter never maps that language's
+// scope family — which is exactly how Markdown shipped unhighlighted through 26 themes
+// and a 1.0 release. The app's preview panes are hand-colored (`<C t="fn">`), so no
+// amount of eyeballing the gallery can catch it; only the generated files can.
+//
+// One representative scope per family that would otherwise be invisible: prose
+// (Markdown/reST), markup tags (HTML/JSX/XML and YAML keys), object keys, and the
+// built-in-default groups Neovim restores after `highlight clear`.
+const REQUIRED_SCOPES = {
+  'vscode/themes/candela-sepia-paper-color-theme.json': [
+    'comment', 'keyword', 'string', 'markup.heading', 'markup.bold', 'markup.inline.raw',
+    'entity.name.tag', 'entity.other.attribute-name',
+  ],
+  'sublime/candela-sepia-paper.sublime-color-scheme': [
+    'markup.heading', 'markup.inline.raw', 'entity.name.tag', 'entity.other.attribute-name',
+  ],
+  'zed/themes/candela.json': ['"title"', '"emphasis"', '"property"', '"tag"', '"text.literal"'],
+  'helix/candela-sepia-paper.toml': ['"markup.heading"', '"markup.raw"', '"tag"', '"attribute"'],
+  'nvim/colors/candela-sepia-paper.lua': [
+    "'Title'", "'@markup.heading'", "'@property'", "'@tag'", "'Search'", "'DiagnosticError'",
+  ],
+};
+
+function checkScopeCoverage(themes, ansiMapping) {
+  const { emitFullFamily } = require('../lib/emitters');
+  const byPath = new Map(emitFullFamily(themes, ansiMapping, '', '').files.map((f) => [f.path, f.content]));
+  const failures = [];
+  for (const [file, scopes] of Object.entries(REQUIRED_SCOPES)) {
+    const content = byPath.get(file);
+    if (content === undefined) {
+      failures.push(`scopes: ${file} is no longer generated — update REQUIRED_SCOPES`);
+      continue;
+    }
+    for (const scope of scopes) {
+      if (!content.includes(scope)) {
+        failures.push(`scopes: ${file} never maps ${scope} — that language renders flat`);
+      }
+    }
+  }
+  return failures;
+}
+
 const useColor = process.stdout.isTTY;
 const green = (s) => (useColor ? `\x1b[32m${s}\x1b[0m` : s);
 const red = (s) => (useColor ? `\x1b[31m${s}\x1b[0m` : s);
@@ -190,6 +233,11 @@ function main() {
   }
 
   for (const f of checkCopy()) {
+    console.log(`${red('FAIL')}  ${f}`);
+    hardFailures++;
+  }
+
+  for (const f of checkScopeCoverage(data.themes, data.ansiMapping)) {
     console.log(`${red('FAIL')}  ${f}`);
     hardFailures++;
   }
