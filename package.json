@@ -1,6 +1,6 @@
 {
   "name": "candela-themes-tooling",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "description": "Build and packaging tooling for Candela Themes. The generator itself (scripts/generate.js) has zero runtime dependencies.",
   "license": "MIT",
