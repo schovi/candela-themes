@@ -1,6 +1,6 @@
 # 059 — Obsidian theme package
 
-priority: 10
+done: 2026-08-10
 
 tags: emitters, packaging
 
@@ -103,6 +103,8 @@ to the `package` script chain.
 
 ## Notes
 
+- The source now has 26 palettes, 15 light and 11 dark. The emitter covers all of them;
+  the earlier 24-palette counts above were stale.
 - Obsidian's Editing view (CodeMirror 6) and Reading view (Prism) highlight
   independently; the `--code-*` variables are documented to cover both but may not
   render identically. If one view diverges, note it rather than chasing per-view CSS.

@@ -285,6 +285,14 @@ The extension, containing every theme, lives at `build/zed/`. In Zed, open
 `npm run package:zed` copies the complete extension to `dist/zed/` for dev install
 and writes `dist/candela-themes-zed-<version>.tar.gz` for download.
 
+### Obsidian
+
+Run `npm run package:obsidian`, then extract
+`dist/candela-themes-obsidian-<version>.zip`. Copy its `Candela/` folder into your
+vault's `.obsidian/themes/` directory. In **Settings → Appearance**, choose
+**Candela**. With the Style Settings plugin installed, choose light and dark
+palettes separately in **Settings → Style Settings → Candela**.
+
 ### Sublime Text
 
 Run `npm run package:sublime`, then copy

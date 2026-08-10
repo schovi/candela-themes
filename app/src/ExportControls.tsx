@@ -26,6 +26,7 @@ const FORMAT_DESCRIPTIONS: Record<string, string> = {
   sublime: 'A Sublime Text color-scheme file and its install guide.',
   nvim: 'A Neovim Lua colorscheme and its install guide.',
   helix: 'A Helix TOML theme and its install guide.',
+  obsidian: 'A single-palette Obsidian theme folder and its install guide.',
 };
 
 function downloadZip(name: string, files: Map<string, string>): void {
