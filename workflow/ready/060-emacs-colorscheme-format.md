@@ -75,10 +75,10 @@ and writes `dist/candela-themes-emacs-<version>.tar.gz` with a `README.txt`.
 
 ## Acceptance criteria
 
-- `npm run build` writes 24 `build/emacs/candela-<id>-theme.el` files.
+- `npm run build` writes 26 `build/emacs/candela-<id>-theme.el` files.
 - Adding `build/emacs/` to `custom-theme-load-path` and running `M-x load-theme` lists every Candela theme and applies one cleanly, with no "unsafe theme" byte-compile warnings.
 - Comments, keywords, strings, functions, numbers, types, built-ins and punctuation each take their Candela token in a spot-checked buffer (one light, one dark).
-- `npm run package:bundles` writes `dist/candela-themes-emacs-<version>.tar.gz` with 24 `.el` files plus `README.txt`.
+- `npm run package:bundles` writes `dist/candela-themes-emacs-<version>.tar.gz` with 26 `.el` files plus `README.txt`.
 - The explorer's `/editor` Export picker offers Emacs and its zip installs cleanly.
 - README documents the install under `## Install`.
 - Green: `node scripts/validate.js`, `npm run build`, `cd app && npm ci && npm run build`.
