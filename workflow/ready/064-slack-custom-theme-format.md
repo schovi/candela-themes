@@ -59,10 +59,10 @@ Packaging: drop-in, so a `bundles[]` entry in `scripts/package-bundles.js`
 
 ## Acceptance criteria
 
-- `npm run build` writes 24 `build/slack/candela-<id>.txt` files, each with a four-hex comma-separated string.
+- `npm run build` writes 26 `build/slack/candela-<id>.txt` files, each with a four-hex comma-separated string.
 - Pasting a light theme's string and a dark theme's string into Slack → Preferences → Appearance → Custom theme → Import applies the intended colors to the right four slots.
 - Each file names the theme and states the *Darker sidebars* / *Window gradient* settings to use.
-- `npm run package:bundles` writes `dist/candela-themes-slack-<version>.tar.gz` with 24 `.txt` files plus `README.txt`.
+- `npm run package:bundles` writes `dist/candela-themes-slack-<version>.tar.gz` with 26 `.txt` files plus `README.txt`.
 - The explorer's `/editor` Export picker offers Slack and its zip installs cleanly.
 - README documents the paste-in install under `## Install`.
 - Green: `node scripts/validate.js`, `npm run build`, `cd app && npm ci && npm run build`.

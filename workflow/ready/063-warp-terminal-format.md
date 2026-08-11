@@ -54,10 +54,10 @@ Packaging: drop-in, so a `bundles[]` entry in `scripts/package-bundles.js`
 
 ## Acceptance criteria
 
-- `npm run build` writes 24 `build/warp/candela-<id>.yaml` files and reports 7 terminal formats.
+- `npm run build` writes 26 `build/warp/candela-<id>.yaml` files and reports 7 terminal formats.
 - Copying one into `~/.warp/themes/` makes it selectable in Warp's theme picker and it applies with the right background, foreground, accent and 16 ANSI colors.
 - `details` is `lighter` for light themes and `darker` for dark themes.
-- `npm run package:bundles` writes `dist/candela-themes-warp-<version>.tar.gz` with 24 YAML files plus `README.txt`.
+- `npm run package:bundles` writes `dist/candela-themes-warp-<version>.tar.gz` with 26 YAML files plus `README.txt`.
 - The explorer's `/editor` Export picker offers Warp and its zip installs cleanly.
 - README's `### Other terminals` section lists Warp.
 - Green: `node scripts/validate.js`, `npm run build`, `cd app && npm ci && npm run build`.
