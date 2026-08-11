@@ -1,6 +1,6 @@
 # 060 — Emacs colorscheme format
 
-priority: 40
+done: 2026-08-11
 
 tags: emitters, packaging
 

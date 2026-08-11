@@ -48,6 +48,11 @@ const bundles = [
     extension: '.toml',
     install: 'Copy a theme file to the themes directory under your Helix configuration directory, then select the file name without the .toml extension using :theme or set theme in config.toml.',
   },
+  {
+    tool: 'emacs',
+    extension: '.el',
+    install: 'Copy the .el files into a directory on custom-theme-load-path, then run M-x load-theme and choose a Candela theme.',
+  },
 ];
 
 function run(command, arguments_, cwd) {

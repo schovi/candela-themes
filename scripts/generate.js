@@ -29,9 +29,10 @@ function main() {
   console.log(`Generated build/zed/candela.json family with ${themes.length} themes.`);
   console.log(`Generated build/sublime/ ${themes.length} .sublime-color-scheme files.`);
   console.log(`Generated build/nvim/ ${themes.length} Lua colorschemes.`);
+  console.log(`Generated build/emacs/ ${themes.length} Emacs colorschemes.`);
   console.log(`Generated build/helix/ ${themes.length} .toml themes.`);
   console.log(`Generated build/obsidian/Candela/ theme with ${themes.length} palettes.`);
-  if (FORMAT_EMITTERS.length !== 13) throw new Error('Expected 13 export formats.');
+  if (FORMAT_EMITTERS.length !== 14) throw new Error('Expected 14 export formats.');
 }
 
 main();

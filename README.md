@@ -310,6 +310,13 @@ archive and point lazy.nvim or packer at that local plugin directory, or copy it
 candela-sepia-paper` (or another theme id). `npm run package:nvim` writes the
 release archive to `dist/candela-themes-nvim-<version>.tar.gz`.
 
+### Emacs
+
+Drop-in theme files live under `build/emacs/`. Add that directory to
+`custom-theme-load-path`, then run `M-x load-theme` and choose a *Candela …*
+theme. `npm run package:bundles` writes
+`dist/candela-themes-emacs-<version>.tar.gz` with every theme file.
+
 ### Helix
 
 Drop-in files for every theme live under `build/helix/`. Install them per
