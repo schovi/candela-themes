@@ -53,6 +53,11 @@ const bundles = [
     extension: '.el',
     install: 'Copy the .el files into a directory on custom-theme-load-path, then run M-x load-theme and choose a Candela theme.',
   },
+  {
+    tool: 'vim',
+    extension: '.vim',
+    install: 'Copy the .vim files into ~/.vim/colors/, then run :colorscheme candela-<id>. Vim uses xterm-256 fallbacks when termguicolors is unavailable.',
+  },
 ];
 
 function run(command, arguments_, cwd) {

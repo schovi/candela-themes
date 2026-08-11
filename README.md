@@ -310,6 +310,15 @@ archive and point lazy.nvim or packer at that local plugin directory, or copy it
 candela-sepia-paper` (or another theme id). `npm run package:nvim` writes the
 release archive to `dist/candela-themes-nvim-<version>.tar.gz`.
 
+### Vim
+
+Drop-in colorschemes live under `build/vim/`. Copy a `.vim` file into
+`~/.vim/colors/`, then run `:colorscheme candela-sepia-paper` (or another theme
+id). `npm run package:bundles` writes
+`dist/candela-themes-vim-<version>.tar.gz` with every theme file and install
+instructions. The files include xterm-256 fallbacks for terminals without
+`termguicolors`.
+
 ### Emacs
 
 Drop-in theme files live under `build/emacs/`. Add that directory to
@@ -360,7 +369,7 @@ It wipes and rewrites `build/`, emitting one file per theme per tool at
 `build/<tool>/<theme-id>.<ext>`. Output is deterministic (re-running gives
 byte-identical files). Hex helpers live in `lib/colors.js`; the emitters live in
 `lib/emitters/`, one module per tool (`terminals.js`, `vscode.js`, `intellij.js`,
-`zed.js`, `sublime.js`, `nvim.js`, `helix.js`) over a shared `shared.js`, with
+`zed.js`, `sublime.js`, `nvim.js`, `vim.js`, `helix.js`) over a shared `shared.js`, with
 `index.js` exposing the two entry points and the install manuals. The Node generator
 is only the filesystem shell, while the browser editor calls the same emitters for
 downloads.

@@ -25,6 +25,7 @@ const FORMAT_DESCRIPTIONS: Record<string, string> = {
   zed: 'A Zed theme extension and its install guide.',
   sublime: 'A Sublime Text color-scheme file and its install guide.',
   nvim: 'A Neovim Lua colorscheme and its install guide.',
+  vim: 'A Vim colorscheme with xterm-256 fallbacks and its install guide.',
   emacs: 'An Emacs colorscheme and its install guide.',
   helix: 'A Helix TOML theme and its install guide.',
   obsidian: 'A single-palette Obsidian theme folder and its install guide.',

@@ -1,6 +1,6 @@
 # 061 — Vim 8/9 colorscheme format
 
-priority: 50
+done: 2026-08-11
 
 tags: emitters, packaging
 
@@ -55,11 +55,11 @@ Packaging: drop-in, so a `bundles[]` entry in `scripts/package-bundles.js`
 
 ## Acceptance criteria
 
-- `npm run build` writes 24 `build/vim/candela-<id>.vim` files.
+- `npm run build` writes 26 `build/vim/candela-<id>.vim` files.
 - `build/nvim/` output is byte-identical to before the shared-table extraction.
 - Dropping a file into `~/.vim/colors/` and running `:colorscheme candela-<id>` applies it in Vim 9 with no errors, in both truecolor and a 256-colour terminal without `termguicolors`.
 - `background` matches the theme's `mode`, and comments/keywords/strings/functions/types take their Candela tokens.
-- `npm run package:bundles` writes `dist/candela-themes-vim-<version>.tar.gz` with 24 `.vim` files plus `README.txt`.
+- `npm run package:bundles` writes `dist/candela-themes-vim-<version>.tar.gz` with 26 `.vim` files plus `README.txt`.
 - The explorer's `/editor` Export picker offers Vim and its zip installs cleanly.
 - README documents the install under `## Install`.
 - Green: `node scripts/validate.js`, `npm run build`, `cd app && npm ci && npm run build`.
