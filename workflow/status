@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Print the board from the workflow/ status folders.
 
-Usage: workflow/status [--done N|all]   (default: done hidden, count only)
+Usage: workflow/status [--done N|all] [--tag NAME ...] [--tags] [--next-id]
+       (default: done hidden, count only; --tag keeps only tasks with every named
+       tag; --tags prints the tag vocabulary in use with counts, then exits;
+       --next-id prints the id to mint the next task with, then exits)
 Folder = status. Task file: first line `# NNN — Title`, then optional
-`priority:` (ready), `depends:` (task IDs), `gate:` (blocked), `done:` (done) lines.
+`priority:` (ready), `depends:` (task IDs), `tags:` (lowercase slugs), `gate:`
+(blocked), `done:` (done) lines.
 Ready tasks show `depends:` and flag unmet ones as `(waits: N)`.
 
 Other git worktrees are scanned too: a task whose section differs from this
@@ -17,8 +21,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 REPO = ROOT.parent
-META = re.compile(r"^(priority|depends|gate|done):\s*(.+?)\s*$")
+META = re.compile(r"^(priority|depends|tags|gate|done):\s*(.+?)\s*$")
 SECTIONS = ("draft", "ready", "in-progress", "blocked", "done")
+WANTED_TAGS = []  # --tag NAME (repeatable); empty = no filtering
+
+
+def tags_of(item):
+    return [t.strip() for t in item["meta"].get("tags", "").split(",") if t.strip()]
 
 
 def tasks(section, root=ROOT):
@@ -32,7 +41,9 @@ def tasks(section, root=ROOT):
             if match:
                 meta[match.group(1)] = match.group(2)
         task_id = re.match(r"(\d+)", path.name)
-        items.append({"id": int(task_id.group(1)) if task_id else 0, "title": title, "meta": meta})
+        item = {"id": int(task_id.group(1)) if task_id else 0, "title": title, "meta": meta}
+        if all(want in tags_of(item) for want in WANTED_TAGS):
+            items.append(item)
     return items
 
 
@@ -40,7 +51,9 @@ def show(heading, items, annotate=None):
     print(f"\n{heading}")
     for item in items:
         note = annotate(item) if annotate else ""
-        print(f"  {item['title']}{note}")
+        labels = tags_of(item)
+        tag_note = f"  #{' #'.join(labels)}" if labels else ""
+        print(f"  {item['title']}{note}{tag_note}")
 
 
 def git(args, cwd=REPO):
@@ -99,11 +112,55 @@ def show_worktrees():
             print("    (board matches this checkout)")
 
 
+def print_next_task_id():
+    """Print the next free task id, derived instead of stored.
+
+    Three sources, because no single one is enough across worktrees: task files in
+    this checkout, task files in every sibling worktree (uncommitted drafts
+    included), and every id ever committed under workflow/ on any ref (an id whose
+    file was merged elsewhere, renamed, or lives only on a branch this checkout
+    can't see). A stored counter file conflicts on every merge and still hands the
+    same number to two worktrees minting in parallel.
+    """
+    ids = set()
+    for root in [ROOT] + [wt / "workflow" for wt in other_worktrees()]:
+        for section in SECTIONS:
+            for path in (root / section).glob("*.md"):
+                match = re.match(r"(\d+)", path.name)
+                if match:
+                    ids.add(int(match.group(1)))
+    log = git(["log", "--all", "--name-only", "--pretty=format:", "--", "workflow/"])
+    ids |= {int(m.group(1)) for m in re.finditer(r"^workflow/[\w-]+/(\d+)", log, re.M)}
+    print(f"{max(ids, default=0) + 1:03d}")
+
+
+def print_tag_vocabulary():
+    """Tags actually in use, with counts — the vocabulary to reuse instead of coining a synonym."""
+    counts = {}
+    for section in SECTIONS:
+        for item in tasks(section):
+            for tag in tags_of(item):
+                counts[tag] = counts.get(tag, 0) + 1
+    for tag, count in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0])):
+        print(f"  {tag}  ({count})")
+    if not counts:
+        print("  (no tags yet)")
+
+
 def main():
+    if "--next-id" in sys.argv:
+        print_next_task_id()
+        return
+
     done_limit = 0  # done is history, not a decision input — hidden unless asked
     if "--done" in sys.argv:
         value = sys.argv[sys.argv.index("--done") + 1]
         done_limit = None if value == "all" else int(value)
+
+    WANTED_TAGS.extend(sys.argv[i + 1] for i, a in enumerate(sys.argv) if a == "--tag")
+    if "--tags" in sys.argv:
+        print_tag_vocabulary()
+        return
 
     done_ids = {t["id"] for t in tasks("done")}
 
