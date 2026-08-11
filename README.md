@@ -67,6 +67,8 @@ The vision-science rationale, including where common advice gets it wrong, is in
 
 ## The themes
 
+Lightweight, embeddable previews are available in [`docs/swatches/`](docs/swatches/).
+
 Themes are grouped by kind, and a light/dark pair always sits together. 01–10 are
 the main palettes, from calm neutrals to stronger pastels. 11–17 explore one design
 idea each: E-Ink Slate stands alone, then three pairs run back to back so the light

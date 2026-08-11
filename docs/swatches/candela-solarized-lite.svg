@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="150" viewBox="0 0 480 150" role="img" aria-labelledby="swatch-title">
+  <title id="swatch-title">Candela Solarized Lite, warm</title>
+  <rect x="0.5" y="0.5" width="479" height="149" rx="12" fill="#f6efd8" stroke="#e6dcc0"/>
+  <text x="16" y="30" fill="#33362c" font-family="system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="15" font-weight="700">Solarized Lite</text>
+  <text x="464" y="30" fill="#706b54" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" text-anchor="end">warm</text>
+  <path d="M 1 55.5 H 479" stroke="#e6dcc0"/>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13">
+    <g><title>bg</title><rect x="16" y="72" width="22" height="22" rx="4" fill="#f6efd8" stroke="#e6dcc0"/></g>
+    <g><title>ink</title><rect x="45" y="72" width="22" height="22" rx="4" fill="#33362c" stroke="#e6dcc0"/></g>
+    <g><title>kw</title><rect x="74" y="72" width="22" height="22" rx="4" fill="#b7420f" stroke="#e6dcc0"/></g>
+    <g><title>str</title><rect x="103" y="72" width="22" height="22" rx="4" fill="#5f7300" stroke="#e6dcc0"/></g>
+    <g><title>fn</title><rect x="132" y="72" width="22" height="22" rx="4" fill="#1f6fa8" stroke="#e6dcc0"/></g>
+    <g><title>num</title><rect x="161" y="72" width="22" height="22" rx="4" fill="#b02a68" stroke="#e6dcc0"/></g>
+    <g><title>type</title><rect x="190" y="72" width="22" height="22" rx="4" fill="#5257a8" stroke="#e6dcc0"/></g>
+    <g><title>builtin</title><rect x="219" y="72" width="22" height="22" rx="4" fill="#1a776f" stroke="#e6dcc0"/></g>
+    <text x="16" y="128" fill="#b7420f">def</text>
+    <text x="39.4" y="128" fill="#33362c"> </text>
+    <text x="47.199999999999996" y="128" fill="#1f6fa8">total</text>
+    <text x="86.19999999999999" y="128" fill="#6a6d5c">(</text>
+    <text x="93.99999999999999" y="128" fill="#5257a8">cents</text>
+    <text x="133" y="128" fill="#6a6d5c">)</text>
+    <text x="140.8" y="128" fill="#33362c"> </text>
+    <text x="148.60000000000002" y="128" fill="#6a6d5c">=</text>
+    <text x="156.40000000000003" y="128" fill="#33362c"> </text>
+    <text x="164.20000000000005" y="128" fill="#33362c">cents</text>
+    <text x="203.20000000000005" y="128" fill="#33362c"> </text>
+    <text x="211.00000000000006" y="128" fill="#6a6d5c">/</text>
+    <text x="218.80000000000007" y="128" fill="#33362c"> </text>
+    <text x="226.60000000000008" y="128" fill="#b02a68">100.0</text>
+  </g>
+</svg>

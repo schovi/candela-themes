@@ -19,6 +19,8 @@
     "package:zed": "node scripts/package-zed.js",
     "package:vscode": "node scripts/package-vscode.js",
     "app": "cd app && npm run dev",
+    "swatches": "node scripts/swatches.mjs",
+    "swatches:png": "node scripts/swatches.mjs --png",
     "app:screenshots": "cd app && npm run screenshots -- --out=docs/screenshots/examples"
   },
   "devDependencies": {

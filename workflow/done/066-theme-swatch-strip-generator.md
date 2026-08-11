@@ -1,6 +1,6 @@
 # 066 — Theme swatch strip generator
 
-priority: 5
+done: 2026-08-11
 tags: app, docs
 
 ## What & why

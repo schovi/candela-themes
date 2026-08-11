@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="150" viewBox="0 0 480 150" role="img" aria-labelledby="swatch-title">
+  <title id="swatch-title">Candela Nightshade, dark / purple</title>
+  <rect x="0.5" y="0.5" width="479" height="149" rx="12" fill="#282a36" stroke="#4d5164"/>
+  <text x="16" y="30" fill="#cfd0e4" font-family="system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="15" font-weight="700">Nightshade</text>
+  <text x="464" y="30" fill="#8b90ad" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" text-anchor="end">dark / purple</text>
+  <path d="M 1 55.5 H 479" stroke="#4d5164"/>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13">
+    <g><title>bg</title><rect x="16" y="72" width="22" height="22" rx="4" fill="#282a36" stroke="#4d5164"/></g>
+    <g><title>ink</title><rect x="45" y="72" width="22" height="22" rx="4" fill="#cfd0e4" stroke="#4d5164"/></g>
+    <g><title>kw</title><rect x="74" y="72" width="22" height="22" rx="4" fill="#e78ac0" stroke="#4d5164"/></g>
+    <g><title>str</title><rect x="103" y="72" width="22" height="22" rx="4" fill="#cfd48a" stroke="#4d5164"/></g>
+    <g><title>fn</title><rect x="132" y="72" width="22" height="22" rx="4" fill="#6ec48c" stroke="#4d5164"/></g>
+    <g><title>num</title><rect x="161" y="72" width="22" height="22" rx="4" fill="#b49bf2" stroke="#4d5164"/></g>
+    <g><title>type</title><rect x="190" y="72" width="22" height="22" rx="4" fill="#79c3e3" stroke="#4d5164"/></g>
+    <g><title>builtin</title><rect x="219" y="72" width="22" height="22" rx="4" fill="#f0a06a" stroke="#4d5164"/></g>
+    <text x="16" y="128" fill="#e78ac0">def</text>
+    <text x="39.4" y="128" fill="#cfd0e4"> </text>
+    <text x="47.199999999999996" y="128" fill="#6ec48c">total</text>
+    <text x="86.19999999999999" y="128" fill="#cfd0e4">(</text>
+    <text x="93.99999999999999" y="128" fill="#79c3e3">cents</text>
+    <text x="133" y="128" fill="#cfd0e4">)</text>
+    <text x="140.8" y="128" fill="#cfd0e4"> </text>
+    <text x="148.60000000000002" y="128" fill="#cfd0e4">=</text>
+    <text x="156.40000000000003" y="128" fill="#cfd0e4"> </text>
+    <text x="164.20000000000005" y="128" fill="#cfd0e4">cents</text>
+    <text x="203.20000000000005" y="128" fill="#cfd0e4"> </text>
+    <text x="211.00000000000006" y="128" fill="#cfd0e4">/</text>
+    <text x="218.80000000000007" y="128" fill="#cfd0e4"> </text>
+    <text x="226.60000000000008" y="128" fill="#b49bf2">100.0</text>
+  </g>
+</svg>

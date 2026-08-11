@@ -106,7 +106,11 @@ protan/deutan separation. It reads the JSON read-only — it reports, humans dec
    choosing which sample panes each card shows (default: terminal, TypeScript, Markdown, git;
    more languages opt-in). The **Editor** has Simple and Pro modes over one persisted draft
    and runs the same `lib/rules.js` invariants live.
-6. Commit the JSON only — `build/` is generated and gitignored, not committed. To package
+6. `npm run swatches` rewrites the committed SVG previews under `docs/swatches/` after a
+   palette change. `npm run swatches:png` also writes matching PNGs through the app's
+   Playwright Chromium.
+7. Commit the JSON and any regenerated committed docs — `build/` is generated and gitignored,
+   not committed. To package
    an extension, `npm run package:vscode` writes a `.vsix` and `npm run package:intellij`
    writes a plugin `.zip`; `npm run package:zed` writes a clean extension directory.
    `npm run package:sublime` writes an installable `.sublime-package` archive.
