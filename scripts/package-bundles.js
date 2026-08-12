@@ -44,6 +44,11 @@ const bundles = [
     install: 'Copy a theme file to the Ghostty themes directory, then set theme to the file name without the .conf extension in the Ghostty configuration.',
   },
   {
+    tool: 'warp',
+    extension: '.yaml',
+    install: 'Copy a theme file to ~/.warp/themes/, restart Warp if needed, then select Candela from the theme picker.',
+  },
+  {
     tool: 'helix',
     extension: '.toml',
     install: 'Copy a theme file to the themes directory under your Helix configuration directory, then select the file name without the .toml extension using :theme or set theme in config.toml.',

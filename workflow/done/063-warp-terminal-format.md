@@ -1,6 +1,6 @@
 # 063 — Warp terminal format
 
-priority: 20
+done: 2026-08-12
 model: sonnet
 
 tags: emitters, packaging

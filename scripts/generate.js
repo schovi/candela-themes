@@ -22,8 +22,9 @@ function main() {
     fs.writeFileSync(destination, output.content);
   }
 
-  const terminalCount = themes.length * 6;
-  console.log(`Generated ${terminalCount} files for ${themes.length} themes across 6 formats.`);
+  const terminalCount = themes.length * 7;
+  console.log(`Generated ${terminalCount} files for ${themes.length} themes across 7 formats.`);
+  console.log(`Generated build/warp/ ${themes.length} YAML themes.`);
   console.log(`Generated build/vscode/ extension: package.json + ${themes.length} theme files.`);
   console.log(`Generated build/intellij/ plugin: plugin.xml + ${themes.length} editor schemes (.xml + .icls) + ${themes.length} .theme.json.`);
   console.log(`Generated build/zed/candela.json family with ${themes.length} themes.`);
@@ -34,7 +35,7 @@ function main() {
   console.log(`Generated build/xcode/ ${themes.length} .xccolortheme files.`);
   console.log(`Generated build/helix/ ${themes.length} .toml themes.`);
   console.log(`Generated build/obsidian/Candela/ theme with ${themes.length} palettes.`);
-  if (FORMAT_EMITTERS.length !== 16) throw new Error('Expected 16 export formats.');
+  if (FORMAT_EMITTERS.length !== 17) throw new Error('Expected 17 export formats.');
 }
 
 main();

@@ -272,7 +272,7 @@ color scheme (as `.xml`, which the plugin's `editorScheme` loads, plus an identi
 
 ### Other terminals
 
-The same ANSI palette is available for six terminals. Pick your file and import
+The same ANSI palette is available for seven terminals. Pick your file and import
 it according to that terminal's documentation:
 
 Run `npm run package:bundles` to create one release
@@ -287,6 +287,7 @@ short installation instructions; loose files remain available under `build/`.
 | WezTerm | `build/wezterm/candela-<id>.toml` |
 | Windows Terminal | `build/windows-terminal/candela-<id>.json` (fragment) |
 | Ghostty | `build/ghostty/candela-<id>.conf` |
+| Warp | `build/warp/candela-<id>.yaml` |
 
 ### Zed
 
