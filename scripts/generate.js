@@ -31,9 +31,10 @@ function main() {
   console.log(`Generated build/nvim/ ${themes.length} Lua colorschemes.`);
   console.log(`Generated build/vim/ ${themes.length} Vim colorschemes.`);
   console.log(`Generated build/emacs/ ${themes.length} Emacs colorschemes.`);
+  console.log(`Generated build/xcode/ ${themes.length} .xccolortheme files.`);
   console.log(`Generated build/helix/ ${themes.length} .toml themes.`);
   console.log(`Generated build/obsidian/Candela/ theme with ${themes.length} palettes.`);
-  if (FORMAT_EMITTERS.length !== 15) throw new Error('Expected 15 export formats.');
+  if (FORMAT_EMITTERS.length !== 16) throw new Error('Expected 16 export formats.');
 }
 
 main();

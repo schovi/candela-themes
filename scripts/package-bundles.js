@@ -54,6 +54,11 @@ const bundles = [
     install: 'Copy the .el files into a directory on custom-theme-load-path, then run M-x load-theme and choose a Candela theme.',
   },
   {
+    tool: 'xcode',
+    extension: '.xccolortheme',
+    install: 'Copy the .xccolortheme files into ~/Library/Developer/Xcode/UserData/FontAndColorThemes/, restart Xcode, then select a Candela theme in Settings > Themes.',
+  },
+  {
     tool: 'vim',
     extension: '.vim',
     install: 'Copy the .vim files into ~/.vim/colors/, then run :colorscheme candela-<id>. Vim uses xterm-256 fallbacks when termguicolors is unavailable.',

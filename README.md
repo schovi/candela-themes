@@ -224,6 +224,14 @@ mono`, `hearth-dusk`, `azure-mono`, `harbor-dawn`, `harbor-dusk`.
    `candela-sepia-paper.itermcolors`.
 3. Open **Color Presets…** again and select it (it appears as *candela-…*).
 
+### Xcode
+
+Copy a `.xccolortheme` from `build/xcode/` into
+`~/Library/Developer/Xcode/UserData/FontAndColorThemes/`, restart Xcode, then choose
+it in **Settings → Themes**. `npm run package:bundles` writes
+`dist/candela-themes-xcode-<version>.tar.gz` with every theme file and install
+instructions.
+
 ### VS Code
 
 Run `npm run package` to build all supported packages. Format-specific commands
@@ -369,7 +377,7 @@ It wipes and rewrites `build/`, emitting one file per theme per tool at
 `build/<tool>/<theme-id>.<ext>`. Output is deterministic (re-running gives
 byte-identical files). Hex helpers live in `lib/colors.js`; the emitters live in
 `lib/emitters/`, one module per tool (`terminals.js`, `vscode.js`, `intellij.js`,
-`zed.js`, `sublime.js`, `nvim.js`, `vim.js`, `helix.js`) over a shared `shared.js`, with
+`zed.js`, `sublime.js`, `nvim.js`, `vim.js`, `xcode.js`, `helix.js`) over a shared `shared.js`, with
 `index.js` exposing the two entry points and the install manuals. The Node generator
 is only the filesystem shell, while the browser editor calls the same emitters for
 downloads.

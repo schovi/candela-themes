@@ -1,6 +1,6 @@
 # 062 — Xcode colorscheme format
 
-priority: 60
+done: 2026-08-12
 
 tags: emitters, packaging
 
@@ -68,10 +68,10 @@ Packaging: drop-in, so a `bundles[]` entry in `scripts/package-bundles.js`
 
 ## Acceptance criteria
 
-- `npm run build` writes 24 `build/xcode/*.xccolortheme` files, each valid XML (`plutil -lint` passes).
+- `npm run build` writes 26 `build/xcode/*.xccolortheme` files, each valid XML (`plutil -lint` passes).
 - Copying them into `~/Library/Developer/Xcode/UserData/FontAndColorThemes/` makes every Candela theme appear in Xcode → Settings → Themes, and selecting one repaints the editor and console.
 - A spot-checked Swift file shows comments, keywords, strings, numbers, functions and types in their Candela tokens; the user's font is unchanged.
-- `npm run package:bundles` writes `dist/candela-themes-xcode-<version>.tar.gz` with 24 theme files plus `README.txt`.
+- `npm run package:bundles` writes `dist/candela-themes-xcode-<version>.tar.gz` with 26 theme files plus `README.txt`.
 - The explorer's `/editor` Export picker offers Xcode and its zip installs cleanly.
 - README documents the install under `## Install`.
 - Green: `node scripts/validate.js`, `npm run build`, `cd app && npm ci && npm run build`.

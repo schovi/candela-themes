@@ -27,6 +27,7 @@ const FORMAT_DESCRIPTIONS: Record<string, string> = {
   nvim: 'A Neovim Lua colorscheme and its install guide.',
   vim: 'A Vim colorscheme with xterm-256 fallbacks and its install guide.',
   emacs: 'An Emacs colorscheme and its install guide.',
+  xcode: 'An Xcode color scheme and its install guide.',
   helix: 'A Helix TOML theme and its install guide.',
   obsidian: 'A single-palette Obsidian theme folder and its install guide.',
 };
