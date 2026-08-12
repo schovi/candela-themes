@@ -1,6 +1,6 @@
 # 064 — Slack custom theme format
 
-priority: 30
+done: 2026-08-12
 
 tags: emitters, packaging
 

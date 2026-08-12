@@ -224,6 +224,13 @@ mono`, `hearth-dusk`, `azure-mono`, `harbor-dawn`, `harbor-dusk`.
    `candela-sepia-paper.itermcolors`.
 3. Open **Color Presets…** again and select it (it appears as *candela-…*).
 
+### Slack
+
+Open **Preferences → Appearance → Custom theme → Import**, then paste the four-color
+line from `build/slack/candela-<id>.txt`. Set **Darker sidebars** and **Window
+gradient** as the file says. `npm run package:bundles` writes
+`dist/candela-themes-slack-<version>.tar.gz` with every theme file and these steps.
+
 ### Xcode
 
 Copy a `.xccolortheme` from `build/xcode/` into

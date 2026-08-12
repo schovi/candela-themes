@@ -49,6 +49,11 @@ const bundles = [
     install: 'Copy a theme file to ~/.warp/themes/, restart Warp if needed, then select Candela from the theme picker.',
   },
   {
+    tool: 'slack',
+    extension: '.txt',
+    install: 'Open Preferences > Appearance > Custom theme > Import, paste the four-color line from a theme file, then set Darker sidebars and Window gradient as noted.',
+  },
+  {
     tool: 'helix',
     extension: '.toml',
     install: 'Copy a theme file to the themes directory under your Helix configuration directory, then select the file name without the .toml extension using :theme or set theme in config.toml.',

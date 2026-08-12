@@ -21,6 +21,7 @@ const FORMAT_DESCRIPTIONS: Record<string, string> = {
   'windows-terminal': 'A Windows Terminal color-scheme fragment and its install guide.',
   ghostty: 'A Ghostty configuration theme and its install guide.',
   warp: 'A Warp YAML theme and its install guide.',
+  slack: 'A four-color Slack custom theme string and its install guide.',
   vscode: 'A single-theme VS Code extension and its install guide.',
   intellij: 'A single-theme IntelliJ plugin project and its install guide.',
   zed: 'A Zed theme extension and its install guide.',
