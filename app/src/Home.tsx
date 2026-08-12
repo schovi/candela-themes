@@ -88,6 +88,11 @@ export function Home() {
             so you can read code all day — without the glare of pure white or the harshness
             of pure black.
           </p>
+          <p className="home-body">
+            Supports iTerm2, Alacritty, Kitty, WezTerm, Windows Terminal, Ghostty, Warp,
+            VS Code, JetBrains IDEs, Zed, Obsidian, Sublime Text, Neovim, Vim, Emacs, Xcode,
+            Helix, and Slack.
+          </p>
           <div className="hero-ctas">
             <a className="hero-cta" href="/themes">Browse the gallery</a>
             <a className="hero-cta-alt" href={`${REPO}/releases/latest`}>Download latest release</a>
@@ -151,13 +156,10 @@ export function Home() {
           ))}
         </div>
         <p className="home-body home-outro">
-          Every palette is authored in one JSON source and generated for seven terminals
-          (iTerm2, Alacritty, Kitty, WezTerm, Windows Terminal, Ghostty, Warp), ten editors
-          (VS Code, JetBrains IDEs, Zed, Obsidian, Sublime Text, Neovim, Vim, Emacs, Xcode,
-          Helix), and Slack. Fork one or build your own in the <a href="/editor">Theme Editor</a>,
-          download a ready-made archive from the <a href={`${REPO}/releases/latest`}>latest
-          release</a>, or read the <a href={`${REPO}#install`}>install guide</a> on{' '}
-          <a href={REPO}>GitHub</a>.
+          Every palette is authored in one JSON source. Fork one or build your own in the{' '}
+          <a href="/editor">Theme Editor</a>, download a ready-made archive from the{' '}
+          <a href={`${REPO}/releases/latest`}>latest release</a>, or read the{' '}
+          <a href={`${REPO}#install`}>install guide</a> on <a href={REPO}>GitHub</a>.
         </p>
       </section>
     </SiteShell>
