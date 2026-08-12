@@ -186,6 +186,17 @@ Preview every theme across terminal, TypeScript, Markdown, and git panes.
 | **Moss & Magenta**<br>![Moss & Magenta](docs/screenshots/examples/candela-moss-magenta.png) | **Amber Mono**<br>![Amber Mono](docs/screenshots/examples/candela-amber-mono.png) |
 | **Harbor Dawn**<br>![Harbor Dawn](docs/screenshots/examples/candela-harbor-dawn.png) | **Harbor Dusk**<br>![Harbor Dusk](docs/screenshots/examples/candela-harbor-dusk.png) |
 
+## Supported apps
+
+Every palette is generated for:
+
+- **Terminals:** iTerm2, Alacritty, Kitty, WezTerm, Windows Terminal, Ghostty, and Warp.
+- **Editors:** VS Code, JetBrains IDEs, Zed, Obsidian, Sublime Text, Neovim, Vim, Emacs,
+  Xcode, and Helix.
+- **Chat:** Slack.
+
+See [Install](#install) for format-specific setup and downloads.
+
 ## Install
 
 **Download a release.** The [latest GitHub release](https://github.com/schovi/candela-themes/releases/latest)

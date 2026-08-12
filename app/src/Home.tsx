@@ -151,11 +151,13 @@ export function Home() {
           ))}
         </div>
         <p className="home-body home-outro">
-          Every palette is authored in one JSON source and generated for iTerm2, Alacritty,
-          Kitty, WezTerm, Ghostty, VS Code, JetBrains, Zed, Sublime, Neovim, and Helix. Fork
-          one or build your own in the <a href="/editor">Theme Editor</a>, download a ready-made
-          archive from the <a href={`${REPO}/releases/latest`}>latest release</a>, or read the{' '}
-          <a href={`${REPO}#install`}>install guide</a> on <a href={REPO}>GitHub</a>.
+          Every palette is authored in one JSON source and generated for seven terminals
+          (iTerm2, Alacritty, Kitty, WezTerm, Windows Terminal, Ghostty, Warp), ten editors
+          (VS Code, JetBrains IDEs, Zed, Obsidian, Sublime Text, Neovim, Vim, Emacs, Xcode,
+          Helix), and Slack. Fork one or build your own in the <a href="/editor">Theme Editor</a>,
+          download a ready-made archive from the <a href={`${REPO}/releases/latest`}>latest
+          release</a>, or read the <a href={`${REPO}#install`}>install guide</a> on{' '}
+          <a href={REPO}>GitHub</a>.
         </p>
       </section>
     </SiteShell>
