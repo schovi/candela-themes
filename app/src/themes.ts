@@ -54,11 +54,12 @@ export const lightThemes = themes.filter((t) => !isDarkTheme(t));
 
 // Map every theme token to a CSS variable, plus the code/prose fonts, so any
 // preview renders straight from the source-of-truth values.
-export function themeVars(theme: Theme): CSSProperties {
-  const vars: Record<string, string> = {
-    '--code-font': `'${theme.fonts.code}'`,
-    '--prose-font': `'${theme.fonts.prose}'`,
-  };
+export function themeVars(theme: Theme, includeFonts = true): CSSProperties {
+  const vars: Record<string, string> = {};
+  if (includeFonts) {
+    vars['--code-font'] = `'${theme.fonts.code}'`;
+    vars['--prose-font'] = `'${theme.fonts.prose}'`;
+  }
   for (const [token, hex] of Object.entries(theme.colors)) {
     vars[`--${token}`] = hex;
   }
