@@ -94,7 +94,7 @@ function HeroDemo() {
         ))}
       </div>
       <p className="hero-demo-caption">
-        {theme.name} · {theme.tone} — <a href={`/themes#${theme.id}`}>open in the gallery</a>
+        <a href={`/themes#${theme.id}`}>open in the gallery</a> — {theme.name} · {theme.tone}
       </p>
     </div>
   );
