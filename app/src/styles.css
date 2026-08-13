@@ -151,6 +151,11 @@ html.is-hydrating #root { pointer-events: none; }
    SamplePanes renders a 2-col .samples grid; a single pane should fill it. */
 .hero-demo .samples { grid-template-columns: 1fr; }
 .hero-demo .pane { box-shadow: 0 10px 30px rgba(50, 47, 40, 0.13); }
+.hero-demo-preview { animation: hero-theme-change 280ms ease-out; }
+@keyframes hero-theme-change {
+  from { opacity: 0.35; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .hero-swatchbar {
   display: flex;
   align-items: center;
@@ -239,6 +244,7 @@ html.is-hydrating #root { pointer-events: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .home-card, .home-card:hover, .hero-swatch, .hero-swatch:hover { transition: none; transform: none; }
+  .hero-demo-preview { animation: none; }
 }
 
 @media (max-width: 600px) {

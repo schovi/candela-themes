@@ -10,7 +10,7 @@ const standaloneThemes = themes.filter((t) => !t.pair);
 import { SamplePanes } from './samples/Panes';
 
 const REPO = 'https://github.com/schovi/candela-themes';
-const HERO_ROTATION_MS = 4_000;
+const HERO_ROTATION_MS = 3_000;
 
 // One line of token-colored sample code in the theme's own colors + code font.
 function TinyPreview({ theme }: { theme: Theme }) {
@@ -70,7 +70,9 @@ function HeroDemo() {
 
   return (
     <div className="hero-demo" style={{ ...themeVars(theme) }}>
-      <SamplePanes panes={new Set(['typescript'])} />
+      <div key={theme.id} className="hero-demo-preview">
+        <SamplePanes panes={new Set(['typescript'])} />
+      </div>
       <div className="hero-swatchbar" role="group" aria-label="Preview a theme">
         {themes.map((t, index) => (
           <button
