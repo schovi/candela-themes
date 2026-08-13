@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SiteShell } from './SiteShell';
 import { brand } from './branding';
-import { themes, themeVars, type Theme } from './themes';
+import { darkThemes, lightThemes, themes, themeVars, type Theme } from './themes';
 
 // Source order already places a pair's two halves next to each other (D14), so
 // filtering keeps them adjacent without re-sorting here.
@@ -11,6 +11,15 @@ import { SamplePanes } from './samples/Panes';
 
 const REPO = 'https://github.com/schovi/candela-themes';
 const HERO_ROTATION_MS = 2_500;
+// Four extra light themes are spread through the loop, so it never ends in a
+// long light-only run before returning to the first dark theme.
+const HERO_THEMES = darkThemes.flatMap((darkTheme, index) => [
+  ...lightThemes.slice(
+    Math.floor(index * lightThemes.length / darkThemes.length),
+    Math.floor((index + 1) * lightThemes.length / darkThemes.length),
+  ),
+  darkTheme,
+]);
 
 // One line of token-colored sample code in the theme's own colors + code font.
 function TinyPreview({ theme }: { theme: Theme }) {
@@ -55,14 +64,14 @@ function ThemeIndexCard({ theme }: { theme: Theme }) {
 // a theme swatch.
 function HeroDemo() {
   const [themeIndex, setThemeIndex] = useState(0);
-  const theme = themes[themeIndex];
+  const theme = HERO_THEMES[themeIndex];
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    setThemeIndex(Math.floor(Math.random() * themes.length));
+    setThemeIndex(Math.floor(Math.random() * HERO_THEMES.length));
     const timer = window.setInterval(
-      () => setThemeIndex((index) => (index + 1) % themes.length),
+      () => setThemeIndex((index) => (index + 1) % HERO_THEMES.length),
       HERO_ROTATION_MS,
     );
     return () => window.clearInterval(timer);
@@ -72,7 +81,7 @@ function HeroDemo() {
     <div className="hero-demo" style={{ ...themeVars(theme, false) }}>
       <SamplePanes panes={new Set(['typescript'])} />
       <div className="hero-swatchbar" role="group" aria-label="Preview a theme">
-        {themes.map((t, index) => (
+        {HERO_THEMES.map((t, index) => (
           <button
             key={t.id}
             className="hero-swatch"
