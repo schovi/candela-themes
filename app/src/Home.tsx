@@ -98,10 +98,13 @@ export function Home() {
             <a className="hero-cta-alt" href={`${REPO}/releases/latest`}>Download latest release</a>
           </div>
           <p className="home-body hero-install">
-            Install for VS Code from the{' '}
-            <a href="https://marketplace.visualstudio.com/items?itemName=Candela.candela-themes">VS&nbsp;Code Marketplace</a>{' '}
-            or <a href="https://open-vsx.org/extension/candela/candela-themes">Open&nbsp;VSX</a>{' '}
-            (VSCodium, Cursor, Windsurf).
+            Install from the{' '}
+            <a href="https://marketplace.visualstudio.com/items?itemName=Candela.candela-themes">VS&nbsp;Code Marketplace</a>,{' '}
+            <a href="https://open-vsx.org/extension/candela/candela-themes">Open&nbsp;VSX</a>{' '}
+            (VSCodium, Cursor, Windsurf),{' '}
+            <a href="https://plugins.jetbrains.com/plugin/33084-candela-themes">JetBrains Marketplace</a>, or{' '}
+            <a href="https://packagecontrol.io/packages/Candela%20Color%20Schemes">Sublime Package Control</a>.{' '}
+            <a href="https://vscodethemes.com/e/Candela.candela-themes">Preview on VS Code Themes</a>.
           </p>
           <p className="home-data hero-invariants">
             ink : paper ≥ 7:1 (AAA) · every token ≥ 4.5:1 (AA)<br />

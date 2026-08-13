@@ -208,8 +208,10 @@ all-formats ZIP and a `SHA256SUMS.txt` manifest.
 - **VS Code:** [marketplace.visualstudio.com/items?itemName=candela.candela-themes](https://marketplace.visualstudio.com/items?itemName=candela.candela-themes)
 - **Open VSX** (VSCodium, Cursor, Windsurf, Gitpod): [open-vsx.org/extension/candela/candela-themes](https://open-vsx.org/extension/candela/candela-themes)
 - **JetBrains IDEs:** [plugins.jetbrains.com/plugin/33084-candela-themes](https://plugins.jetbrains.com/plugin/33084-candela-themes)
+- **Sublime Text:** [Package Control](https://packagecontrol.io/packages/Candela%20Color%20Schemes)
 
-Zed and Sublime are added here once their registry listings land.
+Preview the VS Code extension on [VS Code Themes](https://vscodethemes.com/e/Candela.candela-themes).
+Zed is not listed in its extension registry yet.
 
 **Or build from source:**
 
