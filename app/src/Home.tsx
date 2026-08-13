@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SiteShell } from './SiteShell';
 import { brand } from './branding';
 import { themes, themeVars, type Theme } from './themes';
@@ -10,6 +10,7 @@ const standaloneThemes = themes.filter((t) => !t.pair);
 import { SamplePanes } from './samples/Panes';
 
 const REPO = 'https://github.com/schovi/candela-themes';
+const HERO_ROTATION_MS = 4_000;
 
 // One line of token-colored sample code in the theme's own colors + code font.
 function TinyPreview({ theme }: { theme: Theme }) {
@@ -53,12 +54,25 @@ function ThemeIndexCard({ theme }: { theme: Theme }) {
 // The product demoing itself: one real sample pane, repainted live by picking
 // a theme swatch.
 function HeroDemo() {
-  const [theme, setTheme] = useState(themes[0]);
+  const [themeIndex, setThemeIndex] = useState(0);
+  const theme = themes[themeIndex];
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    setThemeIndex(Math.floor(Math.random() * themes.length));
+    const timer = window.setInterval(
+      () => setThemeIndex((index) => (index + 1) % themes.length),
+      HERO_ROTATION_MS,
+    );
+    return () => window.clearInterval(timer);
+  }, []);
+
   return (
     <div className="hero-demo" style={{ ...themeVars(theme) }}>
       <SamplePanes panes={new Set(['typescript'])} />
       <div className="hero-swatchbar" role="group" aria-label="Preview a theme">
-        {themes.map((t) => (
+        {themes.map((t, index) => (
           <button
             key={t.id}
             className="hero-swatch"
@@ -66,7 +80,7 @@ function HeroDemo() {
             aria-pressed={t.id === theme.id}
             aria-label={t.name}
             title={t.name}
-            onClick={() => setTheme(t)}
+            onClick={() => setThemeIndex(index)}
           />
         ))}
       </div>
