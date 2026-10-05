@@ -1,6 +1,6 @@
-import { checkTheme, expectedTokens } from '../../lib/rules.js';
-import { hexToHsl, hslToHex } from '../../lib/colors.js';
-import { tokenReference, type Theme, type ColorToken } from './themes';
+import { checkTheme, expectedTokens, modeForBackground } from '../../lib/rules.js';
+import { hexToOklch, oklchToHex } from '../../lib/colors.js';
+import { ansiMapping, tokenReference, type Theme, type ColorToken } from './themes';
 
 // Snap a failing draft toward a passing one by adjusting ONLY lightness (hue and
 // chroma preserved), using the shared rule engine as the pass/fail oracle so no
@@ -30,22 +30,17 @@ export function autoFix(theme: Theme): Theme {
 // token against a frozen background without moving bg/surface.
 export function fitLightness(work: Theme, token: ColorToken, expected: ColorToken[]): string {
   const original = work.colors[token];
-  const { h, s, l: originalL } = hexToHsl(original);
+  const { C, h, L: originalL } = hexToOklch(original);
   let best = original;
   let bestFails = Infinity;
   let bestDistance = Infinity;
-  // bg must land on the side of 0.5 its declared mode requires. This is what makes
-  // Auto-fix move a dark-bg/light-mode conflict toward the user's mode (darken when
-  // mode says dark) instead of always lightening bg back to satisfy light. Steps
-  // 49/51 keep bg off exactly 0.5, which satisfies neither mode.
-  const loStep = token === 'bg' && work.mode === 'light' ? 51 : 0;
-  const hiStep = token === 'bg' && work.mode === 'dark' ? 49 : LIGHTNESS_STEPS;
-  for (let step = loStep; step <= hiStep; step++) {
-    const l = step / LIGHTNESS_STEPS;
-    const candidate = hslToHex({ h, s, l });
+  for (let step = 0; step <= LIGHTNESS_STEPS; step++) {
+    const L = step / LIGHTNESS_STEPS;
+    const candidate = oklchToHex({ L, C, h });
+    if (token === 'bg' && modeForBackground(candidate) !== work.mode) continue;
     work.colors[token] = candidate;
     const fails = failureCount(work, expected);
-    const distance = Math.abs(l - originalL);
+    const distance = Math.abs(L - originalL);
     if (fails < bestFails || (fails === bestFails && distance < bestDistance)) {
       best = candidate;
       bestFails = fails;
@@ -57,5 +52,5 @@ export function fitLightness(work: Theme, token: ColorToken, expected: ColorToke
 }
 
 function failureCount(theme: Theme, expected: ColorToken[]): number {
-  return (checkTheme(theme, expected) as { failures: string[] }).failures.length;
+  return (checkTheme(theme, expected, ansiMapping) as { failures: string[] }).failures.length;
 }

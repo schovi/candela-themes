@@ -7,7 +7,7 @@
 // their collisions without ever moving bg/surface (which would fight the chosen
 // darkness). Result is always rule-valid and exportable.
 import { fitLightness } from './autofix';
-import { SYNTAX_ACCENTS, expectedTokens } from '../../lib/rules.js';
+import { SYNTAX_ACCENTS, expectedTokens, modeForBackground } from '../../lib/rules.js';
 import { hexToHsl, hslToHex } from '../../lib/colors.js';
 import { tokenReference, type Theme, type ColorToken } from './themes';
 
@@ -91,10 +91,10 @@ function darknessForBgLightness(bgLightness: number): number {
     : clamp(50 + ((DARK_BG_MAX - bgLightness) / (DARK_BG_MAX - DARK_BG_MIN)) * 50, 50, 100);
 }
 
-// The explicit light/dark signal a bg carries: below 0.5 lightness is dark. Both
-// backgroundShades bands and deriveTheme read it so mode always matches the bg.
+// The shared perceptual lightness split keeps Simple-mode output aligned with the
+// validator. Both backgroundShades bands and deriveTheme read it.
 export function modeForBg(bgHex: string): 'light' | 'dark' {
-  return hexToHsl(bgHex).l < 0.5 ? 'dark' : 'light';
+  return modeForBackground(bgHex);
 }
 
 function hueDistance(first: number, second: number): number {
@@ -180,8 +180,8 @@ function backgroundShades(mood: Mood, darkness: number): Record<BackgroundToken,
       surface: shade(bgL + 0.03),
       border: shade(bgL + 0.12),
       ink: shade(0.8, 1.1),
-      ink2: shade(0.55),
-      faint: shade(0.58),
+      ink2: shade(0.68),
+      faint: shade(0.6),
       selection: shade(bgL + 0.14, 1.6),
       cursor: shade(0.8, 1.1),
       lineHighlight: shade(bgL + 0.06, 1.2),

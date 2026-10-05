@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { themes, themeVars, tokenReference, type Theme, type ColorToken } from './themes';
+import { ansiMapping, themes, themeVars, tokenReference, type Theme, type ColorToken } from './themes';
 import { ThemeCard } from './ThemeCard';
 import { autoFix } from './autofix';
 import { DEFAULT_PANES, PANE_ORDER, type PaneKey } from './samples/Panes';
@@ -11,7 +11,7 @@ import { ACCENT_L, ACCENT_SAT, DEFAULT_CHOICES, DIAG, MOOD_BG, applyAccentHue, a
 import { decodeSharedDraft, encodeSharedDraft, type SharedDraft, type SharedDraftMode } from './shareDraft';
 // Shared rule module — the exact same invariants scripts/validate.js enforces
 // (both import the same lib/ ESM; change a rule once and both reflect it).
-import { AA_CONTRAST, AAA_CONTRAST, AA_TOKENS, expectedTokens, checkTheme } from '../../lib/rules.js';
+import { AA_CONTRAST, AAA_CONTRAST, AA_TOKENS, TEXT_GROUNDS, expectedTokens, checkTheme, washGrounds } from '../../lib/rules.js';
 import { contrastRatio, hexToHsl, hslToHex } from '../../lib/colors.js';
 import { explainRuleMessage, jumpTokenForMessage } from './ruleMessages';
 
@@ -68,6 +68,7 @@ const VISION_MODES = [
   { value: 'grayscale', label: 'Grayscale' },
   { value: 'protan', label: 'Protan' },
   { value: 'deutan', label: 'Deutan' },
+  { value: 'tritan', label: 'Tritan' },
 ] as const;
 const TOKEN_GROUPS: { label: string; tokens: ColorToken[] }[] = [
   { label: 'UI', tokens: Object.keys(tokenReference.ui) as ColorToken[] },
@@ -75,11 +76,23 @@ const TOKEN_GROUPS: { label: string; tokens: ColorToken[] }[] = [
   { label: 'Diagnostics', tokens: Object.keys(tokenReference.diagnostics) as ColorToken[] },
 ];
 
-const CONTRAST_CHECKS: { token: ColorToken; background: 'bg' | 'surface' | 'selection'; floor: number }[] = [
-  { token: 'ink', background: 'surface', floor: AAA_CONTRAST },
-  ...(AA_TOKENS as ColorToken[]).map((token) => ({ token, background: 'bg' as const, floor: AA_CONTRAST })),
-  { token: 'ink', background: 'selection', floor: AA_CONTRAST },
-];
+interface ContrastCheck { token: ColorToken; background: string; backgroundHex: string; floor: number }
+
+function contrastChecks(colors: Record<ColorToken, string>): ContrastCheck[] {
+  const textGrounds = TEXT_GROUNDS.map((ground) => ({ label: ground, hex: colors[ground as ColorToken] }));
+  const aaGrounds = [...textGrounds, { label: 'selection', hex: colors.selection }, ...washGrounds(colors)];
+  const worstGround = (token: ColorToken) => aaGrounds.reduce((worst, ground) =>
+    contrastRatio(colors[token], ground.hex) < contrastRatio(colors[token], worst.hex) ? ground : worst,
+  );
+  return [
+    ...textGrounds.map((ground) => ({ token: 'ink' as const, background: ground.label, backgroundHex: ground.hex, floor: AAA_CONTRAST })),
+    ...(AA_TOKENS as ColorToken[]).map((token) => {
+      const ground = worstGround(token);
+      return { token, background: ground.label, backgroundHex: ground.hex, floor: AA_CONTRAST };
+    }),
+    { token: 'ink', background: 'selection', backgroundHex: colors.selection, floor: AA_CONTRAST },
+  ];
+}
 
 type VisionMode = typeof VISION_MODES[number]['value'];
 type InspectorTab = 'validation' | 'details' | 'json';
@@ -89,6 +102,8 @@ function warningVisionMode(message: string): VisionMode | null {
   if (message.startsWith('error/ok grayscale separation')) return 'grayscale';
   if (message.startsWith('error/ok protan/deutan distance')) return 'protan';
   if (message.includes('purple') && message.includes('blue')) return 'deutan';
+  const lookAlike = message.match(/look alike for (protan|deutan|tritan)s/);
+  if (lookAlike) return lookAlike[1] as VisionMode;
   return null;
 }
 
@@ -121,9 +136,10 @@ function RuleRow({ message, onJump, onVisionMode }: {
 function VisionFilterDefinitions() {
   return <svg className="vision-filter-definitions" aria-hidden="true">
     <defs>
-      <filter id="vision-grayscale" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0" /></filter>
-      <filter id="vision-protan" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="0.11238 0.88762 0 0 0  0.11238 0.88762 0 0 0  0.00401 -0.00401 1 0 0  0 0 0 1 0" /></filter>
-      <filter id="vision-deutan" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="0.29275 0.70725 0 0 0  0.29275 0.70725 0 0 0  -0.02234 0.02234 1 0 0  0 0 0 1 0" /></filter>
+      <filter id="vision-grayscale" colorInterpolationFilters="linearRGB"><feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0" /></filter>
+      <filter id="vision-protan" colorInterpolationFilters="linearRGB"><feColorMatrix type="matrix" values="0.11238 0.88762 0 0 0  0.11238 0.88762 0 0 0  0.00401 -0.00401 1 0 0  0 0 0 1 0" /></filter>
+      <filter id="vision-deutan" colorInterpolationFilters="linearRGB"><feColorMatrix type="matrix" values="0.29275 0.70725 0 0 0  0.29275 0.70725 0 0 0  -0.02234 0.02234 1 0 0  0 0 0 1 0" /></filter>
+      <filter id="vision-tritan" colorInterpolationFilters="linearRGB"><feColorMatrix type="matrix" values="1.255528 -0.076749 -0.178779 0 0  -0.078411 0.930809 0.147602 0 0  0.004733 0.691367 0.3039 0 0  0 0 0 1 0" /></filter>
     </defs>
   </svg>;
 }
@@ -290,7 +306,7 @@ const ZONE_SHADE = 'rgba(46,125,50,0.28)';
 // the subject of a contrast floor) come back with zero and get no shading. Pure
 // oracle read: it tracks whatever floors lib/rules.js enforces.
 function tokenContrastFails(theme: Theme, expected: ColorToken[], token: string): number {
-  const { failures } = checkTheme(theme, expected) as { failures: string[] };
+  const { failures } = checkTheme(theme, expected, ansiMapping) as { failures: string[] };
   return failures.filter((f) => f.startsWith(token + ' ') && f.includes(':1 <')).length;
 }
 
@@ -662,13 +678,13 @@ export function Playground() {
       return {
         failures: badHex.map((t) => `${t} is not a #rrggbb hex color`),
         warnings: [] as string[],
-        contrast: [] as { token: ColorToken; background: 'bg' | 'surface' | 'selection'; floor: number; ratio: number }[],
+        contrast: [] as Array<ContrastCheck & { ratio: number }>,
       };
     }
-    const result = checkTheme(draft, expected) as { failures: string[]; warnings: string[] };
-    const contrast = CONTRAST_CHECKS.map((check) => ({
+    const result = checkTheme(draft, expected, ansiMapping) as { failures: string[]; warnings: string[] };
+    const contrast = contrastChecks(draft.colors).map((check) => ({
       ...check,
-      ratio: contrastRatio(draft.colors[check.token], draft.colors[check.background]),
+      ratio: contrastRatio(draft.colors[check.token], check.backgroundHex),
     }));
     // Warn-only display hint: two syntax accents landing on the same hex still
     // pass the hard rules, but collapse two roles into one color. Computed here,
@@ -707,6 +723,7 @@ export function Playground() {
     description: draft.description,
     fonts: draft.fonts,
     colors: draft.colors,
+    ansi: draft.ansi,
   };
   const json = JSON.stringify(exportEntry, null, 2);
   const canExport = failures.length === 0;

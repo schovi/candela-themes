@@ -10,6 +10,7 @@ export type ColorToken =
   | 'error' | 'warning' | 'ok';
 
 export type ThemeCategory = 'tone' | 'heritage' | 'experiment' | 'solo';
+export type AnsiHueSlot = 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan';
 
 export interface Theme {
   id: string;
@@ -22,11 +23,13 @@ export interface Theme {
   description: string;
   fonts: { code: string; prose: string };
   colors: Record<ColorToken, string>;
+  ansi?: Partial<Record<AnsiHueSlot, ColorToken>>;
 }
 
 export interface AnsiMapping {
-  normal: Record<string, ColorToken>;
-  bright: Record<string, ColorToken>;
+  note: string;
+  hues: Record<AnsiHueSlot, ColorToken>;
+  neutrals: Record<'light' | 'dark', Record<'black' | 'white' | 'brightBlack' | 'brightWhite', ColorToken>>;
 }
 
 const themeData = data as { themes: Theme[]; ansiMapping: AnsiMapping };
