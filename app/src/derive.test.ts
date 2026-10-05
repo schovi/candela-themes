@@ -6,12 +6,12 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { deriveTheme, deriveChoices, applyBackground, DEFAULT_CHOICES } from './derive';
 import { autoFix } from './autofix';
-import { tokenReference, themes, type Theme } from './themes';
+import { ansiMapping, tokenReference, themes, type Theme } from './themes';
 import { expectedTokens, checkTheme } from '../../lib/rules.js';
 import { hexToHsl } from '../../lib/colors.js';
 
 const EXPECTED = expectedTokens(tokenReference);
-const failures = (theme: Theme) => (checkTheme(theme, EXPECTED) as { failures: string[] }).failures;
+const failures = (theme: Theme) => (checkTheme(theme, EXPECTED, ansiMapping) as { failures: string[] }).failures;
 const bgL = (theme: Theme) => hexToHsl(theme.colors.bg).l;
 
 test('default choices derive a valid light theme', () => {
