@@ -211,7 +211,7 @@ function main() {
   let warningCount = 0;
 
   for (const theme of data.themes) {
-    const { failures, warnings } = checkTheme(theme, expected);
+    const { failures, warnings } = checkTheme(theme, expected, data.ansiMapping);
     for (const f of failures) {
       console.log(`${red('FAIL')}  ${theme.id}: ${f}`);
       hardFailures++;
