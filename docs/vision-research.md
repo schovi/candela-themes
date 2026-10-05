@@ -44,19 +44,25 @@ Sources: [AAO](https://www.aao.org/eye-health/tips-prevention/are-computer-glass
 
 ## Contrast rules
 
-**WCAG 2 ratios are trustworthy for this regime.** WCAG 2's known failure mode is
-dark-on-dark (it over-passes); for dark text on light/off-white backgrounds it tracks
-perception well. APCA mapping: Lc 60 ≈ 4.5:1, Lc 75 ≈ 7:1; APCA recommends Lc 75–90 for
-body text. So `ink` ≥ 7:1 on `surface` satisfies both models — sound, keep it.
+**WCAG 2 ratios are trustworthy for light themes, not for dark ones.** For dark text on
+light/off-white backgrounds WCAG 2 tracks perception well. APCA mapping: Lc 60 ≈ 4.5:1,
+Lc 75 ≈ 7:1; APCA recommends Lc 75–90 for body text. So `ink` ≥ 7:1 on `surface`
+satisfies both models in a light theme. For light text on a dark ground WCAG 2
+over-passes: a dark theme's 7.6:1 body ink can sit at Lc 63, and its 4.6:1 comments at
+Lc 40, against ~66 for the same ratio in a light theme. The validator therefore also
+warns below Lc 75 for `ink` and Lc 45 for every AA token.
 Sources: [APCA in a nutshell](https://git.apcacontrast.com/documentation/APCA_in_a_Nutshell.html),
 [Myndex WCAG comparison](https://github.com/Myndex/SAPC-APCA/discussions/30).
 
-**Every syntax token needs ≥ 4.5:1 (WCAG AA) — against `bg`, not just `surface`.**
+**Every syntax token needs ≥ 4.5:1 (WCAG AA) — on every ground it is painted on.**
 Syntax colors are normal-size informational text; SC 1.4.3 has no code exemption. AA is
 the accepted floor (GitHub Primer rebuilt its themes to it; Eric Bailey's
 a11y-syntax-highlighting targets it per token, and notes AAA across all accents is
 infeasible on light backgrounds — the colors converge and stop being highlighting).
-Terminals render on `bg`, which is darker than `surface`, so `bg` is the binding check.
+Terminals render on `bg` and editors on `surface`, and both draw the current-line
+highlight, the selection and translucent diff washes under the same text. In a light theme
+`bg` is darker than `surface`; in a dark theme `surface` and `lineHighlight` are *lighter*
+than `bg`, so light text loses contrast there. No single ground is binding: check them all.
 Sources: [a11y-syntax-highlighting](https://github.com/ericwbailey/a11y-syntax-highlighting),
 [GitHub contrast improvements](https://github.blog/changelog/2023-03-28-light-and-dark-theme-color-contrast-improvements/).
 
@@ -103,10 +109,16 @@ Sources: [Okabe-Ito](https://jfly.uni-koeln.de/color/),
 The rules above condense to (enforced by `scripts/validate.js`, stated in
 `AGENTS.md`, "Design rules to preserve"):
 
-- `ink` on `surface` ≥ 7:1 (AAA); no pure `#ffffff` bg / `#000000` ink.
-- Every syntax and diagnostic token, and `faint`, ≥ 4.5:1 (AA) against `bg`.
+- `ink` ≥ 7:1 (AAA) on `bg`, `surface` and `lineHighlight`; no pure `#ffffff` bg /
+  `#000000` ink.
+- Every syntax and diagnostic token, `faint` and `ink2`, ≥ 4.5:1 (AA) on `bg`, `surface`,
+  `lineHighlight`, `selection` and the status washes.
 - `ink` on `selection` ≥ 4.5:1; selection never repaints text.
 - Diagnostics use unique hexes (`error` ≠ `num`, `warning` ≠ `kw`/`num`); `error` leans
   vermillion, `ok` leans blue-green, and the pair is luminance-separated.
-- Purple tokens sit at a different lightness than the blue ones.
+- Purple tokens sit ≥ 0.05 OKLab L from the blue ones.
+- APCA cross-check (warn): `ink` Lc ≥ 75, every AA token Lc ≥ 45.
+- Color-vision checks use the Machado 2009 matrices on *linear* RGB and compare in OKLab;
+  applying them to gamma-encoded values (as an SVG filter in `sRGB` interpolation does)
+  misjudges the darks.
 - Accents stay desaturated (the anti-fringing rule); the 6–8 hue count is taste.
