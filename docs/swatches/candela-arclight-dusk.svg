@@ -12,20 +12,20 @@
     <g><title>str</title><rect x="103" y="72" width="22" height="22" rx="4" fill="#8ce8a8" stroke="#3d4349"/></g>
     <g><title>fn</title><rect x="132" y="72" width="22" height="22" rx="4" fill="#8fc0ff" stroke="#3d4349"/></g>
     <g><title>num</title><rect x="161" y="72" width="22" height="22" rx="4" fill="#ffc07a" stroke="#3d4349"/></g>
-    <g><title>type</title><rect x="190" y="72" width="22" height="22" rx="4" fill="#d2b0ff" stroke="#3d4349"/></g>
+    <g><title>type</title><rect x="190" y="72" width="22" height="22" rx="4" fill="#dac0ff" stroke="#3d4349"/></g>
     <g><title>builtin</title><rect x="219" y="72" width="22" height="22" rx="4" fill="#7fe0e8" stroke="#3d4349"/></g>
     <text x="16" y="128" fill="#ffb0d8">def</text>
     <text x="39.4" y="128" fill="#eef1f4"> </text>
     <text x="47.199999999999996" y="128" fill="#8fc0ff">total</text>
-    <text x="86.19999999999999" y="128" fill="#eef1f4">(</text>
-    <text x="93.99999999999999" y="128" fill="#d2b0ff">cents</text>
-    <text x="133" y="128" fill="#eef1f4">)</text>
+    <text x="86.19999999999999" y="128" fill="#c6c9cc">(</text>
+    <text x="93.99999999999999" y="128" fill="#dac0ff">cents</text>
+    <text x="133" y="128" fill="#c6c9cc">)</text>
     <text x="140.8" y="128" fill="#eef1f4"> </text>
-    <text x="148.60000000000002" y="128" fill="#eef1f4">=</text>
+    <text x="148.60000000000002" y="128" fill="#c6c9cc">=</text>
     <text x="156.40000000000003" y="128" fill="#eef1f4"> </text>
     <text x="164.20000000000005" y="128" fill="#eef1f4">cents</text>
     <text x="203.20000000000005" y="128" fill="#eef1f4"> </text>
-    <text x="211.00000000000006" y="128" fill="#eef1f4">/</text>
+    <text x="211.00000000000006" y="128" fill="#c6c9cc">/</text>
     <text x="218.80000000000007" y="128" fill="#eef1f4"> </text>
     <text x="226.60000000000008" y="128" fill="#ffc07a">100.0</text>
   </g>

@@ -61,9 +61,12 @@ the original rationale was wrong) lives in `docs/vision-research.md` — read it
 re-deriving the numbers.
 
 - `bg` and `surface` are **never** `#ffffff`; `surface` is slightly lighter than `bg`.
-- `ink` is **never** `#000000`; `ink` on `surface` must clear **~7:1 (AAA)**.
-- Every syntax + diagnostic token, and `faint`, clears **4.5:1 (AA) against `bg`** (the
-  binding surface — terminals paint on it).
+- `ink` is **never** `#000000`; `ink` clears **7:1 (AAA)** on `bg`, `surface` and
+  `lineHighlight`.
+- Every syntax + diagnostic token, `faint` and `ink2` clear **4.5:1 (AA)** on every ground
+  text sits on: `bg`, `surface`, `lineHighlight`, `selection`, and the translucent status
+  washes (`WASH_ALPHA_HEX` over `surface`). `bg` is not always the binding one: a dark
+  theme's `surface` and `lineHighlight` are lighter than `bg`.
 - `ink` on `selection` clears **4.5:1 (AA)**; selection never repaints text.
 - Diagnostics use **unique hexes** (`error` ≠ `num`, `warning` ≠ `kw`/`num`, `ok` ≠
   `error`); `error` leans vermillion, `ok` leans blue-green/teal, and the pair is
@@ -72,25 +75,35 @@ re-deriving the numbers.
   hues** is taste/consistency, not a vision constraint.
 - Preserve semantic roles: `kw`/`str`/`fn`/etc. mean the same thing in every theme.
 - Prefer **blue + orange** as the two hues carrying the most meaning (colorblind-safe); keep
-  purple tokens at a different lightness than blue ones (purple collapses into blue for
-  protans/deutans).
+  purple tokens at least **0.05 OKLab L** away from blue ones (purple collapses into blue
+  for protans/deutans).
+- Keep roles ranked: `punct` is its own muted step (never equal to `ink` or `faint`), and
+  `ink2` reads stronger than `faint`.
+- Terminal **ANSI slots match their names**: red/green/yellow come from
+  `error`/`ok`/`warning`; blue/magenta/cyan default to `fn`/`type`/`builtin` and a theme
+  whose tokens sit on other hues overrides them in its own `ansi` block. Black is darker
+  than white in both modes (the neutral slots are per mode).
 - Fill in **all** tokens — nothing implicit — so generation never needs per-theme hacks.
 - `mode` is **`"light"` or `"dark"`** on every theme — the explicit light/dark signal. The
   app's gallery filter and light/dark counts read it; never infer it from `tone`. A light
-  theme's `bg` HSL lightness is above 0.5; a dark theme's is below 0.5.
+  theme's `bg` OKLab lightness is above 0.6; a dark theme's is below 0.6.
 
 `scripts/validate.js` (via `lib/rules.js`, Node, no deps) hard-gates the above: no pure-white
-`bg`/`surface`, `surface` lighter than `bg`, no pure-black `ink`, `ink`/`surface` ≥ 7:1 (AAA),
-every AA floor, diagnostic hex-uniqueness, a valid `mode` (`light`/`dark`), a valid
-`category`, symmetric and
-opposite-mode `pair` links, every token present
-in all themes, and ANSI mappings that reference real tokens. It exits non-zero and names the failing theme + token.
+`bg`/`surface`, `surface` lighter than `bg`, no pure-black `ink`, `ink` ≥ 7:1 (AAA) on every
+ground, every AA floor on every ground, purple/blue lightness separation, diagnostic
+hex-uniqueness, a valid `mode` (`light`/`dark`), a valid `category`, symmetric and
+opposite-mode `pair` links, every token present in all themes, and ANSI slots that reference
+real tokens, put red/green/yellow on matching hues, keep black darker than white, and give
+bright black AA. It exits non-zero and names the failing theme + token.
 It also gates **scope coverage**: every editor emitter must map the prose (`markup.*`), markup-tag
 and object-key scope families, because a palette can pass every contrast rule and still render
 Markdown, YAML or JSON as flat `ink` — which is how Markdown shipped unhighlighted through 1.0.
 The app's preview panes are hand-colored, so only the generated files can catch it.
-Warn-only judgement calls (never gate): the accent-hue count (6–8) and the error/ok grayscale +
-protan/deutan separation. It reads the JSON read-only — it reports, humans decide.
+Warn-only judgement calls (never gate): the accent-hue count (6–8), blue/magenta/cyan ANSI
+hues, APCA floors (Lc 75 for `ink`, 45 for every AA token; WCAG 2 overstates light-on-dark
+contrast), OKLCH chroma above 0.17, syntax tokens that look alike for normal vision or after
+protan/deutan/tritan simulation, `punct`/`ink2` role ranking, selection visibility, and the
+error/ok grayscale + protan/deutan separation. It reads the JSON read-only — it reports, humans decide.
 
 ### Standard loop for a theme change
 
@@ -149,11 +162,15 @@ Full runbook: `docs/release-runbook.md`.
   unused category never renders). Optional `pair`: the id of its light/dark counterpart,
   which must point back and be the opposite mode. Nothing generates from `pair` — it records
   the relationship so names don't have to, and "solo" in the UI is derived from its absence,
-  never stored twice. `build/` regenerates for all
+  never stored twice. Optional `ansi`: hue-slot overrides (`blue`/`magenta`/`cyan`, rarely
+  others) naming the token whose hue fits, when `fn`/`type`/`builtin` don't; the validator
+  warns when a slot is off-hue. `build/` regenerates for all
   formats automatically; add the theme to README's theme table (and the gallery) by hand.
 - *New tool format*: add a pure emitter module under `lib/emitters/` and wire it into `lib/emitters/index.js`
   (`FORMAT_EMITTERS`, `INSTALL_STEPS`, `emitFullFamily`; hex helpers in `lib/colors.js`);
-  terminal formats derive from the top-level `ansiMapping` block.
+  terminal formats derive from the top-level `ansiMapping` block plus each theme's optional
+  `ansi` overrides (`resolveAnsi`). Any translucent background drawn behind text uses
+  `WASH_ALPHA_HEX` from `lib/rules.js` so the validator checks what ships.
 
 ## Work tracking
 

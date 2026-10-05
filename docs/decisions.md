@@ -400,3 +400,46 @@ The one judgement call in the classification is `ink-coral`: it shares the
 `high-contrast` tag with `arclight-dawn` but is filed as `tone`, because it is a
 punchy palette rather than an acuity study. If that flips, flip only the category —
 its tags are correct either way.
+
+## D16 — ANSI slots follow hue, not role; neutral slots follow mode (2026-10-05)
+
+**Problem.** `ansiMapping` assigned terminal slots by syntax role (`red` = `num`,
+`green` = `str`, `yellow` = `kw`) with one mapping for both modes. Programs pick ANSI
+slots by meaning — `git diff` deletions are red, test failures red, warnings yellow — so
+role mapping broke them wherever a role's hue differs from the slot name. Sepia Paper's
+`num` and `str` are both olive (OKLab ΔE 0.045), so diff deletions and additions looked
+the same. Meadow's green slot was blue. In every dark theme `black` was `ink` (light) and
+bright white was `surface` (~1.1:1 on `bg`, invisible).
+
+**Options.** (A) A full 16-hex `ansi` block per theme. (B) Pick the nearest-hue token at
+generation time. (C) A shared mapping by hue with explicit per-theme overrides.
+
+**Choice.** C. red/green/yellow come from `error`/`ok`/`warning`, whose hues the design
+rules already pin (vermillion, teal, amber), so they are hard-gated to their hue windows.
+blue/magenta/cyan default to `fn`/`type`/`builtin`; a theme whose tokens sit elsewhere
+names the fitting token in its own `ansi` block, and the validator only warns, because
+low-blue and monochrome palettes have no blue or magenta by design. Neutral slots are
+keyed by `mode`. A is sixteen more hand-tuned hexes per theme that could drift from the
+palette; B hides the mapping in code (the "nothing implicit" rule).
+
+**Consequence.** Normal and bright hue slots share a color. A new theme gets correct
+red/green/yellow for free; check the blue/magenta/cyan warnings before shipping it.
+
+## D17 — Contrast is checked on every ground text sits on (2026-10-05)
+
+**Problem.** The AA gate checked tokens against `bg` only, on the reasoning that `bg` is
+darker than `surface`. That holds in light themes and inverts in dark ones: Nocturne's
+tokens fell to 4.26:1 on `surface` (VS Code's editor background) and 3.63:1 on
+`lineHighlight`. Syntax colors on the selection fell to 3.9–4.3:1 in every light theme,
+and `ink2` (sidebar, status bar, line numbers) was ungated at 3.3:1 in Nocturne.
+
+**Choice.** `lib/rules.js` checks every AA token, including `ink2`, against `bg`,
+`surface`, `lineHighlight`, `selection` and the status washes composited over `surface`,
+and `ink` at AAA on the three opaque grounds. Wash alpha lives in `WASH_ALPHA_HEX` and the
+emitters read it, so the validator checks what ships. The palettes were retuned by moving
+OKLCH lightness only, away from `bg` (hue and chroma kept), pulling an over-bright dark
+selection or line highlight toward `bg` first.
+
+**Consequence.** Light accents sit around 5:1 on `bg` instead of hugging 4.5:1, and diff
+washes are lighter (8% instead of 13%). Raising a wash alpha or adding a translucent
+background behind text needs its composite added to `washGrounds`.

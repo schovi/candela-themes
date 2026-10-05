@@ -51,9 +51,10 @@ light themes calmer:
    paper (`bg`, with panels a shade lighter in `surface`) doesn't.
 2. **Dark gray text, never pure black.** Candela inks are very dark but never
    `#000`. Dark gray on off-white just reads calmer for a lot of people.
-3. **Strong contrast, not maximal.** Body text (`ink` on `surface`) clears WCAG
-   AAA (7:1+). Secondary text (`ink2`) and comments (`faint`) step down but
-   still clear WCAG AA (4.5:1 against `bg`, the surface terminals paint on).
+3. **Strong contrast, not maximal.** Body text (`ink`) clears WCAG AAA (7:1+).
+   Secondary text (`ink2`), comments (`faint`) and every syntax color step down
+   but still clear WCAG AA (4.5:1) on every background they appear on: the
+   page, panels, the current line, the selection, and diff highlights.
 4. **Low-saturation colors.** Desaturated accents reduce the colored fringing
    that can make text harder to read.
 5. **Blue and orange carry the meaning.** Keeping them distinct helps keywords,
@@ -292,7 +293,9 @@ color scheme (as `.xml`, which the plugin's `editorScheme` loads, plus an identi
 
 ### Other terminals
 
-The same ANSI palette is available for seven terminals. Pick your file and import
+The same ANSI palette is available for seven terminals. Slots match their names:
+red is the theme's error color, green its success color, yellow its warning
+color, and black stays darker than white in both light and dark themes. Pick your file and import
 it according to that terminal's documentation:
 
 Run `npm run package:bundles` to create one release
@@ -387,6 +390,8 @@ needs:
 
 Every entry declares `mode` (`"light"` or `"dark"`) and a non-empty `tags` array.
 Both are required by validation, and `mode` and `tags` power the explorer's filters.
+`ansiMapping` names the token behind each terminal ANSI slot (neutral slots per
+mode); a theme can override a hue slot in its own optional `ansi` block.
 
 Build from the repo root:
 
