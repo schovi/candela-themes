@@ -889,6 +889,81 @@
       }
     },
     {
+      "id": "t3-ember-dawn",
+      "category": "tone",
+      "pair": "t3-ember-dusk",
+      "name": "T3 Ember Dawn",
+      "tone": "warm / terracotta",
+      "tags": [
+        "warm"
+      ],
+      "mode": "light",
+      "description": "A near-neutral warm page with plum-tinted ink and a terracotta keyword, after T3 Code's Ember. The light half of the pair. Code in JetBrains Mono, prose in Hanken Grotesk.",
+      "fonts": {
+        "code": "JetBrains Mono",
+        "prose": "Hanken Grotesk"
+      },
+      "colors": {
+        "bg": "#f3efec",
+        "surface": "#f9f7f5",
+        "border": "#ddd2ce",
+        "ink": "#241523",
+        "ink2": "#544952",
+        "faint": "#685c65",
+        "selection": "#ebdad1",
+        "cursor": "#ae552a",
+        "lineHighlight": "#f0eae6",
+        "kw": "#9d4616",
+        "str": "#596423",
+        "fn": "#2c6194",
+        "num": "#9c2a44",
+        "type": "#692f6d",
+        "builtin": "#276b59",
+        "punct": "#674e4a",
+        "error": "#8d1c11",
+        "warning": "#815709",
+        "ok": "#236e44"
+      }
+    },
+    {
+      "id": "t3-ember-dusk",
+      "category": "tone",
+      "pair": "t3-ember-dawn",
+      "name": "T3 Ember Dusk",
+      "tone": "dark / terracotta",
+      "tags": [
+        "dark",
+        "warm"
+      ],
+      "mode": "dark",
+      "description": "Peach and coral on a red-brown ground with plum-white ink, after T3 Code's Ember. The dark half of the pair. Code in JetBrains Mono, prose in Hanken Grotesk.",
+      "fonts": {
+        "code": "JetBrains Mono",
+        "prose": "Hanken Grotesk"
+      },
+      "colors": {
+        "bg": "#291e1a",
+        "surface": "#32261f",
+        "border": "#664c3f",
+        "ink": "#f4eef3",
+        "ink2": "#c5bbbb",
+        "faint": "#b2a8a8",
+        "selection": "#4a3528",
+        "cursor": "#f09a64",
+        "lineHighlight": "#2f231e",
+        "kw": "#f4a16d",
+        "str": "#bbc986",
+        "fn": "#90bce9",
+        "num": "#f693a0",
+        "type": "#e6bfe7",
+        "builtin": "#8ad0cf",
+        "punct": "#c9ada4",
+        "error": "#f87f71",
+        "warning": "#f0be67",
+        "ok": "#84d1af"
+      }
+    },
+    {
       "id": "moss-magenta",
       "category": "heritage",
       "name": "Moss & Magenta",
