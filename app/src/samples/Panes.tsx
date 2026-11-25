@@ -11,7 +11,8 @@ export type PaneKey =
   | 'python'
   | 'rust'
   | 'go'
-  | 'diagnostics';
+  | 'diagnostics'
+  | 'app';
 
 // Default 4 come first; the rest are opt-in via the gallery's pane toggles.
 export const PANE_ORDER: { key: PaneKey; label: string }[] = [
@@ -25,6 +26,7 @@ export const PANE_ORDER: { key: PaneKey; label: string }[] = [
   { key: 'rust', label: 'Rust' },
   { key: 'go', label: 'Go' },
   { key: 'diagnostics', label: 'Diagnostics' },
+  { key: 'app', label: 'App window' },
 ];
 
 // Shown by default in the gallery and captured by the screenshot command.
@@ -269,6 +271,71 @@ function Go() {
   );
 }
 
+// An editor window rather than a text sample: the only pane that paints the
+// chrome tokens (bg vs surface, border, selection, lineHighlight, cursor) as
+// areas, the way the editor emitters apply them.
+const uiFont = '12.5px/1 var(--prose-font), system-ui, sans-serif';
+const codeFont = '13px/1.75 var(--code-font), monospace';
+
+function TreeRow({ depth = 0, active, badge, children }: { depth?: number; active?: boolean; badge?: ColorToken; children: ReactNode }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', padding: `6px 12px 6px ${12 + depth * 12}px`, background: active ? 'var(--selection)' : undefined, color: active ? 'var(--ink)' : 'var(--ink2)' }}>
+      <span>{children}</span>
+      {badge && <span data-token={badge} style={{ color: `var(--${badge})`, font: codeFont, lineHeight: 1 }}>{badge === 'error' ? '1' : badge === 'warning' ? 'M' : 'U'}</span>}
+    </div>
+  );
+}
+
+function CodeLine({ n, active, children }: { n: number; active?: boolean; children?: ReactNode }) {
+  return (
+    <div style={{ display: 'flex', background: active ? 'var(--lineHighlight)' : undefined }}>
+      <span style={{ width: 34, paddingRight: 12, textAlign: 'right', flex: 'none', color: active ? 'var(--ink)' : 'var(--faint)' }}>{n}</span>
+      <span>{children}</span>
+    </div>
+  );
+}
+
+function AppWindow() {
+  const caret = <span data-token="cursor" style={{ borderLeft: '2px solid var(--cursor)', marginLeft: 1 }} />;
+  const selected: React.CSSProperties = { background: 'var(--selection)' };
+  return (
+    <Pane title="candela — billing.ts">
+      <div style={{ display: 'flex', flex: 1, font: uiFont }}>
+        <div style={{ width: 150, flex: 'none', background: 'var(--bg)', borderRight: '1px solid var(--border)', padding: '10px 0' }}>
+          <div style={{ padding: '4px 12px 8px', color: 'var(--faint)', fontSize: 10.5, letterSpacing: '0.08em' }}>EXPLORER</div>
+          <TreeRow>▾ src</TreeRow>
+          <TreeRow depth={1} active badge="error">billing.ts</TreeRow>
+          <TreeRow depth={1} badge="ok">invoice.ts</TreeRow>
+          <TreeRow depth={1} badge="warning">theme.rb</TreeRow>
+          <TreeRow>▸ test</TreeRow>
+          <TreeRow>README.md</TreeRow>
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ padding: '9px 14px', background: 'var(--surface)', color: 'var(--ink)', borderRight: '1px solid var(--border)', boxShadow: 'inset 0 2px 0 var(--kw)' }}>billing.ts</span>
+            <span style={{ padding: '9px 14px', color: 'var(--ink2)', borderRight: '1px solid var(--border)' }}>invoice.ts</span>
+          </div>
+          <pre style={{ ...preStyle, font: codeFont, padding: '10px 0' }}>
+            <CodeLine n={4}><C t="kw">function</C> <C t="fn">totalDue</C><C t="punct">(</C>invoices<C t="punct">:</C> <C t="type">Invoice</C><C t="punct">[]) {'{'}</C></CodeLine>
+            <CodeLine n={5}>{'  '}<C t="kw">return</C> invoices</CodeLine>
+            <CodeLine n={6} active>{'    '}<C t="punct">.</C><C t="fn">filter</C><C t="punct">((</C>i<C t="punct">)</C> <C t="kw">=&gt;</C> i<C t="punct">.</C>cents <C t="punct">&gt;</C> <C t="num">0</C><C t="punct">)</C>{caret}</CodeLine>
+            <CodeLine n={7}>{'    '}<span style={selected}><C t="punct">.</C><C t="fn">reduce</C><C t="punct">((</C>sum<C t="punct">,</C> i<C t="punct">)</C> <C t="kw">=&gt;</C> sum <C t="punct">+</C> i<C t="punct">.</C>cents<C t="punct">,</C> <C t="num">0</C><C t="punct">)</C></span></CodeLine>
+            <CodeLine n={8}><C t="punct">{'}'}</C> <C t="faint">// cents, not dollars</C></CodeLine>
+          </pre>
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 14, padding: '7px 12px', background: 'var(--bg)', borderTop: '1px solid var(--border)', font: uiFont, color: 'var(--ink2)' }}>
+        <C t="kw">⎇ main</C>
+        <C t="error">✕ 1</C>
+        <C t="warning">▲ 1</C>
+        <C t="ok">✓ 42</C>
+        <span style={{ marginLeft: 'auto' }}>Ln 6, Col 31</span>
+        <span>TypeScript</span>
+      </div>
+    </Pane>
+  );
+}
+
 const PANES: Record<PaneKey, () => React.JSX.Element> = {
   terminal: Terminal,
   typescript: TypeScript,
@@ -280,6 +347,7 @@ const PANES: Record<PaneKey, () => React.JSX.Element> = {
   rust: Rust,
   go: Go,
   diagnostics: Diagnostics,
+  app: AppWindow,
 };
 
 export function SamplePanes({ panes }: { panes: Set<PaneKey> }) {
